@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
+import AuthSuccess from "@/components/auth/AuthSuccess";
 import CardWrapper from "@/components/auth/CardWrapper";
 import { RegisterSchema, RegisterValidator } from "@/lib/validators/register";
 import {
@@ -17,6 +19,10 @@ import {
 } from "@/components/ui/form";
 
 const RegisterForm = () => {
+  const [error, setError] = useState("");
+
+  const [success, setSuccess] = useState("");
+
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<RegisterValidator>({
@@ -103,6 +109,10 @@ const RegisterForm = () => {
               )}
             />
           </div>
+
+          <AuthError message={error} />
+
+          <AuthSuccess message={success} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
             Create an account
