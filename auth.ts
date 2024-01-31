@@ -5,6 +5,7 @@ import { UserRole } from "@prisma/client";
 import { getUserById } from "./data/user";
 import { getAccountByUserId } from "./data/account";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 
 export const {
   handlers: { GET, POST },
@@ -41,6 +42,20 @@ export const {
 
       //If two-factor authentication is true
       if (existingUser?.isTwoFactorEnabled) {
+        //Check if there is a confirmation
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        //If no confirmation don't sign in.
+        if (!twoFactorConfirmation) return false;
+
+        // if there is a confirmation sign in and Delete two factor confirmation for next sign in.
+        await prismadb.twoFactorConfirmation.delete({
+          where: {
+            id: twoFactorConfirmation.id,
+          },
+        });
       }
 
       return true;
