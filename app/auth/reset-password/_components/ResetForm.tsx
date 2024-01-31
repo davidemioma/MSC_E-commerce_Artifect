@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import BtnSpinner from "@/components/BtnSpinner";
 import { Button } from "@/components/ui/button";
 import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -94,7 +95,7 @@ const ResetForm = () => {
           <AuthError message={error} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
-            Send reset email
+            {isPending ? <BtnSpinner /> : "Send reset email"}
           </Button>
         </form>
       </Form>

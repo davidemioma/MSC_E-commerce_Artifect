@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import BtnSpinner from "@/components/BtnSpinner";
 import { Button } from "@/components/ui/button";
 import AuthError from "@/components/auth/AuthError";
 import { newPassword } from "@/actions/new-password";
@@ -102,7 +103,7 @@ const NewPasswordForm = ({ token }: Props) => {
           <AuthError message={error} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
-            Reset password
+            {isPending ? <BtnSpinner /> : "Reset password"}
           </Button>
         </form>
       </Form>
