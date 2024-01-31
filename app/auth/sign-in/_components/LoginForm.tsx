@@ -6,6 +6,7 @@ import { login } from "@/actions/login";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import BtnSpinner from "@/components/BtnSpinner";
 import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AuthSuccess from "@/components/auth/AuthSuccess";
@@ -129,7 +130,7 @@ const LoginForm = () => {
           <AuthError message={error} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
-            Sign In
+            {isPending ? <BtnSpinner /> : "Sign In"}
           </Button>
         </form>
       </Form>
