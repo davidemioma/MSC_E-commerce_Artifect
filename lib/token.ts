@@ -3,6 +3,7 @@ import prismadb from "./prisma";
 import { v4 as uuidv4 } from "uuid";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { getVerificationTokenByEmail } from "@/data/verification-token";
+import { getPasswordResetTokenByEmail } from "@/data/reset-password-token";
 
 export const generateVerificationToken = async (email: string) => {
   const token = uuidv4();
@@ -63,4 +64,34 @@ export const generateTwofactorToken = async (email: string) => {
   });
 
   return twoFactorToken;
+};
+
+export const generateResetPasswordToken = async (email: string) => {
+  const token = uuidv4();
+
+  //This is expiring in 10 mins.
+  const expires = new Date(new Date().getTime() + 10 * 60 * 1000);
+
+  //Check if there is an existing verification token for this email.
+  const existingToken = await getPasswordResetTokenByEmail(email);
+
+  //Delete existing token
+  if (existingToken) {
+    await prismadb.passwordResetToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+  }
+
+  //Create a new token.
+  const passwordResetToken = await prismadb.passwordResetToken.create({
+    data: {
+      email,
+      token,
+      expires,
+    },
+  });
+
+  return passwordResetToken;
 };

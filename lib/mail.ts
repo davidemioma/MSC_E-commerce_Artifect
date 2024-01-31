@@ -52,3 +52,24 @@ export const sendTwoFactorTokenEmail = async ({
     console.log(err);
   }
 };
+
+export const sendPasswordResetEmail = async ({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) => {
+  const resetLink = `${domain}/auth/new-password?token=${token}`;
+
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USERNAME,
+      to: email,
+      subject: "Reset your password",
+      html: `<p>Click <a href="${resetLink}">here</a> to reset password.</p>`,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

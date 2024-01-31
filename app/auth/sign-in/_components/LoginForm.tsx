@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BtnSpinner from "@/components/BtnSpinner";
+import { useSearchParams } from "next/navigation";
 import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AuthSuccess from "@/components/auth/AuthSuccess";
@@ -22,13 +23,22 @@ import {
 } from "@/components/ui/form";
 
 const LoginForm = () => {
+  const searchParams = useSearchParams();
+
   const [error, setError] = useState("");
 
   const [success, setSuccess] = useState("");
 
-  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const [isPending, startTransition] = useTransition();
+
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider!"
+      : "";
 
   const form = useForm<LoginValidator>({
     resolver: zodResolver(LoginSchema),
@@ -44,7 +54,7 @@ const LoginForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      login(values)
+      login(values, callbackUrl)
         .then((data) => {
           if (data?.error) {
             form.reset();
@@ -159,7 +169,7 @@ const LoginForm = () => {
 
           <AuthSuccess message={success} />
 
-          <AuthError message={error} />
+          <AuthError message={error || urlError} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
             {isPending ? <BtnSpinner /> : showTwoFactor ? "Confirm" : "Sign In"}
