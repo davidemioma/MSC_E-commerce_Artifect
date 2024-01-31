@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import BtnSpinner from "@/components/BtnSpinner";
 import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AuthSuccess from "@/components/auth/AuthSuccess";
@@ -34,7 +36,22 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: RegisterValidator) => {};
+  const onSubmit = (values: RegisterValidator) => {
+    setError("");
+
+    setSuccess("");
+
+    startTransition(() => {
+      axios
+        .post("/api/auth/register", values)
+        .then((res) => {
+          setSuccess(res.data);
+        })
+        .catch((err) => {
+          setError(err.response?.data || "Something went wrong");
+        });
+    });
+  };
 
   return (
     <CardWrapper
@@ -115,7 +132,11 @@ const RegisterForm = () => {
           <AuthSuccess message={success} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
-            Create an account
+            {isPending ? (
+              <BtnSpinner className="border-white" />
+            ) : (
+              "Create an account"
+            )}
           </Button>
         </form>
       </Form>
