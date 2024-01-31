@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import axios from "axios";
 import { BeatLoader } from "react-spinners";
 import AuthError from "@/components/auth/AuthError";
 import CardWrapper from "@/components/auth/CardWrapper";
 import AuthSuccess from "@/components/auth/AuthSuccess";
+import { newVerification } from "@/actions/new-verification";
 
 type Props = {
   token: string;
@@ -25,14 +25,18 @@ const NewVerificationForm = ({ token }: Props) => {
       return;
     }
 
-    axios
-      .patch("/api/auth/new-verification", { token })
-      .then((res) => {
-        setSuccess(res.data);
+    newVerification(token)
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        }
+
+        if (data.success) {
+          setSuccess(data.success);
+        }
       })
-      .catch((err) => {
-        console.log(err);
-        setError(err.response?.data || "Something went wrong!");
+      .catch(() => {
+        setError("Something went wrong!");
       });
   }, [token, success, error]);
 

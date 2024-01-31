@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
+import { register } from "@/actions/register";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BtnSpinner from "@/components/BtnSpinner";
@@ -42,13 +42,22 @@ const RegisterForm = () => {
     setSuccess("");
 
     startTransition(() => {
-      axios
-        .post("/api/auth/register", values)
-        .then((res) => {
-          setSuccess(res.data);
+      register(values)
+        .then((data) => {
+          if (data?.error) {
+            form.reset();
+
+            setError(data.error);
+          }
+
+          if (data?.success) {
+            form.reset();
+
+            setSuccess(data.success);
+          }
         })
         .catch((err) => {
-          setError(err.response?.data || "Something went wrong");
+          setError("Something went wrong");
         });
     });
   };

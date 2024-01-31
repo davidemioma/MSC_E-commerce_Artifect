@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
+import { login } from "@/actions/login";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthError from "@/components/auth/AuthError";
 import { zodResolver } from "@hookform/resolvers/zod";
+import AuthSuccess from "@/components/auth/AuthSuccess";
 import CardWrapper from "@/components/auth/CardWrapper";
-import { RegisterSchema, RegisterValidator } from "@/lib/validators/register";
+import { LoginValidator, LoginSchema } from "@/lib/validators/login";
 import {
   Form,
   FormControl,
@@ -18,18 +21,45 @@ import {
 } from "@/components/ui/form";
 
 const LoginForm = () => {
+  const [error, setError] = useState("");
+
+  const [success, setSuccess] = useState("");
+
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<RegisterValidator>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<LoginValidator>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: RegisterValidator) => {};
+  const onSubmit = (values: LoginValidator) => {
+    setError("");
+
+    setSuccess("");
+
+    startTransition(() => {
+      login(values)
+        .then((data) => {
+          if (data?.error) {
+            form.reset();
+
+            setError(data.error);
+          }
+
+          if (data?.success) {
+            form.reset();
+
+            setSuccess(data.success);
+          }
+        })
+        .catch((err) => {
+          setError("Something went wrong");
+        });
+    });
+  };
 
   return (
     <CardWrapper
@@ -93,6 +123,10 @@ const LoginForm = () => {
               )}
             />
           </div>
+
+          <AuthSuccess message={success} />
+
+          <AuthError message={error} />
 
           <Button className="w-full" type="submit" disabled={isPending}>
             Sign In

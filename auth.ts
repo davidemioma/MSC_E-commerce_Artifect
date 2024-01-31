@@ -9,6 +9,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 export const {
   handlers: { GET, POST },
   auth,
+  signIn,
+  signOut,
+  update,
 } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prismadb),
@@ -35,6 +38,10 @@ export const {
 
       // Prevent user from signing in without email verification.
       if (!existingUser?.emailVerified) return false;
+
+      //If two-factor authentication is true
+      if (existingUser?.isTwoFactorEnabled) {
+      }
 
       return true;
     },
