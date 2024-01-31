@@ -33,3 +33,22 @@ export const sendVerificationEmail = async ({
     console.log(err);
   }
 };
+
+export const sendTwoFactorTokenEmail = async ({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from: process.env.EMAIL_USERNAME,
+      to: email,
+      subject: "2FA Code",
+      html: `<p>Your 2FA code: ${token}</p>`,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
