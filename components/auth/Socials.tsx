@@ -14,7 +14,9 @@ const Socials = () => {
 
   const signInWithGoogle = () => {
     signIn("google", {
-      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      callbackUrl:
+        (!callbackUrl?.includes("sign-in" || "sign-up") && callbackUrl) ||
+        DEFAULT_LOGIN_REDIRECT,
     });
   };
 
