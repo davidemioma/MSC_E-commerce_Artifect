@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Nunito_Sans } from "next/font/google";
 
@@ -9,11 +10,13 @@ const font = Nunito_Sans({
 
 const Logo = () => {
   return (
-    <div className="flex items-center gap-2">
-      <span className={cn("text-4xl font-semibold", font.className)}>🛍</span>
+    <Link href="/">
+      <div className="flex items-center gap-2">
+        <span className={cn("text-4xl font-semibold", font.className)}>🛍</span>
 
-      <span className="font-medium">LocalMart</span>
-    </div>
+        <span className="font-medium">LocalMart</span>
+      </div>
+    </Link>
   );
 };
 

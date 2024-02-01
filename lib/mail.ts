@@ -1,6 +1,11 @@
 import nodemailer from "nodemailer";
+import { TwoFAEmailHtml } from "@/components/email/TwoFactorEmail";
+import { VerificationEmailHtml } from "@/components/email/VerificationEmail";
+import { PasswordResetEmailHtml } from "@/components/email/PasswordResetEmail";
 
 const domain = process.env.NEXT_PUBLIC_APP_URL;
+
+const from = process.env.EMAIL_USERNAME;
 
 const transporter = nodemailer.createTransport({
   //@ts-ignore
@@ -24,10 +29,13 @@ export const sendVerificationEmail = async ({
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USERNAME,
+      from,
       to: email,
       subject: "Confirm your email",
-      html: `<p>Click <a href="${confirmLink}">here</a> to confirm email.</p>`,
+      html: VerificationEmailHtml({
+        href: confirmLink,
+        buttonText: "Verify Email",
+      }),
     });
   } catch (err) {
     console.log(err);
@@ -43,10 +51,12 @@ export const sendTwoFactorTokenEmail = async ({
 }) => {
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USERNAME,
+      from,
       to: email,
       subject: "2FA Code",
-      html: `<p>Your 2FA code: ${token}</p>`,
+      html: TwoFAEmailHtml({
+        code: token,
+      }),
     });
   } catch (err) {
     console.log(err);
@@ -64,10 +74,13 @@ export const sendPasswordResetEmail = async ({
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USERNAME,
+      from,
       to: email,
       subject: "Reset your password",
-      html: `<p>Click <a href="${resetLink}">here</a> to reset password.</p>`,
+      html: PasswordResetEmailHtml({
+        href: resetLink,
+        buttonText: "Reset Password",
+      }),
     });
   } catch (err) {
     console.log(err);
