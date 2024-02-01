@@ -1,6 +1,7 @@
 import "./globals.css";
 import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
@@ -22,7 +23,11 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={cn("h-full antialiased", font.className)}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={session}>
+          <Toaster position="top-center" richColors />
+
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

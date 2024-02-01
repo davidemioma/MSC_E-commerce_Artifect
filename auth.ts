@@ -81,6 +81,8 @@ export const {
 
         session.user.email = token.email;
 
+        session.user.image = token.picture;
+
         session.user.isOAuth = token.isOAuth as boolean;
       }
 
@@ -104,6 +106,8 @@ export const {
       token.email = existingUser.email;
 
       token.role = existingUser.role;
+
+      token.picture = existingUser.image;
 
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 

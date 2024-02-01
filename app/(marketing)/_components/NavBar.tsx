@@ -13,7 +13,7 @@ const NavBar = () => {
   const { user } = useCurrentUser();
 
   return (
-    <nav className="fixed top-0 inset-x-0 bg-white h-16 flex items-center border-b border-gray-200 shadow-sm">
+    <nav className="fixed top-0 inset-x-0 z-40 bg-white h-16 flex items-center border-b border-gray-200 shadow-sm">
       <Container>
         <div className="flex items-center justify-between">
           <Logo />
