@@ -219,11 +219,13 @@ export default function SettingsPage() {
 
       <CardFooter>
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="secondary" disabled={isPending}>
-            <Link href={"/store"}>
-              {role === "USER" ? "Become a seller" : "Go to store"}
-            </Link>
-          </Button>
+          {role !== "ADMIN" && (
+            <Button variant="secondary" disabled={isPending}>
+              <Link href={"/store"}>
+                {role === "USER" ? "Become a seller" : "Go to store"}
+              </Link>
+            </Button>
+          )}
 
           <Button onClick={() => signOut()} disabled={isPending}>
             Sign Out

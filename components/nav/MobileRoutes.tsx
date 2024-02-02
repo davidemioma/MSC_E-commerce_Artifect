@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type Props = {
-  routes: StoreRoute[];
+  routes: RouteType[];
 };
 
 const MobileRoutes = ({ routes }: Props) => {

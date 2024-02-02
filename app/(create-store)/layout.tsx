@@ -1,6 +1,6 @@
-import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getFirstStoreByUserId } from "@/data/store";
+import { currentRole, currentUser } from "@/lib/auth";
 
 const CreateStoreLayout = async ({
   children,
@@ -11,6 +11,12 @@ const CreateStoreLayout = async ({
 
   if (!user) {
     return redirect("/auth/sign-in");
+  }
+
+  const { role } = await currentRole();
+
+  if (role === "ADMIN" || role === "USER") {
+    return redirect("/");
   }
 
   const store = await getFirstStoreByUserId(user?.id);

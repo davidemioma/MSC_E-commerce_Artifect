@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { X, ImagePlus } from "lucide-react";
+import { Trash2, ImagePlus } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { uploadToStorage } from "@/lib/functions";
 import useCurrentUser from "@/hooks/use-current-user";
@@ -101,8 +101,8 @@ const ImageUpload = ({ value, disabled, forProduct, onChange }: Props) => {
                 alt=""
               />
 
-              <X
-                className="absolute top-0 -right-2 cursor-ponter text-red-500"
+              <Trash2
+                className="absolute -top-1 -right-0 cursor-ponter text-red-500"
                 onClick={clearImage}
               />
             </div>

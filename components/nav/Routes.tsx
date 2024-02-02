@@ -1,9 +1,11 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  routes: StoreRoute[];
+  routes: RouteType[];
   className?: string;
 };
 

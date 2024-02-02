@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import Routes from "./Routes";
+import StoreRoutes from "./StoreRoutes";
 import { Store } from "@prisma/client";
-import MobileRoutes from "./MobileRoutes";
 import StoreAccount from "../StoreAccount";
 import StoreSwitcher from "../StoreSwitcher";
 import Container from "@/components/Container";
+import StoreMobileRoutes from "./StoreMobileRoutes";
 import { useParams, usePathname } from "next/navigation";
 
 type Props = {
@@ -58,13 +58,13 @@ const Header = ({ stores }: Props) => {
       <Container>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MobileRoutes routes={routes} />
+            <StoreMobileRoutes routes={routes} />
 
             <StoreSwitcher stores={stores} />
           </div>
 
           <div className="hidden md:inline-flex mx-6 flex-1">
-            <Routes routes={routes} />
+            <StoreRoutes routes={routes} />
           </div>
 
           <StoreAccount currentStore={currentStore} />

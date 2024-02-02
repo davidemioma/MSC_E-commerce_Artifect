@@ -33,11 +33,19 @@ const UserAccount = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
-          <Link href={"/store"}>
-            {role === "USER" ? "Become a seller" : "Go to store"}
-          </Link>
-        </DropdownMenuItem>
+        {role === "ADMIN" && (
+          <DropdownMenuItem>
+            <Link href={"/admin"}>Go to admin dashboard</Link>
+          </DropdownMenuItem>
+        )}
+
+        {role !== "ADMIN" && (
+          <DropdownMenuItem>
+            <Link href={"/store"}>
+              {role === "USER" ? "Become a seller" : "Go to store"}
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem>
           <Link href={"/settings"}>Settings</Link>

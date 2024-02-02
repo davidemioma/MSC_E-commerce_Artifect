@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { getStoreById } from "@/data/store";
+import Container from "@/components/Container";
 
 export default async function StoreDashboardPage({
   params,
@@ -21,5 +22,9 @@ export default async function StoreDashboardPage({
     return redirect("/store");
   }
 
-  return <div>StoreDashboardPage {storeId}</div>;
+  return (
+    <div className="w-full">
+      <Container>StoreDashboardPage {storeId}</Container>
+    </div>
+  );
 }

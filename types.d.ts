@@ -1,4 +1,4 @@
-type StoreRoute = {
+type RouteType = {
   href: string;
   label: string;
   active: boolean;
