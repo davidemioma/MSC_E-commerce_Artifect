@@ -1,13 +1,17 @@
-import Header from "./_components/Header";
+import Header from "./_components/header/Header";
 import { redirect } from "next/navigation";
 import { getStoresByUserId } from "@/data/store";
 import { currentRole, currentUser } from "@/lib/auth";
 
 const StoreDashboardLayout = async ({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { storeId: string };
 }) => {
+  const { storeId } = params;
+
   const { user } = await currentUser();
 
   const { role } = await currentRole();
