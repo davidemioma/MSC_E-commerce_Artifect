@@ -24,6 +24,22 @@ enum UserRole {
   SELLER
 }
 
+enum storeStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  DECLINED
+  CLOSED
+}
+
+enum ProductStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  DECLINED
+  ARCHIVED
+}
+
 model User {
   id String @id @default(cuid()) 
   name String? 
@@ -37,6 +53,11 @@ model User {
   twoFactorConfirmation TwoFactorConfirmation?
 
   accounts Account[]
+  stores Store[]
+  products Product[]
+  reviews Review[]
+  ratings Rating[]
+
 }
 
 model Account {
@@ -90,3 +111,136 @@ model TwoFactorConfirmation {
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Store{
+  id String @id @default(cuid())
+  userId String
+  name String
+  phoneNumber String
+  location String
+  logo String?
+  description String?
+  status storeStatus @default(PENDING)
+  statusFeedback String @default("Your request to open store has been submitted for approval")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  products Product[]
+  images Image[]
+  sizes Size[]
+  category Category[]
+  color Color[]
+  reviews Review[]
+  ratings Rating[]
+}
+
+model Image{
+  id String @id @default(cuid())
+  storeId String
+  productId String
+  url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Size{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  products Product[]
+}
+
+model Category{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  products Product[]
+}
+
+model Color{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  products Product[]
+}
+
+model Product{
+  id String @id @default(cuid())
+  userId String
+  storeId String
+  sizeId String
+  categoryId String
+  colorId String
+  name String
+  description Json?
+  currentPrice Float
+  originalPrice Float
+  discount Float @default(0)
+  numInStocks Int
+  status ProductStatus @default(PENDING)
+  statusFeedback String @default("Your product has been submitted for approval")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  images Image[]
+  reviews Review[]
+  ratings Rating[]
+}
+
+model Review{
+  id String @id @default(cuid())
+  userId String
+  storeId String
+  productId String
+  comment String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Rating{
+  id String @id @default(cuid())
+  userId String
+  storeId String
+  productId String
+  value Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+
