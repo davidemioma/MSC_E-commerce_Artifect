@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
+import ModalProvider from "@/providers/modal-provider";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
@@ -25,6 +26,8 @@ export default async function RootLayout({
       <body className={cn("h-full antialiased", font.className)}>
         <SessionProvider session={session}>
           <Toaster position="top-center" richColors />
+
+          <ModalProvider />
 
           {children}
         </SessionProvider>

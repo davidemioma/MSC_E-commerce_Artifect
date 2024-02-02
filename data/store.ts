@@ -2,7 +2,7 @@ import prismadb from "@/lib/prisma";
 
 export const getFirstStoreByUserId = async (userId: string) => {
   try {
-    const store = await prismadb.account.findFirst({
+    const store = await prismadb.store.findFirst({
       where: {
         userId,
       },
