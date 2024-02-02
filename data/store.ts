@@ -5,6 +5,9 @@ export const getFirstStoreByUserId = async (userId: string) => {
     const store = await prismadb.store.findFirst({
       where: {
         userId,
+        emailVerified: {
+          not: null,
+        },
       },
     });
 

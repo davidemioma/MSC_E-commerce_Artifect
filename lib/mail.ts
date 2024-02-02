@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { TwoFAEmailHtml } from "@/components/email/TwoFactorEmail";
 import { VerificationEmailHtml } from "@/components/email/VerificationEmail";
 import { PasswordResetEmailHtml } from "@/components/email/PasswordResetEmail";
+import { StoreVerificationEmailHtml } from "@/components/email/StoreVerificationEmail";
 
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -80,6 +81,27 @@ export const sendPasswordResetEmail = async ({
       html: PasswordResetEmailHtml({
         href: resetLink,
         buttonText: "Reset Password",
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendStoreVerificationTokenEmail = async ({
+  email,
+  token,
+}: {
+  email: string;
+  token: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Store Verification Code",
+      html: StoreVerificationEmailHtml({
+        code: token,
       }),
     });
   } catch (err) {
