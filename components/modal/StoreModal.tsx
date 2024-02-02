@@ -7,7 +7,6 @@ import { Button } from "../ui/button";
 import BtnSpinner from "../BtnSpinner";
 import AuthError from "../auth/AuthError";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import AuthSuccess from "../auth/AuthSuccess";
 import useCountries from "@/hooks/use-countries";
 import useStoreModal from "@/hooks/use-store-modal";
@@ -31,8 +30,6 @@ import {
 } from "../ui/form";
 
 const StoreModal = () => {
-  const router = useRouter();
-
   const { getAll } = useCountries();
 
   const countries = getAll();
@@ -75,8 +72,12 @@ const StoreModal = () => {
             form.reset();
 
             setSuccess(data.success);
+          }
 
-            router.refresh();
+          if (data?.storeId) {
+            storeModal.onClose();
+
+            window.location.assign(`/dashboard/${data.storeId}`);
           }
 
           if (data?.verificationCode) {

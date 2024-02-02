@@ -10,13 +10,13 @@ const CreateStoreLayout = async ({
   const { user } = await currentUser();
 
   if (!user) {
-    redirect("/sign-in");
+    return redirect("/auth/sign-in");
   }
 
   const store = await getFirstStoreByUserId(user?.id);
 
   if (store) {
-    redirect(`/dashboard/${store.id}`);
+    return redirect(`/dashboard/${store.id}`);
   }
 
   return (

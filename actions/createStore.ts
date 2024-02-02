@@ -124,7 +124,10 @@ export const createStore = async (values: StoreValidator) => {
         },
       });
 
-      return { success: "Email verified, your store has been created!" };
+      return {
+        success: "Email verified, your store has been created!",
+        storeId: storeExists.id,
+      };
     }
   }
 };
