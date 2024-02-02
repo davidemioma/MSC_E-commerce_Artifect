@@ -114,6 +114,16 @@ export const createStore = async (values: StoreValidator) => {
         },
       });
 
+      //Change current user to seller
+      await prismadb.user.update({
+        where: {
+          id: dbUser.id,
+        },
+        data: {
+          role: "SELLER",
+        },
+      });
+
       return { success: "Email verified, your store has been created!" };
     }
   }
