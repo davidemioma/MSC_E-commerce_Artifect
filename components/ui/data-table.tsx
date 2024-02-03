@@ -4,15 +4,16 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  SortingState,
   ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -21,18 +22,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import StatusFilters from "@/app/(admin-board)/admin/stores/_components/StatusFilters";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
+  isStores?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  isStores,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -44,14 +50,16 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
     state: {
+      sorting,
       columnFilters,
     },
   });
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-4">
         <Input
           placeholder="Search..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -60,6 +68,8 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+
+        {isStores && <StatusFilters />}
       </div>
 
       <div className="rounded-md border">

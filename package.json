@@ -37,6 +37,7 @@
     "next-auth": "^5.0.0-beta.4",
     "nodemailer": "^6.9.8",
     "postcode-validator": "^3.8.20",
+    "query-string": "^8.2.0",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",

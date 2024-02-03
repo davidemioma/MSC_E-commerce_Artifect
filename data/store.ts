@@ -1,4 +1,6 @@
 import prismadb from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
+import { getStoreStatusValue } from "@/lib/utils";
 
 export const getFirstStoreByUserId = async (userId: string) => {
   try {
@@ -55,5 +57,35 @@ export const getStoreById = async ({
     return store;
   } catch (err) {
     return null;
+  }
+};
+
+export const getStoresByAdmin = async ({
+  status,
+  userRole,
+}: {
+  status?: string;
+  userRole?: UserRole;
+}) => {
+  try {
+    if (!userRole || userRole !== "ADMIN") {
+      return [];
+    }
+
+    let stores = [];
+
+    if (status && status !== "all") {
+      stores = await prismadb.store.findMany({
+        where: {
+          status: getStoreStatusValue(status),
+        },
+      });
+    } else {
+      stores = await prismadb.store.findMany({});
+    }
+
+    return stores;
+  } catch (err) {
+    return [];
   }
 };
