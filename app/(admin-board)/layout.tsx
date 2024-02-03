@@ -20,7 +20,7 @@ const AdminDashboardLayout = async ({
   }
 
   return (
-    <div className="relative min-h-full w-full bg-gray-100">
+    <div className="relative min-h-full w-full bg-white">
       <AdminNav />
 
       <main className="py-6">{children}</main>
