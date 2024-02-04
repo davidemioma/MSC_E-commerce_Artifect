@@ -20,34 +20,36 @@ const Header = ({ stores }: Props) => {
 
   const currentStore = stores.find((store) => store.id === params.storeId);
 
+  console.log(params.storeId);
+
   const routes = [
     {
-      href: `/${params.storeId}`,
+      href: `/dashboard/${params.storeId}`,
       label: "Overview",
       active: pathname === `/dashboard/${params.storeId}`,
     },
     {
-      href: `/${params.storeId}/categories`,
+      href: `/dashboard/${params.storeId}/categories`,
       label: "Categories",
       active: pathname === `/dashboard/${params.storeId}/categories`,
     },
     {
-      href: `/${params.storeId}/sizes`,
+      href: `/dashboard/${params.storeId}/sizes`,
       label: "Sizes",
       active: pathname === `/dashboard/${params.storeId}/sizes`,
     },
     {
-      href: `/${params.storeId}/colors`,
+      href: `/dashboard/${params.storeId}/colors`,
       label: "Colors",
       active: pathname === `/dashboard/${params.storeId}/colors`,
     },
     {
-      href: `/${params.storeId}/products`,
+      href: `/dashboard/${params.storeId}/products`,
       label: "Products",
       active: pathname === `/dashboard/${params.storeId}/products`,
     },
     {
-      href: `/${params.storeId}/orders`,
+      href: `/dashboard/${params.storeId}/orders`,
       label: "Orders",
       active: pathname === `/dashboard/${params.storeId}/orders`,
     },

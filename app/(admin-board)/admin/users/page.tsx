@@ -2,7 +2,7 @@ import { currentUser } from "@/lib/auth";
 import { getUsersByAdmin } from "@/data/user";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
-import Heading from "../../_components/Heading";
+import Heading from "../../../../components/Heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 

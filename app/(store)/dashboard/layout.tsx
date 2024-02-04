@@ -26,8 +26,12 @@ const StoreDashboardLayout = async ({
 
   const stores = await getStoresByUserId({ userId: user.id });
 
+  if (stores.length === 0) {
+    return redirect("/store");
+  }
+
   return (
-    <div className="relative min-h-full w-full bg-gray-100">
+    <div className="relative min-h-full w-full bg-white">
       <Header stores={stores} />
 
       <main className="py-6">{children}</main>

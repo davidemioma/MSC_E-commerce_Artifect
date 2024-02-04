@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Edit } from "lucide-react";
@@ -63,7 +63,11 @@ const CellActions = ({ data }: Props) => {
       setOpen(false);
     },
     onError: (err) => {
-      toast.error(err.message || "Something went wrong");
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 

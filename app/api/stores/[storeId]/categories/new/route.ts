@@ -1,9 +1,9 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { StatusSchema } from "@/lib/validators/status";
 import { currentRole, currentUser } from "@/lib/auth";
+import { CategorySchema } from "@/lib/validators/category";
 
-export async function PATCH(
+export async function POST(
   request: Request,
   { params }: { params: { storeId: string } }
 ) {
@@ -14,21 +14,25 @@ export async function PATCH(
       return new NextResponse("Store Id is required", { status: 400 });
     }
 
+    //Check if there is a current user
     const { user } = await currentUser();
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "ADMIN") {
+    if (role !== "SELLER") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    //Check if the user owns the store
     const store = await prismadb.store.findUnique({
       where: {
         id: storeId,
+        userId: user.id,
       },
     });
 
@@ -38,20 +42,33 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { status } = StatusSchema.parse(body);
+    const { name } = CategorySchema.parse(body);
 
-    await prismadb.store.update({
+    //Check if category name exists
+    const category = await prismadb.category.findFirst({
       where: {
-        id: storeId,
-      },
-      data: {
-        status,
+        storeId,
+        name: {
+          contains: name,
+          mode: "insensitive",
+        },
       },
     });
 
-    return NextResponse.json("Status updated!");
+    if (category) {
+      return new NextResponse("Name already taken!", { status: 409 });
+    }
+
+    await prismadb.category.create({
+      data: {
+        name,
+        storeId,
+      },
+    });
+
+    return NextResponse.json("Category Created!");
   } catch (err) {
-    console.log("[STATUS_PATCH]", err);
+    console.log("[CATEGORY_CREATE]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

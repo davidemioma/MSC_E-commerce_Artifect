@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import Container from "@/components/Container";
-import Heading from "../../_components/Heading";
+import Heading from "../../../../components/Heading";
 import { getStoresByAdmin } from "@/data/store";
 import { columns } from "./_components/Columns";
 import { Separator } from "@/components/ui/separator";
