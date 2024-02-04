@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Category } from "@prisma/client";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
+import AlertModal from "@/components/modal/AlertModal";
 import { CategoryValidator, CategorySchema } from "@/lib/validators/category";
 import {
   Form,
@@ -29,10 +30,35 @@ const CategoryForm = ({ data }: Props) => {
 
   const router = useRouter();
 
+  const [open, setOpen] = useState(false);
+
   const form = useForm<CategoryValidator>({
     resolver: zodResolver(CategorySchema),
     defaultValues: {
       name: data?.name || "",
+    },
+  });
+
+  const { mutate: onDelete, isPending: deleting } = useMutation({
+    mutationKey: ["delete-category"],
+    mutationFn: async () => {
+      await axios.delete(
+        `/api/stores/${params.storeId}/categories/${data?.id}`
+      );
+    },
+    onSuccess: () => {
+      toast.success("Category Deleted!");
+
+      router.push(`/dashboard/${params.storeId}/categories`);
+
+      router.refresh();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
@@ -72,32 +98,59 @@ const CategoryForm = ({ data }: Props) => {
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-sm"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
+    <>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={deleting}
+        featureToDelete="category"
+      />
 
-              <FormControl>
-                <Input {...field} disabled={isPending} placeholder="Shoes..." />
-              </FormControl>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 max-w-sm"
+        >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormControl>
+                  <Input
+                    {...field}
+                    disabled={isPending}
+                    placeholder="Shoes..."
+                  />
+                </FormControl>
 
-        <Button type="submit" disabled={isPending}>
-          {data ? "Save" : "Create"}
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex items-center gap-3">
+            <Button type="submit" disabled={isPending}>
+              {data ? "Save" : "Create"}
+            </Button>
+
+            {data && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => setOpen(true)}
+                disabled={isPending}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
+        </form>
+      </Form>
+    </>
   );
 };
 
