@@ -1,5 +1,4 @@
 import { currentUser } from "@/lib/auth";
-import { storeStatus } from "@prisma/client";
 import Container from "@/components/Container";
 import Heading from "../../_components/Heading";
 import { getStoresByAdmin } from "@/data/store";
@@ -25,7 +24,7 @@ export default async function AdminStoresPage({
 
   return (
     <Container>
-      <Heading title="Stores" description="Manage stores for sellers" />
+      <Heading title="Stores" description="Review and manage store status." />
 
       <Separator className="my-4" />
 

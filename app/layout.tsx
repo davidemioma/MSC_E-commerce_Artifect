@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import ModalProvider from "@/providers/modal-provider";
+import QueryProvider from "@/providers/query-provider";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
@@ -25,11 +26,13 @@ export default async function RootLayout({
     <html lang="en" className="h-full">
       <body className={cn("h-full antialiased", font.className)}>
         <SessionProvider session={session}>
-          <Toaster position="top-center" richColors />
+          <QueryProvider>
+            <Toaster position="top-center" richColors />
 
-          <ModalProvider />
+            <ModalProvider />
 
-          {children}
+            {children}
+          </QueryProvider>
         </SessionProvider>
       </body>
     </html>

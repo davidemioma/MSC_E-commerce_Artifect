@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import CellActions from "./CellActions";
 import { Check, X } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Store, storeStatus } from "@prisma/client";
@@ -75,5 +76,9 @@ export const columns: ColumnDef<CategoryCol>[] = [
         {row.original.status}
       </div>
     ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => <CellActions data={row.original} />,
   },
 ];
