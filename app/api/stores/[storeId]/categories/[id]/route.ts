@@ -51,6 +51,9 @@ export async function PATCH(
     //Check if category name exists
     const category = await prismadb.category.findFirst({
       where: {
+        id: {
+          not: id,
+        },
         storeId,
         name: {
           contains: name,

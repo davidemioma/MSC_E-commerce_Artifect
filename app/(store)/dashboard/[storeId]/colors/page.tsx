@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { buttonVariants } from "@/components/ui/button";
 
-export default async function SizesPage({
+export default async function ColorsPage({
   params: { storeId },
 }: {
   params: { storeId: string };
@@ -21,7 +21,7 @@ export default async function SizesPage({
     return redirect("/auth/sign-in");
   }
 
-  const sizes = await prismadb.size.findMany({
+  const colors = await prismadb.color.findMany({
     where: {
       storeId,
     },
@@ -42,12 +42,12 @@ export default async function SizesPage({
       <Container>
         <div className="flex items-center justify-between">
           <Heading
-            title={`Sizes (${sizes.length})`}
-            description="Manage your store sizes"
+            title={`Colors (${colors.length})`}
+            description="Manage your store colors"
           />
 
           <Link
-            href={`/dashboard/${storeId}/sizes/new`}
+            href={`/dashboard/${storeId}/colors/new`}
             className={buttonVariants()}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -57,7 +57,7 @@ export default async function SizesPage({
 
         <Separator className="my-4" />
 
-        <DataTable columns={columns} data={sizes} searchKey="name" />
+        <DataTable columns={columns} data={colors} searchKey="name" />
       </Container>
     </div>
   );

@@ -2,16 +2,17 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { Size } from "@prisma/client";
+import { Color } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import axios, { AxiosError } from "axios";
+import { SketchPicker } from "react-color";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/modal/AlertModal";
-import { SizeValidator, SizeSchema } from "@/lib/validators/size";
+import { ColorValidator, ColorSchema } from "@/lib/validators/color";
 import {
   Form,
   FormControl,
@@ -22,18 +23,18 @@ import {
 } from "@/components/ui/form";
 
 type Props = {
-  data?: Size;
+  data?: Color;
 };
 
-const SizeForm = ({ data }: Props) => {
+const ColorForm = ({ data }: Props) => {
   const params = useParams();
 
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
 
-  const form = useForm<SizeValidator>({
-    resolver: zodResolver(SizeSchema),
+  const form = useForm<ColorValidator>({
+    resolver: zodResolver(ColorSchema),
     defaultValues: {
       name: data?.name || "",
       value: data?.value || "",
@@ -41,14 +42,14 @@ const SizeForm = ({ data }: Props) => {
   });
 
   const { mutate: onDelete, isPending: deleting } = useMutation({
-    mutationKey: ["delete-size"],
+    mutationKey: ["delete-color"],
     mutationFn: async () => {
-      await axios.delete(`/api/stores/${params.storeId}/sizes/${data?.id}`);
+      await axios.delete(`/api/stores/${params.storeId}/colors/${data?.id}`);
     },
     onSuccess: () => {
-      toast.success("Size Deleted!");
+      toast.success("Color Deleted!");
 
-      router.push(`/dashboard/${params.storeId}/sizes`);
+      router.push(`/dashboard/${params.storeId}/colors`);
 
       router.refresh();
     },
@@ -62,21 +63,21 @@ const SizeForm = ({ data }: Props) => {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationKey: data ? ["update-size"] : ["create-size"],
-    mutationFn: async (values: SizeValidator) => {
+    mutationKey: data ? ["update-color"] : ["create-color"],
+    mutationFn: async (values: ColorValidator) => {
       if (data) {
         await axios.patch(
-          `/api/stores/${params.storeId}/sizes/${data.id}`,
+          `/api/stores/${params.storeId}/colors/${data.id}`,
           values
         );
       } else {
-        await axios.post(`/api/stores/${params.storeId}/sizes/new`, values);
+        await axios.post(`/api/stores/${params.storeId}/colors/new`, values);
       }
     },
     onSuccess: () => {
-      toast.success(data ? "Size Updated!" : "Size Created!");
+      toast.success(data ? "Color Updated!" : "Color Created!");
 
-      router.push(`/dashboard/${params.storeId}/sizes`);
+      router.push(`/dashboard/${params.storeId}/colors`);
 
       router.refresh();
     },
@@ -89,7 +90,7 @@ const SizeForm = ({ data }: Props) => {
     },
   });
 
-  const onSubmit = (values: SizeValidator) => {
+  const onSubmit = (values: ColorValidator) => {
     mutate(values);
   };
 
@@ -100,15 +101,15 @@ const SizeForm = ({ data }: Props) => {
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
         loading={deleting}
-        featureToDelete="size"
+        featureToDelete="color"
       />
 
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 max-w-2xl"
+          className="space-y-6 max-w-sm"
         >
-          <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -120,7 +121,7 @@ const SizeForm = ({ data }: Props) => {
                     <Input
                       {...field}
                       disabled={isPending}
-                      placeholder="Large"
+                      placeholder="Black"
                     />
                   </FormControl>
 
@@ -137,7 +138,10 @@ const SizeForm = ({ data }: Props) => {
                   <FormLabel>Value</FormLabel>
 
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="lg" />
+                    <SketchPicker
+                      color={field.value}
+                      onChange={(color) => field.onChange(color.hex)}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -168,4 +172,4 @@ const SizeForm = ({ data }: Props) => {
   );
 };
 
-export default SizeForm;
+export default ColorForm;

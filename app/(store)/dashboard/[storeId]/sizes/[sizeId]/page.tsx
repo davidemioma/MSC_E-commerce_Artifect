@@ -25,7 +25,7 @@ export default async function SizePage({
 
   return (
     <Container>
-      <Heading title="Edit Category" description="" />
+      <Heading title="Edit Size" description={`Editing ${size.name}`} />
 
       <Separator className="my-4" />
 

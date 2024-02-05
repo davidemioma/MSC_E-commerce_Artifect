@@ -1,19 +1,19 @@
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
+import ColorForm from "../_components/ColorForm";
 import { Separator } from "@/components/ui/separator";
-import SizeForm from "../_components/SizeForm";
 
-export default function NewSize() {
+export default function NewColor() {
   return (
     <Container>
       <Heading
-        title="New Size"
-        description="Create a new size for your store"
+        title="New Color"
+        description="Create a new color for your store"
       />
 
       <Separator className="my-4" />
 
-      <SizeForm />
+      <ColorForm />
     </Container>
   );
 }

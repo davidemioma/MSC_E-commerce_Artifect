@@ -30,14 +30,14 @@ const CellActions = ({ data }: Props) => {
   const [open, setOpen] = useState(false);
 
   const { mutate: onDelete, isPending } = useMutation({
-    mutationKey: ["delete-size"],
+    mutationKey: ["delete-color"],
     mutationFn: async () => {
-      await axios.delete(`/api/stores/${params.storeId}/sizes/${data?.id}`);
+      await axios.delete(`/api/stores/${params.storeId}/colors/${data?.id}`);
     },
     onSuccess: () => {
-      toast.success("Size Deleted!");
+      toast.success("Color Deleted!");
 
-      router.push(`/dashboard/${params.storeId}/sizes`);
+      router.push(`/dashboard/${params.storeId}/colors`);
 
       router.refresh();
     },
@@ -57,7 +57,7 @@ const CellActions = ({ data }: Props) => {
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
         loading={isPending}
-        featureToDelete="size"
+        featureToDelete="color"
       />
 
       <DropdownMenu>
@@ -70,13 +70,13 @@ const CellActions = ({ data }: Props) => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
-          <DropdownMenuLabel>Size</DropdownMenuLabel>
+          <DropdownMenuLabel>Color</DropdownMenuLabel>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
             onClick={() =>
-              router.push(`/dashboard/${data.storeId}/sizes/${data.id}`)
+              router.push(`/dashboard/${data.storeId}/colors/${data.id}`)
             }
             disabled={isPending}
           >

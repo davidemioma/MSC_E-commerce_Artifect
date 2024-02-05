@@ -1,21 +1,21 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { SizeSchema } from "@/lib/validators/size";
+import { ColorSchema } from "@/lib/validators/color";
 import { currentRole, currentUser } from "@/lib/auth";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
+  { params }: { params: { storeId: string; colorId: string } }
 ) {
   try {
-    const { storeId, sizeId } = params;
+    const { storeId, colorId } = params;
 
     if (!storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
     }
 
-    if (!sizeId) {
-      return new NextResponse("Size Id is required", { status: 400 });
+    if (!colorId) {
+      return new NextResponse("Color Id is required", { status: 400 });
     }
 
     //Check if there is a current user
@@ -46,13 +46,13 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, value } = SizeSchema.parse(body);
+    const { name, value } = ColorSchema.parse(body);
 
     //Check if category name exists
-    const size = await prismadb.size.findFirst({
+    const color = await prismadb.color.findFirst({
       where: {
         id: {
-          not: sizeId,
+          not: colorId,
         },
         storeId,
         name: {
@@ -62,13 +62,13 @@ export async function PATCH(
       },
     });
 
-    if (size) {
-      return new NextResponse("Name already taken!", { status: 409 });
+    if (color) {
+      return new NextResponse(`${name} already taken!`, { status: 409 });
     }
 
-    await prismadb.size.update({
+    await prismadb.color.update({
       where: {
-        id: sizeId,
+        id: colorId,
         storeId,
       },
       data: {
@@ -77,9 +77,9 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Size Updated!");
+    return NextResponse.json("Color Updated!");
   } catch (err) {
-    console.log("[SIZE_UPDATE]", err);
+    console.log("[COLOR_UPDATE]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }
@@ -87,17 +87,17 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
+  { params }: { params: { storeId: string; colorId: string } }
 ) {
   try {
-    const { storeId, sizeId } = params;
+    const { storeId, colorId } = params;
 
     if (!storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
     }
 
-    if (!sizeId) {
-      return new NextResponse("Size Id is required", { status: 400 });
+    if (!colorId) {
+      return new NextResponse("Color Id is required", { status: 400 });
     }
 
     //Check if there is a current user
@@ -126,16 +126,16 @@ export async function DELETE(
       return new NextResponse("Store not found!", { status: 404 });
     }
 
-    await prismadb.size.delete({
+    await prismadb.color.delete({
       where: {
-        id: sizeId,
+        id: colorId,
         storeId,
       },
     });
 
-    return NextResponse.json("Size Deleted!");
+    return NextResponse.json("Color Deleted!");
   } catch (err) {
-    console.log("[SIZE_DELETE]", err);
+    console.log("[COLOR_DELETE]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

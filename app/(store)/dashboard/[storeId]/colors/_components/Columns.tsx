@@ -1,19 +1,32 @@
 "use client";
 
 import { format } from "date-fns";
-import { Size } from "@prisma/client";
+import { Color } from "@prisma/client";
 import CellActions from "./CellActions";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type SizeCol = Size & {
+export type ColorCol = Color & {
   _count: {
     products: number;
   };
 };
 
-export const columns: ColumnDef<SizeCol>[] = [
+export const columns: ColumnDef<ColorCol>[] = [
   { accessorKey: "name", header: "Name" },
-  { accessorKey: "value", header: "Value" },
+  {
+    accessorKey: "value",
+    header: "Value",
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <div
+          style={{ backgroundColor: row.original.value }}
+          className="w-6 h-6 rounded-full border"
+        />
+
+        <span>{row.original.value}</span>
+      </div>
+    ),
+  },
   {
     accessorKey: "createdAt",
     header: "Date",
