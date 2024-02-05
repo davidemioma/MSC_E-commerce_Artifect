@@ -28,7 +28,11 @@ export default async function StoreCategoriesPage({
       storeId,
     },
     include: {
-      products: true,
+      _count: {
+        select: {
+          products: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

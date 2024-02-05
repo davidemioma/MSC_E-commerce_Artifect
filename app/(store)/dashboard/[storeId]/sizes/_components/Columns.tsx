@@ -1,18 +1,19 @@
 "use client";
 
 import { format } from "date-fns";
-import { Category } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import { Size } from "@prisma/client";
 import CellActions from "./CellActions";
+import { ColumnDef } from "@tanstack/react-table";
 
-export type CategoryCol = Category & {
+export type SizeCol = Size & {
   _count: {
     products: number;
   };
 };
 
-export const columns: ColumnDef<CategoryCol>[] = [
+export const columns: ColumnDef<SizeCol>[] = [
   { accessorKey: "name", header: "Name" },
+  { accessorKey: "value", header: "Value" },
   {
     accessorKey: "createdAt",
     header: "Date",
