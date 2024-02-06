@@ -201,13 +201,9 @@ model Product{
   id String @id @default(cuid())
   userId String
   storeId String
-  categoryId String
   name String
-  description Json?
-  currentPrice Float
-  originalPrice Float
-  discount Float @default(0)
-  numInStocks Int
+  categoryId String
+  description String
   status ProductStatus @default(PENDING)
   statusFeedback String @default("Your product has been submitted for approval")
   createdAt DateTime @default(now())
@@ -220,7 +216,6 @@ model Product{
   ProductItem ProductItem[]
   reviews Review[]
   ratings Rating[]
-  
 }
 
 model ProductItem{
@@ -228,6 +223,10 @@ model ProductItem{
   productId String
   sizeId String
   colorId String?
+  numInStocks Int
+  currentPrice Float
+  originalPrice Float
+  discount Float @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

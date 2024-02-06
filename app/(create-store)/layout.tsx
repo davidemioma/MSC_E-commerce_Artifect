@@ -15,7 +15,7 @@ const CreateStoreLayout = async ({
 
   const { role } = await currentRole();
 
-  if (role === "ADMIN" || role === "USER") {
+  if (role === "ADMIN") {
     return redirect("/");
   }
 
