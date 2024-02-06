@@ -1,40 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { Store } from "@prisma/client";
 import CellActions from "./CellActions";
 import { Check, X } from "lucide-react";
+import { cn, getStatusColor } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { Store, storeStatus } from "@prisma/client";
 
 export type CategoryCol = Store;
-
-const getColor = (status: storeStatus) => {
-  let color;
-
-  switch (status) {
-    case "PENDING":
-      color = "text-gray-500";
-      break;
-    case "REVIEWING":
-      color = "text-orange-500";
-      break;
-    case "APPROVED":
-      color = "text-green-500";
-      break;
-    case "DECLINED":
-      color = "text-red-500";
-      break;
-    case "CLOSED":
-      color = "text-gray-600";
-      break;
-    default:
-      color = "text-black";
-      break;
-  }
-
-  return color;
-};
 
 export const columns: ColumnDef<CategoryCol>[] = [
   { accessorKey: "name", header: "Name" },
@@ -72,7 +45,7 @@ export const columns: ColumnDef<CategoryCol>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className={cn("font-bold", getColor(row.original.status))}>
+      <div className={cn("font-bold", getStatusColor(row.original.status))}>
         {row.original.status}
       </div>
     ),

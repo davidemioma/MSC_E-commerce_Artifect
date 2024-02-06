@@ -38,7 +38,11 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { status } = StatusSchema.parse(body);
+    const { status, statusFeedback } = StatusSchema.parse(body);
+
+    if (!status || !statusFeedback) {
+      return new NextResponse("Status and feedback required!", { status: 400 });
+    }
 
     await prismadb.store.update({
       where: {
@@ -46,6 +50,7 @@ export async function PATCH(
       },
       data: {
         status,
+        statusFeedback,
       },
     });
 

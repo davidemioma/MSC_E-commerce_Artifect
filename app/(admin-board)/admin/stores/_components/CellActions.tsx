@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Edit } from "lucide-react";
 import { Store, storeStatus } from "@prisma/client";
@@ -24,6 +25,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -47,6 +49,7 @@ const CellActions = ({ data }: Props) => {
     resolver: zodResolver(StatusSchema),
     defaultValues: {
       status: data.status,
+      statusFeedback: "",
     },
   });
 
@@ -98,8 +101,8 @@ const CellActions = ({ data }: Props) => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="status"
@@ -144,15 +147,35 @@ const CellActions = ({ data }: Props) => {
                 )}
               />
 
-              <div className="w-full flex items-center gap-3 justify-end">
-                <Button onClick={() => setOpen(false)} disabled={isPending}>
-                  Cancel
-                </Button>
+              <FormField
+                control={form.control}
+                name="statusFeedback"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status Feedback</FormLabel>
 
-                <Button type="submit" variant="outline" disabled={isPending}>
-                  Save
-                </Button>
-              </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Write something..."
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="w-full flex items-center gap-3 justify-end">
+              <Button onClick={() => setOpen(false)} disabled={isPending}>
+                Cancel
+              </Button>
+
+              <Button type="submit" variant="outline" disabled={isPending}>
+                Save
+              </Button>
             </div>
           </form>
         </Form>

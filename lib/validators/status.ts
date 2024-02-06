@@ -9,6 +9,7 @@ export const StatusSchema = z.object({
     storeStatus.REVIEWING,
     storeStatus.CLOSED,
   ]),
+  statusFeedback: z.string().min(1, { message: "Feedback is required" }),
 });
 
 export type StatusValidator = z.infer<typeof StatusSchema>;

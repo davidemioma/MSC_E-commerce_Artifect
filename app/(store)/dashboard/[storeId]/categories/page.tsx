@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import prismadb from "@/lib/prisma";
-import { currentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { Separator } from "@/components/ui/separator";
@@ -16,12 +14,6 @@ export default async function StoreCategoriesPage({
   params: { storeId: string };
 }) {
   const { storeId } = params;
-
-  const { user } = await currentUser();
-
-  if (!user) {
-    return redirect("/auth/sign-in");
-  }
 
   const categories = await prismadb.category.findMany({
     where: {

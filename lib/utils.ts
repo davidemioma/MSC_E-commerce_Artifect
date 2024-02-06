@@ -59,3 +59,30 @@ export const getStoreStatusValue = (status: string) => {
 
   return statusValue;
 };
+
+export const getStatusColor = (status: storeStatus) => {
+  let color;
+
+  switch (status) {
+    case "PENDING":
+      color = "text-gray-500";
+      break;
+    case "REVIEWING":
+      color = "text-orange-500";
+      break;
+    case "APPROVED":
+      color = "text-green-500";
+      break;
+    case "DECLINED":
+      color = "text-red-500";
+      break;
+    case "CLOSED":
+      color = "text-gray-600";
+      break;
+    default:
+      color = "text-black";
+      break;
+  }
+
+  return color;
+};

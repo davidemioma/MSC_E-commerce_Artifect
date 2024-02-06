@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import prismadb from "@/lib/prisma";
-import { currentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
@@ -15,12 +13,6 @@ export default async function ColorsPage({
 }: {
   params: { storeId: string };
 }) {
-  const { user } = await currentUser();
-
-  if (!user) {
-    return redirect("/auth/sign-in");
-  }
-
   const colors = await prismadb.color.findMany({
     where: {
       storeId,
