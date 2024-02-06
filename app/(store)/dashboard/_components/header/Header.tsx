@@ -20,8 +20,6 @@ const Header = ({ stores }: Props) => {
 
   const currentStore = stores.find((store) => store.id === params.storeId);
 
-  console.log(params.storeId);
-
   const routes = [
     {
       href: `/dashboard/${params.storeId}`,

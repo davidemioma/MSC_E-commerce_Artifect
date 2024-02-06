@@ -25,13 +25,6 @@ export default async function ColorsPage({
     where: {
       storeId,
     },
-    include: {
-      _count: {
-        select: {
-          products: true,
-        },
-      },
-    },
     orderBy: {
       createdAt: "desc",
     },

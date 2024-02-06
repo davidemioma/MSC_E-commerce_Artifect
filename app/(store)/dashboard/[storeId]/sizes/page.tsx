@@ -25,13 +25,6 @@ export default async function SizesPage({
     where: {
       storeId,
     },
-    include: {
-      _count: {
-        select: {
-          products: true,
-        },
-      },
-    },
     orderBy: {
       createdAt: "desc",
     },

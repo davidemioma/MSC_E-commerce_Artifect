@@ -5,11 +5,7 @@ import { Color } from "@prisma/client";
 import CellActions from "./CellActions";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type ColorCol = Color & {
-  _count: {
-    products: number;
-  };
-};
+export type ColorCol = Color;
 
 export const columns: ColumnDef<ColorCol>[] = [
   { accessorKey: "name", header: "Name" },
@@ -33,11 +29,6 @@ export const columns: ColumnDef<ColorCol>[] = [
     cell: ({ row }) => (
       <div>{format(row.original.createdAt, "MMMM do, yyyy")}</div>
     ),
-  },
-  {
-    accessorKey: "Products",
-    header: "Number of Products",
-    cell: ({ row }) => <div>{row.original._count.products}</div>,
   },
   {
     id: "actions",

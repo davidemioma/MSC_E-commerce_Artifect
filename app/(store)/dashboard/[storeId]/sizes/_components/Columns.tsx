@@ -5,11 +5,7 @@ import { Size } from "@prisma/client";
 import CellActions from "./CellActions";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type SizeCol = Size & {
-  _count: {
-    products: number;
-  };
-};
+export type SizeCol = Size;
 
 export const columns: ColumnDef<SizeCol>[] = [
   { accessorKey: "name", header: "Name" },
@@ -20,11 +16,6 @@ export const columns: ColumnDef<SizeCol>[] = [
     cell: ({ row }) => (
       <div>{format(row.original.createdAt, "MMMM do, yyyy")}</div>
     ),
-  },
-  {
-    accessorKey: "Products",
-    header: "Number of Products",
-    cell: ({ row }) => <div>{row.original._count.products}</div>,
   },
   {
     id: "actions",
