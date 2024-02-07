@@ -1,10 +1,26 @@
-import { storeStatus } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ProductStatus, storeStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const getCurrentPrice = ({
+  price,
+  discount,
+}: {
+  price: number;
+  discount: number;
+}) => {
+  const discountRate = discount / 100;
+
+  const discountAmount = discountRate * price;
+
+  const currentPrice = price - discountAmount;
+
+  return currentPrice;
+};
 
 export const storeCategories = [
   {
@@ -77,6 +93,33 @@ export const getStatusColor = (status: storeStatus) => {
       color = "text-red-500";
       break;
     case "CLOSED":
+      color = "text-gray-600";
+      break;
+    default:
+      color = "text-black";
+      break;
+  }
+
+  return color;
+};
+
+export const getProductColor = (status: ProductStatus) => {
+  let color;
+
+  switch (status) {
+    case "PENDING":
+      color = "text-gray-500";
+      break;
+    case "REVIEWING":
+      color = "text-orange-500";
+      break;
+    case "APPROVED":
+      color = "text-green-500";
+      break;
+    case "DECLINED":
+      color = "text-red-500";
+      break;
+    case "ARCHIVED":
       color = "text-gray-600";
       break;
     default:

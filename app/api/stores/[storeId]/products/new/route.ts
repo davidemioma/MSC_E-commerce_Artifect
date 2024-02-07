@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { storeStatus } from "@prisma/client";
+import { getCurrentPrice } from "@/lib/utils";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
@@ -59,23 +60,6 @@ export async function POST(
         status: 400,
       });
     }
-
-    //Get the price after discounts
-    const getCurrentPrice = ({
-      price,
-      discount,
-    }: {
-      price: number;
-      discount: number;
-    }) => {
-      const discountRate = discount / 100;
-
-      const discountAmount = discountRate * price;
-
-      const currentPrice = price - discountAmount;
-
-      return currentPrice;
-    };
 
     //Create Product
     await prismadb.product.create({

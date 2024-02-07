@@ -49,6 +49,21 @@ export default async function ProductsPage({
       userId: user.id,
       storeId,
     },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      _count: {
+        select: {
+          productItems: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return (

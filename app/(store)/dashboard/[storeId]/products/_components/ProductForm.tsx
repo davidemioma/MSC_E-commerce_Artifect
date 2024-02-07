@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
@@ -13,11 +13,12 @@ import SizeModal from "@/components/modal/SizeModal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import ColorModal from "@/components/modal/ColorModal";
+import AlertModal from "@/components/modal/AlertModal";
 import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Category, Color, Product, Size } from "@prisma/client";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { ProductValidator, ProductSchema } from "@/lib/validators/product";
+import { Category, Color, Product, ProductItem, Size } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -36,13 +37,7 @@ import {
 
 type Props = {
   data?: Product & {
-    productItems: {
-      sizeId: string;
-      colorId: string;
-      price: number;
-      discount: number;
-      numInStocks: number;
-    }[];
+    productItems: ProductItem[];
   };
 };
 
@@ -51,13 +46,26 @@ const ProductForm = ({ data }: Props) => {
 
   const router = useRouter();
 
+  //For product delete alert
+  const [open, setOpen] = useState(false);
+
+  const formattedProductItems = data?.productItems.map((item) => ({
+    id: item.id,
+    sizeId: item.sizeId,
+    colorId: item.colorId || undefined,
+    imageUrl: item.imageUrl,
+    price: item.originalPrice,
+    discount: item.discount,
+    numInStocks: item.numInStocks,
+  }));
+
   const form = useForm<ProductValidator>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: data?.name || "",
       categoryId: data?.categoryId || "",
       description: data?.description || "",
-      productItems: data?.productItems || [],
+      productItems: formattedProductItems || [],
     },
   });
 
@@ -105,13 +113,36 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["create-color"],
-    mutationFn: async (values: ProductValidator) => {
-      await axios.post(`/api/stores/${params.storeId}/products/new`, values);
+  const { mutate: deleteItem, isPending: deletingItem } = useMutation({
+    mutationKey: ["delete-product-item"],
+    mutationFn: async (id: string) => {
+      if (!id && data?.id) return;
+
+      await axios.delete(
+        `/api/stores/${params.storeId}/products/${data?.id}/items/${id}`
+      );
     },
     onSuccess: () => {
-      toast.success("Product Created!");
+      toast.success("Item deleted successfully");
+
+      window.location.reload();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
+  const { mutate: onDeleteProduct, isPending: deletingProduct } = useMutation({
+    mutationKey: ["delete-product"],
+    mutationFn: async () => {
+      await axios.delete(`/api/stores/${params.storeId}/products/${data?.id}`);
+    },
+    onSuccess: () => {
+      toast.success("Product Deleted!");
 
       router.push(`/dashboard/${params.storeId}/products`);
 
@@ -123,8 +154,34 @@ const ProductForm = ({ data }: Props) => {
       } else {
         toast.error("Something went wrong");
       }
+    },
+  });
 
-      console.log(err);
+  const { mutate, isPending } = useMutation({
+    mutationKey: data ? ["update-product"] : ["create-product"],
+    mutationFn: async (values: ProductValidator) => {
+      if (data) {
+        await axios.patch(
+          `/api/stores/${params.storeId}/products/${data.id}`,
+          values
+        );
+      } else {
+        await axios.post(`/api/stores/${params.storeId}/products/new`, values);
+      }
+    },
+    onSuccess: () => {
+      toast.success(data ? "Product Updated!" : "Product Created!");
+
+      router.push(`/dashboard/${params.storeId}/products`);
+
+      router.refresh();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
@@ -134,6 +191,14 @@ const ProductForm = ({ data }: Props) => {
 
   return (
     <>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDeleteProduct}
+        loading={deletingProduct}
+        featureToDelete="product"
+      />
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
@@ -148,7 +213,7 @@ const ProductForm = ({ data }: Props) => {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={isPending}
+                        disabled={isPending || deletingItem}
                         placeholder="Name..."
                       />
                     </FormControl>
@@ -167,7 +232,7 @@ const ProductForm = ({ data }: Props) => {
                       <span>Category</span>
 
                       <CategoryModal>
-                        <AddBtn disabled={isPending} />
+                        <AddBtn disabled={isPending || deletingItem} />
                       </CategoryModal>
                     </FormLabel>
 
@@ -175,7 +240,7 @@ const ProductForm = ({ data }: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        disabled={isPending}
+                        disabled={isPending || deletingItem}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -226,7 +291,7 @@ const ProductForm = ({ data }: Props) => {
                     <TextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      disabled={isPending}
+                      disabled={isPending || deletingItem}
                     />
                   </FormControl>
 
@@ -242,6 +307,7 @@ const ProductForm = ({ data }: Props) => {
             <AddBtn
               onClick={() =>
                 append({
+                  id: "",
                   sizeId: "",
                   colorId: "",
                   imageUrl: "",
@@ -269,7 +335,8 @@ const ProductForm = ({ data }: Props) => {
                           forProduct
                           value={field.value}
                           onChange={field.onChange}
-                          disabled={isPending}
+                          disabled={isPending || deletingItem}
+                          productItemId={item.id || undefined}
                         />
                       </FormControl>
 
@@ -288,7 +355,7 @@ const ProductForm = ({ data }: Props) => {
                           <span>Size</span>
 
                           <SizeModal>
-                            <AddBtn disabled={isPending} />
+                            <AddBtn disabled={isPending || deletingItem} />
                           </SizeModal>
                         </FormLabel>
 
@@ -296,7 +363,7 @@ const ProductForm = ({ data }: Props) => {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={isPending}
+                            disabled={isPending || deletingItem}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -344,7 +411,7 @@ const ProductForm = ({ data }: Props) => {
                           <span>Color</span>
 
                           <ColorModal>
-                            <AddBtn disabled={isPending} />
+                            <AddBtn disabled={isPending || deletingItem} />
                           </ColorModal>
                         </FormLabel>
 
@@ -352,7 +419,7 @@ const ProductForm = ({ data }: Props) => {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={isPending}
+                            disabled={isPending || deletingItem}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -404,7 +471,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
-                            disabled={isPending}
+                            disabled={isPending || deletingItem}
                             placeholder="Price"
                           />
                         </FormControl>
@@ -424,7 +491,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
-                            disabled={isPending}
+                            disabled={isPending || deletingItem}
                             placeholder="Discount"
                           />
                         </FormControl>
@@ -444,7 +511,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
-                            disabled={isPending}
+                            disabled={isPending || deletingItem}
                             placeholder="Number In Stocks"
                           />
                         </FormControl>
@@ -456,26 +523,50 @@ const ProductForm = ({ data }: Props) => {
                 </div>
 
                 <div className="flex items-center justify-end">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => remove(index)}
-                    disabled={isPending}
-                  >
-                    Remove Item
-                  </Button>
+                  {data?.productItems[index] ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => deleteItem(data.productItems[index].id)}
+                      disabled={isPending || deletingItem}
+                    >
+                      Delete Item
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => remove(index)}
+                      disabled={isPending || deletingItem}
+                    >
+                      Remove Item
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
-          <Button
-            className="disabled:cursor-not-allowed disabled:opacity-75"
-            type="submit"
-            disabled={isPending}
-          >
-            Create
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              className="disabled:cursor-not-allowed disabled:opacity-75"
+              type="submit"
+              disabled={isPending || deletingItem}
+            >
+              {data ? "Save" : "Create"}
+            </Button>
+
+            {data && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => setOpen(true)}
+                disabled={isPending || deletingItem}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
     </>

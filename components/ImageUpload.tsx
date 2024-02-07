@@ -121,9 +121,9 @@ const ImageUpload = ({
 
             {base64 && (
               <div className="w-[200px] h-[200px] flex gap-2">
-                <div className="relative w-[150px] h-[150px] bg-black rounded-lg">
+                <div className="relative w-[150px] h-[150px] rounded-lg border">
                   <Image
-                    className="object-cover rounded-full"
+                    className="object-cover w-full h-full rounded-full"
                     src={base64}
                     fill
                     alt=""
