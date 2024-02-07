@@ -144,9 +144,9 @@ const ProductForm = ({ data }: Props) => {
     onSuccess: () => {
       toast.success("Product Deleted!");
 
-      router.push(`/dashboard/${params.storeId}/products`);
-
       router.refresh();
+
+      router.push(`/dashboard/${params.storeId}/products`);
     },
     onError: (err) => {
       if (err instanceof AxiosError) {

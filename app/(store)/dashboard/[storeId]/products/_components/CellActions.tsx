@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
 import { ProductCol } from "./Columns";
+import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import AlertModal from "@/components/modal/AlertModal";
 import { useParams, useRouter } from "next/navigation";
 import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
 import {
@@ -21,8 +25,39 @@ const CellActions = ({ data }: Props) => {
 
   const router = useRouter();
 
+  const [open, setOpen] = useState(false);
+
+  const { mutate: onDelete, isPending } = useMutation({
+    mutationKey: ["delete-product-modal"],
+    mutationFn: async () => {
+      await axios.delete(`/api/stores/${params.storeId}/products/${data?.id}`);
+    },
+    onSuccess: () => {
+      toast.success("Product Deleted!");
+
+      router.push(`/dashboard/${params.storeId}/products`);
+
+      router.refresh();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
+
   return (
     <>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={isPending}
+        featureToDelete="product"
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -52,7 +87,7 @@ const CellActions = ({ data }: Props) => {
             Update
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => {}} disabled={false}>
+          <DropdownMenuItem onClick={() => setOpen(true)} disabled={false}>
             <Trash className="w-4 h-4 mr-2" />
             Delete
           </DropdownMenuItem>
