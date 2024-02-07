@@ -20,27 +20,29 @@ type Props = {
   children: React.ReactNode;
 };
 
-const CategoryModal = ({ children }: Props) => {
+const SizeModal = ({ children }: Props) => {
   const params = useParams();
 
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
 
+  const [name, setName] = useState("");
+
   const [value, setValue] = useState("");
 
   const [mounted, setMounted] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["create-category-modal"],
-    mutationFn: async (values: { name: string }) => {
-      await axios.post(`/api/stores/${params.storeId}/categories/new`, values);
+    mutationKey: ["create-size-modal"],
+    mutationFn: async (values: { name: string; value: string }) => {
+      await axios.post(`/api/stores/${params.storeId}/sizes/new`, values);
     },
     onSuccess: () => {
-      toast.success("Category Created!");
+      toast.success("Size Created!");
 
       queryClient.invalidateQueries({
-        queryKey: ["product-category"],
+        queryKey: ["product-sizes"],
       });
 
       setOpen(false);
@@ -55,9 +57,9 @@ const CategoryModal = ({ children }: Props) => {
   });
 
   const onSubmit = () => {
-    if (value.trim() === "") return;
+    if (value.trim() === "" || name.trim() === "") return;
 
-    mutate({ name: value });
+    mutate({ name, value });
   };
 
   useEffect(() => {
@@ -72,18 +74,27 @@ const CategoryModal = ({ children }: Props) => {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Category</DialogTitle>
+          <DialogTitle>New Size</DialogTitle>
 
-          <DialogDescription>Add a category to your store.</DialogDescription>
+          <DialogDescription>Add a size to your store.</DialogDescription>
         </DialogHeader>
 
         <div className="w-full space-y-6">
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            disabled={isPending}
-            placeholder="Shoes..."
-          />
+          <div className="space-y-4">
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isPending}
+              placeholder="Name"
+            />
+
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              disabled={isPending}
+              placeholder="Value"
+            />
+          </div>
 
           <div className="flex items-center gap-3">
             <Button onClick={onSubmit} type="button" disabled={isPending}>
@@ -96,4 +107,4 @@ const CategoryModal = ({ children }: Props) => {
   );
 };
 
-export default CategoryModal;
+export default SizeModal;

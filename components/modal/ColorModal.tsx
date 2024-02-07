@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
+import { SketchPicker } from "react-color";
 import { useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,27 +21,29 @@ type Props = {
   children: React.ReactNode;
 };
 
-const CategoryModal = ({ children }: Props) => {
+const ColorModal = ({ children }: Props) => {
   const params = useParams();
 
   const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
 
+  const [name, setName] = useState("");
+
   const [value, setValue] = useState("");
 
   const [mounted, setMounted] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["create-category-modal"],
-    mutationFn: async (values: { name: string }) => {
-      await axios.post(`/api/stores/${params.storeId}/categories/new`, values);
+    mutationKey: ["create-color-modal"],
+    mutationFn: async (values: { name: string; value: string }) => {
+      await axios.post(`/api/stores/${params.storeId}/colors/new`, values);
     },
     onSuccess: () => {
-      toast.success("Category Created!");
+      toast.success("Color Created!");
 
       queryClient.invalidateQueries({
-        queryKey: ["product-category"],
+        queryKey: ["product-colors"],
       });
 
       setOpen(false);
@@ -55,9 +58,9 @@ const CategoryModal = ({ children }: Props) => {
   });
 
   const onSubmit = () => {
-    if (value.trim() === "") return;
+    if (value.trim() === "" || name.trim() === "") return;
 
-    mutate({ name: value });
+    mutate({ name, value });
   };
 
   useEffect(() => {
@@ -72,18 +75,25 @@ const CategoryModal = ({ children }: Props) => {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New Category</DialogTitle>
+          <DialogTitle>New Color</DialogTitle>
 
-          <DialogDescription>Add a category to your store.</DialogDescription>
+          <DialogDescription>Add a color to your store.</DialogDescription>
         </DialogHeader>
 
         <div className="w-full space-y-6">
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            disabled={isPending}
-            placeholder="Shoes..."
-          />
+          <div className="space-y-4">
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isPending}
+              placeholder="Name"
+            />
+
+            <SketchPicker
+              color={value}
+              onChange={(color) => !isPending && setValue(color.hex)}
+            />
+          </div>
 
           <div className="flex items-center gap-3">
             <Button onClick={onSubmit} type="button" disabled={isPending}>
@@ -96,4 +106,4 @@ const CategoryModal = ({ children }: Props) => {
   );
 };
 
-export default CategoryModal;
+export default ColorModal;

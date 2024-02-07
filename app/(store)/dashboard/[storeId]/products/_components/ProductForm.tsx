@@ -1,18 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
 import AddBtn from "./AddBtn";
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
+import ImageUpload from "@/components/ImageUpload";
+import SizeModal from "@/components/modal/SizeModal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
+import ColorModal from "@/components/modal/ColorModal";
 import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { Category, Color, Product, Size } from "@prisma/client";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { ProductValidator, ProductSchema } from "@/lib/validators/product";
-import { Category, Product } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -52,8 +57,13 @@ const ProductForm = ({ data }: Props) => {
       name: data?.name || "",
       categoryId: data?.categoryId || "",
       description: data?.description || "",
-      ProductItem: data?.productItems || [],
+      productItems: data?.productItems || [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "productItems",
   });
 
   const {
@@ -69,27 +79,154 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const { mutate, isPending } = useMutation({});
+  const {
+    data: sizes,
+    error: sizesError,
+    isLoading: sizesLoading,
+  } = useQuery({
+    queryKey: ["product-sizes"],
+    queryFn: async () => {
+      const res = await axios.get(`/api/stores/${params.storeId}/sizes`);
 
-  const onSubmit = (values: ProductValidator) => {};
+      return res.data;
+    },
+  });
+
+  const {
+    data: colors,
+    error: colorsError,
+    isLoading: colorsLoading,
+  } = useQuery({
+    queryKey: ["product-colors"],
+    queryFn: async () => {
+      const res = await axios.get(`/api/stores/${params.storeId}/colors`);
+
+      return res.data;
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["create-color"],
+    mutationFn: async (values: ProductValidator) => {
+      await axios.post(`/api/stores/${params.storeId}/products/new`, values);
+    },
+    onSuccess: () => {
+      toast.success("Product Created!");
+
+      router.push(`/dashboard/${params.storeId}/products`);
+
+      router.refresh();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+
+      console.log(err);
+    },
+  });
+
+  const onSubmit = (values: ProductValidator) => {
+    mutate(values);
+  };
 
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Name..."
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <span>Category</span>
+
+                      <CategoryModal>
+                        <AddBtn disabled={isPending} />
+                      </CategoryModal>
+                    </FormLabel>
+
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={isPending}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose Category" />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent>
+                          {isLoading && (
+                            <div className="py-4">
+                              <BtnSpinner />
+                            </div>
+                          )}
+
+                          {categories?.length === 0 && (
+                            <div className="flex items-center justify-center py-4 text-sm">
+                              No category found! Create a new category.
+                            </div>
+                          )}
+
+                          {!isLoading && !error && categories && (
+                            <>
+                              {categories?.map((cat: Category) => (
+                                <SelectItem key={cat.id} value={cat.id}>
+                                  {cat.name}
+                                </SelectItem>
+                              ))}
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
-              name="name"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Description</FormLabel>
 
                   <FormControl>
-                    <Input
-                      {...field}
+                    <TextEditor
+                      value={field.value}
+                      onChange={field.onChange}
                       disabled={isPending}
-                      placeholder="Name..."
                     />
                   </FormControl>
 
@@ -97,63 +234,248 @@ const ProductForm = ({ data }: Props) => {
                 </FormItem>
               )}
             />
+          </div>
 
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <span>Category</span>
+          <div className="flex items-center gap-2 pt-16 lg:pt-10">
+            <h4 className="text-xl font-bold">Add Product Details</h4>
 
-                    <CategoryModal>
-                      <AddBtn disabled={isPending} />
-                    </CategoryModal>
-                  </FormLabel>
-
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isPending}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose Category" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {isLoading && (
-                          <div className="py-4">
-                            <BtnSpinner />
-                          </div>
-                        )}
-
-                        {categories?.length === 0 && (
-                          <div className="flex items-center justify-center py-4 text-sm">
-                            No category found! Create a new category.
-                          </div>
-                        )}
-
-                        {!isLoading && !error && categories && (
-                          <>
-                            {categories?.map((cat: Category) => (
-                              <SelectItem key={cat.id} value={cat.id}>
-                                {cat.name}
-                              </SelectItem>
-                            ))}
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
+            <AddBtn
+              onClick={() =>
+                append({
+                  sizeId: "",
+                  colorId: "",
+                  imageUrl: "",
+                  price: 0,
+                  discount: 0,
+                  numInStocks: 1,
+                })
+              }
+              disabled={isPending}
             />
           </div>
+
+          <div className="space-y-6">
+            {fields.map((item, index) => (
+              <div key={item.id} className="space-y-4">
+                <Controller
+                  name={`productItems.${index}.imageUrl`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image</FormLabel>
+
+                      <FormControl>
+                        <ImageUpload
+                          forProduct
+                          value={field.value}
+                          onChange={field.onChange}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Controller
+                    name={`productItems.${index}.sizeId`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <span>Size</span>
+
+                          <SizeModal>
+                            <AddBtn disabled={isPending} />
+                          </SizeModal>
+                        </FormLabel>
+
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={isPending}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose Size" />
+                              </SelectTrigger>
+                            </FormControl>
+
+                            <SelectContent>
+                              {sizesLoading && (
+                                <div className="py-4">
+                                  <BtnSpinner />
+                                </div>
+                              )}
+
+                              {sizes?.length === 0 && (
+                                <div className="flex items-center justify-center py-4 text-sm">
+                                  No size found! Create a new size.
+                                </div>
+                              )}
+
+                              {!sizesLoading && !sizesError && sizes && (
+                                <>
+                                  {sizes?.map((size: Size) => (
+                                    <SelectItem key={size.id} value={size.id}>
+                                      {size.name}
+                                    </SelectItem>
+                                  ))}
+                                </>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Controller
+                    name={`productItems.${index}.colorId`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <span>Color</span>
+
+                          <ColorModal>
+                            <AddBtn disabled={isPending} />
+                          </ColorModal>
+                        </FormLabel>
+
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={isPending}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose Color" />
+                              </SelectTrigger>
+                            </FormControl>
+
+                            <SelectContent>
+                              {colorsLoading && (
+                                <div className="py-4">
+                                  <BtnSpinner />
+                                </div>
+                              )}
+
+                              {colors?.length === 0 && (
+                                <div className="flex items-center justify-center py-4 text-sm">
+                                  No color found! Create a new color.
+                                </div>
+                              )}
+
+                              {!colorsLoading && !colorsError && colors && (
+                                <>
+                                  {colors?.map((color: Color) => (
+                                    <SelectItem key={color.id} value={color.id}>
+                                      {color.name}
+                                    </SelectItem>
+                                  ))}
+                                </>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  <Controller
+                    name={`productItems.${index}.price`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price (£)</FormLabel>
+
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            disabled={isPending}
+                            placeholder="Price"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Controller
+                    name={`productItems.${index}.discount`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Discount (%)</FormLabel>
+
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            disabled={isPending}
+                            placeholder="Discount"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Controller
+                    name={`productItems.${index}.numInStocks`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number In Stocks</FormLabel>
+
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            disabled={isPending}
+                            placeholder="Number In Stocks"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex items-center justify-end">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => remove(index)}
+                    disabled={isPending}
+                  >
+                    Remove Item
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            className="disabled:cursor-not-allowed disabled:opacity-75"
+            type="submit"
+            disabled={isPending}
+          >
+            Create
+          </Button>
         </form>
       </Form>
     </>

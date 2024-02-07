@@ -57,7 +57,6 @@ model User {
   products Product[]
   reviews Review[]
   ratings Rating[]
-
 }
 
 model Account {
@@ -130,7 +129,6 @@ model Store{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   products Product[]
-  images Image[]
   sizes Size[]
   category Category[]
   color Color[]
@@ -145,18 +143,6 @@ model StoreVerificationToken {
   expires DateTime
 
   @@unique([email, token])
-}
-
-model Image{
-  id String @id @default(cuid())
-  storeId String
-  productItemId String
-  url String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
 }
 
 model Category{
@@ -213,7 +199,7 @@ model Product{
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   
-  ProductItem ProductItem[]
+  productItems ProductItem[]
   reviews Review[]
   ratings Rating[]
 }
@@ -223,6 +209,7 @@ model ProductItem{
   productId String
   sizeId String
   colorId String?
+  imageUrl String
   numInStocks Int
   currentPrice Float
   originalPrice Float
@@ -233,10 +220,7 @@ model ProductItem{
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
   color Color? @relation(fields: [colorId], references: [id], onDelete: Cascade)
-
-  image Image[]
 }
-
 
 model Review{
   id String @id @default(cuid())
