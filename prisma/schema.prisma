@@ -130,6 +130,7 @@ model Store{
 
   products Product[]
   sizes Size[]
+  images Image[]
   category Category[]
   color Color[]
   reviews Review[]
@@ -143,44 +144,6 @@ model StoreVerificationToken {
   expires DateTime
 
   @@unique([email, token])
-}
-
-model Category{
-  id String @id @default(cuid())
-  storeId String
-  name String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  products Product[]
-}
-
-model Size{
-  id String @id @default(cuid())
-  storeId String
-  name String
-  value String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  productItems ProductItem[]
-}
-
-model Color{
-  id String @id @default(cuid())
-  storeId String
-  name String
-  value String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  productItems ProductItem[]
 }
 
 model Product{
@@ -204,12 +167,32 @@ model Product{
   ratings Rating[]
 }
 
+model Category{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  products Product[]
+}
+
+model ProductItemSize {
+  productItemId String
+  sizeId String
+  productItem ProductItem @relation(fields: [productItemId], references: [id])
+  size Size @relation(fields: [sizeId], references: [id])
+
+  @@id([productItemId, sizeId])
+}
+
 model ProductItem{
   id String @id @default(cuid())
   productId String
-  sizeId String
-  colorId String?
-  imageUrl String
+  colorId String
+  sizeIds String[]
   numInStocks Int
   currentPrice Float
   originalPrice Float
@@ -218,8 +201,48 @@ model ProductItem{
   updatedAt DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
-  color Color? @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  images Image[]
+  sizes ProductItemSize[]
+}
+
+model Size{
+  id String @id @default(cuid())
+  storeId String
+  productItemIds String[]
+  name String
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productItems ProductItemSize[]
+}
+
+model Image{
+  id String @id @default(cuid())
+  storeId String
+  productItemId String
+  url String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productItems ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+}
+
+model Color{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  productItems ProductItem[]
 }
 
 model Review{

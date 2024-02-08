@@ -18,7 +18,14 @@ import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { ProductValidator, ProductSchema } from "@/lib/validators/product";
-import { Category, Color, Product, ProductItem, Size } from "@prisma/client";
+import {
+  Category,
+  Color,
+  Image,
+  Product,
+  ProductItem,
+  Size,
+} from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -35,9 +42,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+type ProductItemType = ProductItem & {
+  images: Image[];
+};
+
 type Props = {
   data?: Product & {
-    productItems: ProductItem[];
+    productItems: ProductItemType[];
   };
 };
 
@@ -51,12 +62,11 @@ const ProductForm = ({ data }: Props) => {
 
   const formattedProductItems = data?.productItems.map((item) => ({
     id: item.id,
-    sizeId: item.sizeId,
-    colorId: item.colorId || undefined,
-    imageUrl: item.imageUrl,
+    colorId: item.colorId || "",
     price: item.originalPrice,
     discount: item.discount,
     numInStocks: item.numInStocks,
+    sizeIds: item.sizeIds || [],
   }));
 
   const form = useForm<ProductValidator>({
@@ -308,9 +318,8 @@ const ProductForm = ({ data }: Props) => {
               onClick={() =>
                 append({
                   id: "",
-                  sizeId: "",
+                  sizeIds: [],
                   colorId: "",
-                  imageUrl: "",
                   price: 0,
                   discount: 0,
                   numInStocks: 1,
@@ -323,7 +332,7 @@ const ProductForm = ({ data }: Props) => {
           <div className="space-y-6">
             {fields.map((item, index) => (
               <div key={item.id} className="space-y-4">
-                <Controller
+                {/* <Controller
                   name={`productItems.${index}.imageUrl`}
                   control={form.control}
                   render={({ field }) => (
@@ -343,10 +352,10 @@ const ProductForm = ({ data }: Props) => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Controller
+                  {/* <Controller
                     name={`productItems.${index}.sizeId`}
                     control={form.control}
                     render={({ field }) => (
@@ -400,7 +409,7 @@ const ProductForm = ({ data }: Props) => {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
 
                   <Controller
                     name={`productItems.${index}.colorId`}

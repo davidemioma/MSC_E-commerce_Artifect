@@ -2,12 +2,13 @@ import { z } from "zod";
 
 const ProductItemSchema = z.object({
   id: z.string(),
-  sizeId: z.string().min(1, { message: "Size is required." }),
   colorId: z.string().min(1, { message: "Color is required." }),
-  imageUrl: z.string().min(1, { message: "Image is required." }),
   price: z.coerce.number().min(1, { message: "Price is required." }),
   discount: z.optional(z.coerce.number()),
   numInStocks: z.coerce.number().min(1),
+  sizeIds: z
+    .array(z.string())
+    .min(1, { message: "At least one size is required." }),
 });
 
 export const ProductSchema = z.object({

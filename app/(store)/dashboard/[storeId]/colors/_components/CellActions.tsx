@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { Size } from "@prisma/client";
+import { Color } from "@prisma/client";
 import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type Props = {
-  data: Size;
+  data: Color;
 };
 
 const CellActions = ({ data }: Props) => {
