@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import AlertModal from "@/components/modal/AlertModal";
 import { useParams, useRouter } from "next/navigation";
 import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
+import ViewProductModal from "@/components/modal/ViewProductModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,8 @@ const CellActions = ({ data }: Props) => {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+
+  const [viewProduct, setViewProduct] = useState(false);
 
   const { mutate: onDelete, isPending } = useMutation({
     mutationKey: ["delete-product-modal"],
@@ -58,6 +61,12 @@ const CellActions = ({ data }: Props) => {
         featureToDelete="product"
       />
 
+      <ViewProductModal
+        isOpen={viewProduct}
+        onClose={() => setViewProduct(false)}
+        productId={data.id}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -72,7 +81,10 @@ const CellActions = ({ data }: Props) => {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => {}} disabled={false}>
+          <DropdownMenuItem
+            onClick={() => setViewProduct(true)}
+            disabled={false}
+          >
             <Eye className="w-4 h-4 mr-2" />
             View
           </DropdownMenuItem>

@@ -232,3 +232,78 @@ export async function DELETE(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+export async function GET(
+  request: Request,
+  { params }: { params: { storeId: string; productId: string } }
+) {
+  try {
+    const { storeId, productId } = params;
+
+    if (!storeId) {
+      return new NextResponse("Store Id is required", { status: 400 });
+    }
+
+    if (!productId) {
+      return new NextResponse("Product Id is required", { status: 400 });
+    }
+
+    //Check if there is a current user
+    const { user } = await currentUser();
+
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    //Check if user is a seller
+    const { role } = await currentRole();
+
+    if (role !== "SELLER") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    //Check if the user owns the store
+    const store = await prismadb.store.findUnique({
+      where: {
+        id: storeId,
+        userId: user.id,
+      },
+    });
+
+    if (!store) {
+      return new NextResponse("Store not found!", { status: 404 });
+    }
+
+    //Check if store has been approved
+    if (store.status !== storeStatus.APPROVED) {
+      return new NextResponse("Unauthorized, Store not approved yet!", {
+        status: 401,
+      });
+    }
+
+    //Get Product
+    const product = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+        storeId,
+      },
+      include: {
+        productItems: {
+          include: {
+            size: true,
+            color: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(product);
+  } catch (err) {
+    console.log("[PRODUCT_GET]", err);
+
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
