@@ -86,7 +86,7 @@ const CellActions = ({ data }: Props) => {
             disabled={false}
           >
             <Eye className="w-4 h-4 mr-2" />
-            View
+            Preview
           </DropdownMenuItem>
 
           <DropdownMenuItem
