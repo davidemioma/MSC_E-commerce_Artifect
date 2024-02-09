@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
-import ReactSelect from "react-select";
 import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
 import ImageUpload from "@/components/ImageUpload";
+import MultiSelect from "@/components/MultiSelect";
 import SizeModal from "@/components/modal/SizeModal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
@@ -47,7 +47,6 @@ const ProductForm = ({ data }: Props) => {
 
   const router = useRouter();
 
-  //For product delete alert
   const [open, setOpen] = useState(false);
 
   const formattedProductItems = data?.productItems.map((item) => ({
@@ -88,23 +87,14 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const {
-    data: sizes,
-    error: sizesError,
-    isLoading: sizesLoading,
-  } = useQuery({
+  const { data: sizes } = useQuery({
     queryKey: ["product-sizes"],
     queryFn: async () => {
       const res = await axios.get(`/api/stores/${params.storeId}/sizes`);
 
-      return res.data;
+      return res.data as Size[];
     },
   });
-
-  const sizeOptions = sizes?.map((size: Size) => ({
-    value: size.id,
-    label: size.name,
-  }));
 
   const {
     data: colors,
@@ -366,30 +356,15 @@ const ProductForm = ({ data }: Props) => {
                         </FormLabel>
 
                         <FormControl>
-                          {sizesLoading && (
-                            <div className="py-4">
-                              <BtnSpinner />
-                            </div>
-                          )}
-
-                          {sizes && !sizesLoading && !sizesError && (
-                            <ReactSelect
-                              {...field}
-                              isMulti={true}
-                              onBlur={field.onBlur}
-                              options={sizeOptions}
-                              value={sizeOptions.find(
-                                (option: any) => option.value === field.value
-                              )}
-                              closeMenuOnSelect={false}
-                              onChange={(selected: any) => {
-                                const value = Array.isArray(selected)
-                                  ? selected.map((option) => option.value)
-                                  : selected.value;
-                                field.onChange(value);
-                              }}
-                            />
-                          )}
+                          <MultiSelect
+                            {...field}
+                            options={
+                              sizes?.map((size) => ({
+                                value: size.id,
+                                label: size.name,
+                              })) || []
+                            }
+                          />
                         </FormControl>
 
                         <FormMessage />

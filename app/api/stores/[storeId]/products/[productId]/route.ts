@@ -102,9 +102,9 @@ export async function PATCH(
               productId: product.id,
             },
             data: {
-              sizeId: item.sizeId,
-              colorId: item.colorId || undefined,
-              imageUrl: item.imageUrl,
+              sizeIds: item.sizeIds,
+              colorId: item.colorId,
+              images: item.images,
               discount: item.discount || 0,
               originalPrice: item.price,
               numInStocks: item.numInStocks,
@@ -118,9 +118,9 @@ export async function PATCH(
           await prismadb.productItem.create({
             data: {
               productId: product.id,
-              sizeId: item.sizeId,
-              colorId: item.colorId || undefined,
-              imageUrl: item.imageUrl,
+              sizeIds: item.sizeIds,
+              colorId: item.colorId,
+              images: item.images,
               discount: item.discount || 0,
               originalPrice: item.price,
               numInStocks: item.numInStocks,
@@ -290,7 +290,6 @@ export async function GET(
       include: {
         productItems: {
           include: {
-            size: true,
             color: true,
           },
           orderBy: {

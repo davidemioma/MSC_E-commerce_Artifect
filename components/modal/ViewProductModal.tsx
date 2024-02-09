@@ -55,11 +55,11 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
     },
   });
 
-  const [images, setImages] = useState<string[]>([]);
+  // const [images, setImages] = useState<string[]>([]);
 
-  useEffect(() => {
-    setImages(product?.productItems.map((item) => item.imageUrl) || []);
-  }, [product]);
+  // useEffect(() => {
+  //   setImages(product?.productItems.map((item) => item.imageUrl) || []);
+  // }, [product]);
 
   useEffect(() => {
     setMounted(true);
@@ -112,7 +112,7 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                 />
               </div>
 
-              <ImageSlider images={images} />
+              {/* <ImageSlider images={images} /> */}
 
               <div className="space-y-2">
                 <h1 className="text-lg font-bold">Choose Options:</h1>
@@ -140,7 +140,7 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                         <div className="flex items-center gap-1">
                           <div className="font-bold">Size: </div>
 
-                          <div>{item.size.name}</div>
+                          {/* <div>{item.size.name}</div> */}
                         </div>
 
                         <div className="flex items-center gap-1">
