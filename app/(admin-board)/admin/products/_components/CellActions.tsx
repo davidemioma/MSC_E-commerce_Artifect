@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Store } from "@prisma/client";
 import StatusModal from "./StatusModal";
+import { Product } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Pencil } from "lucide-react";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type Props = {
-  data: Store;
+  data: Product;
 };
 
 const CellActions = ({ data }: Props) => {
@@ -39,7 +39,7 @@ const CellActions = ({ data }: Props) => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
-          <DropdownMenuLabel>Store</DropdownMenuLabel>
+          <DropdownMenuLabel>Product</DropdownMenuLabel>
 
           <DropdownMenuSeparator />
 

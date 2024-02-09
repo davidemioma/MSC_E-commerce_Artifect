@@ -23,12 +23,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import StatusFilters from "@/app/(admin-board)/admin/stores/_components/StatusFilters";
+import ProductFilters from "@/app/(admin-board)/admin/products/_components/ProductFilters";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
   isStores?: boolean;
+  isProducts?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -36,6 +38,7 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   isStores,
+  isProducts,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -70,6 +73,8 @@ export function DataTable<TData, TValue>({
         />
 
         {isStores && <StatusFilters />}
+
+        {isProducts && <ProductFilters />}
       </div>
 
       <div className="rounded-md border">

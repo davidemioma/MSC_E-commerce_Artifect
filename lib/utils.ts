@@ -95,6 +95,60 @@ export const getStoreStatusValue = (status: string) => {
   return statusValue;
 };
 
+export const productCategories = [
+  {
+    value: "all",
+    label: "All",
+  },
+  {
+    value: "pending",
+    label: "Pending",
+  },
+  {
+    value: "reviewing",
+    label: "Reviewing",
+  },
+  {
+    value: "approved",
+    label: "Approved",
+  },
+  {
+    value: "declined",
+    label: "Declined",
+  },
+  {
+    value: "archived",
+    label: "Archived",
+  },
+];
+
+export const getProductStatusValue = (status: string) => {
+  let statusValue: ProductStatus;
+
+  switch (status) {
+    case "pending":
+      statusValue = "PENDING";
+      break;
+    case "reviewing":
+      statusValue = "REVIEWING";
+      break;
+    case "approved":
+      statusValue = "APPROVED";
+      break;
+    case "declined":
+      statusValue = "DECLINED";
+      break;
+    case "archived":
+      statusValue = "ARCHIVED";
+      break;
+    default:
+      statusValue = "PENDING";
+      break;
+  }
+
+  return statusValue;
+};
+
 export const getStatusColor = (status: storeStatus) => {
   let color;
 

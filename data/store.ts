@@ -79,9 +79,16 @@ export const getStoresByAdmin = async ({
         where: {
           status: getStoreStatusValue(status),
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
     } else {
-      stores = await prismadb.store.findMany({});
+      stores = await prismadb.store.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
     }
 
     return stores;
