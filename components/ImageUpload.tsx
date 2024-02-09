@@ -5,22 +5,26 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
 import { Trash2, ImagePlus } from "lucide-react";
-import { uploadToStorage } from "@/lib/functions";
 import useCurrentUser from "@/hooks/use-current-user";
+import {
+  readAllFiles,
+  uploadProductImages,
+  uploadToStorage,
+} from "@/lib/functions";
 
 type Props = {
-  value?: string;
+  value?: string | string[];
   disabled?: boolean;
   forProduct?: boolean;
-  productItemId?: string;
-  onChange: (base64: string) => void;
+  storeId?: string;
+  onChange: (base64: string | string[]) => void;
 };
 
 const ImageUpload = ({
   value,
   disabled,
   forProduct,
-  productItemId,
+  storeId,
   onChange,
 }: Props) => {
   const { user } = useCurrentUser();
@@ -31,6 +35,18 @@ const ImageUpload = ({
     setBase64("");
 
     onChange("");
+  };
+
+  const removeImage = (index: number) => {
+    if (!Array.isArray(base64)) return;
+
+    const newBase64 = [...base64];
+
+    newBase64.splice(index, 1);
+
+    setBase64(newBase64);
+
+    onChange(newBase64);
   };
 
   const handleDrop = (files: any) => {
@@ -54,36 +70,31 @@ const ImageUpload = ({
     };
   };
 
-  const handleProductDrop = (files: any) => {
-    if (!user) return;
+  const handleProductDrop = async (files: any) => {
+    if (!user || !storeId) return;
 
-    const file = files[0];
-
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-
-    reader.onload = async (e: any) => {
-      setBase64(e.target.result);
-
-      const imgUrl = await uploadToStorage({
-        file: e.target.result,
+    const imgUrls = await readAllFiles(files).then(async (result) => {
+      const urls = await uploadProductImages({
+        selectedFiles: result,
         userId: user?.id,
-        forProduct,
-        productItemId,
+        storeId,
       });
 
-      onChange(imgUrl || "");
-    };
+      return urls;
+    });
+
+    setBase64(imgUrls || []);
+
+    onChange(imgUrls || []);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    multiple: false,
-    maxFiles: 1,
-    maxSize: 4 * 1024 * 1024,
+    multiple: forProduct,
+    maxFiles: forProduct ? 6 : 1,
+    maxSize: 2 * 1024 * 1024,
     onDrop: forProduct ? handleProductDrop : handleDrop,
     onDropRejected: () => {
-      toast.error("Could not upload image!");
+      toast.error("Could not upload! Try again later.");
 
       return;
     },
@@ -107,7 +118,7 @@ const ImageUpload = ({
           >
             <input {...getInputProps()} />
 
-            {!base64 && (
+            {Array.isArray(base64) && base64?.length === 0 && (
               <div className="flex flex-col">
                 <ImagePlus className="w-7 h-7 mb-4 mx-auto text-violet-400" />
 
@@ -115,25 +126,24 @@ const ImageUpload = ({
                   Choose files or drag and drop
                 </span>
 
-                <span className="text-xs">Profile Image (4MB)</span>
+                <span className="text-xs">Product Items Images (2MB Each)</span>
               </div>
             )}
 
-            {base64 && (
-              <div className="w-[200px] h-[200px] flex gap-2">
-                <div className="relative w-[150px] h-[150px] rounded-lg border">
-                  <Image
-                    className="object-cover w-full h-full rounded-full"
-                    src={base64}
-                    fill
-                    alt=""
-                  />
-                </div>
+            {Array.isArray(base64) && base64?.length > 0 && (
+              <div className="w-[200px] h-[200px] grid grid-col-2 gap-2">
+                {base64.map((url, i) => (
+                  <div className="flex gap-2">
+                    <div className="relative w-full h-full rounded-lg border">
+                      <Image className="object-cover" src={url} fill alt="" />
+                    </div>
 
-                <Trash2
-                  className="w-6 h-6 cursor-ponter text-red-500"
-                  onClick={clearImage}
-                />
+                    <Trash2
+                      className="w-6 h-6 cursor-ponter text-red-500"
+                      onClick={() => removeImage(i)}
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -153,11 +163,11 @@ const ImageUpload = ({
                 Choose files or drag and drop
               </span>
 
-              <span className="text-sm">Profile Image (4MB)</span>
+              <span className="text-sm">Profile Image (2MB)</span>
             </div>
           )}
 
-          {base64 && (
+          {base64 && typeof base64 === "string" && (
             <div className="relative w-16 h-16 mx-auto bg-black rounded-full">
               <Image
                 className="object-cover rounded-full"

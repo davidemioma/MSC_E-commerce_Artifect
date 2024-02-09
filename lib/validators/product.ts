@@ -9,6 +9,9 @@ const ProductItemSchema = z.object({
   sizeIds: z
     .array(z.string())
     .min(1, { message: "At least one size is required." }),
+  images: z
+    .array(z.string())
+    .min(1, { message: "At least one image is required." }),
 });
 
 export const ProductSchema = z.object({

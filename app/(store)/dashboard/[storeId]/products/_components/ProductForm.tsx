@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
+import ReactSelect from "react-select";
 import axios, { AxiosError } from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,14 +19,7 @@ import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { ProductValidator, ProductSchema } from "@/lib/validators/product";
-import {
-  Category,
-  Color,
-  Image,
-  Product,
-  ProductItem,
-  Size,
-} from "@prisma/client";
+import { Category, Color, Product, ProductItem, Size } from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -42,13 +36,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-type ProductItemType = ProductItem & {
-  images: Image[];
-};
-
 type Props = {
   data?: Product & {
-    productItems: ProductItemType[];
+    productItems: ProductItem[];
   };
 };
 
@@ -67,6 +57,7 @@ const ProductForm = ({ data }: Props) => {
     discount: item.discount,
     numInStocks: item.numInStocks,
     sizeIds: item.sizeIds || [],
+    images: item.images || [],
   }));
 
   const form = useForm<ProductValidator>({
@@ -109,6 +100,11 @@ const ProductForm = ({ data }: Props) => {
       return res.data;
     },
   });
+
+  const sizeOptions = sizes?.map((size: Size) => ({
+    value: size.id,
+    label: size.name,
+  }));
 
   const {
     data: colors,
@@ -319,6 +315,7 @@ const ProductForm = ({ data }: Props) => {
                 append({
                   id: "",
                   sizeIds: [],
+                  images: [],
                   colorId: "",
                   price: 0,
                   discount: 0,
@@ -332,8 +329,8 @@ const ProductForm = ({ data }: Props) => {
           <div className="space-y-6">
             {fields.map((item, index) => (
               <div key={item.id} className="space-y-4">
-                {/* <Controller
-                  name={`productItems.${index}.imageUrl`}
+                <Controller
+                  name={`productItems.${index}.images`}
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
@@ -345,23 +342,23 @@ const ProductForm = ({ data }: Props) => {
                           value={field.value}
                           onChange={field.onChange}
                           disabled={isPending || deletingItem}
-                          productItemId={item.id || undefined}
+                          storeId={params.storeId as string}
                         />
                       </FormControl>
 
                       <FormMessage />
                     </FormItem>
                   )}
-                /> */}
+                />
 
                 <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* <Controller
-                    name={`productItems.${index}.sizeId`}
+                  <Controller
+                    name={`productItems.${index}.sizeIds`}
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <span>Size</span>
+                          <span>Sizes</span>
 
                           <SizeModal>
                             <AddBtn disabled={isPending || deletingItem} />
@@ -369,47 +366,36 @@ const ProductForm = ({ data }: Props) => {
                         </FormLabel>
 
                         <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={isPending || deletingItem}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Choose Size" />
-                              </SelectTrigger>
-                            </FormControl>
+                          {sizesLoading && (
+                            <div className="py-4">
+                              <BtnSpinner />
+                            </div>
+                          )}
 
-                            <SelectContent>
-                              {sizesLoading && (
-                                <div className="py-4">
-                                  <BtnSpinner />
-                                </div>
+                          {sizes && !sizesLoading && !sizesError && (
+                            <ReactSelect
+                              {...field}
+                              isMulti={true}
+                              onBlur={field.onBlur}
+                              options={sizeOptions}
+                              value={sizeOptions.find(
+                                (option: any) => option.value === field.value
                               )}
-
-                              {sizes?.length === 0 && (
-                                <div className="flex items-center justify-center py-4 text-sm">
-                                  No size found! Create a new size.
-                                </div>
-                              )}
-
-                              {!sizesLoading && !sizesError && sizes && (
-                                <>
-                                  {sizes?.map((size: Size) => (
-                                    <SelectItem key={size.id} value={size.id}>
-                                      {size.name}
-                                    </SelectItem>
-                                  ))}
-                                </>
-                              )}
-                            </SelectContent>
-                          </Select>
+                              closeMenuOnSelect={false}
+                              onChange={(selected: any) => {
+                                const value = Array.isArray(selected)
+                                  ? selected.map((option) => option.value)
+                                  : selected.value;
+                                field.onChange(value);
+                              }}
+                            />
+                          )}
                         </FormControl>
 
                         <FormMessage />
                       </FormItem>
                     )}
-                  /> */}
+                  />
 
                   <Controller
                     name={`productItems.${index}.colorId`}

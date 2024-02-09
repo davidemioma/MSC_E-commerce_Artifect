@@ -72,9 +72,9 @@ export async function POST(
         productItems: {
           createMany: {
             data: productItems.map((item) => ({
-              sizeId: item.sizeId,
-              colorId: item.colorId || undefined,
-              imageUrl: item.imageUrl,
+              sizeIds: item.sizeIds,
+              images: item.images,
+              colorId: item.colorId,
               numInStocks: item.numInStocks,
               discount: item.discount,
               originalPrice: item.price,

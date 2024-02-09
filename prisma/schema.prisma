@@ -130,7 +130,6 @@ model Store{
 
   products Product[]
   sizes Size[]
-  images Image[]
   category Category[]
   color Color[]
   reviews Review[]
@@ -179,20 +178,12 @@ model Category{
   products Product[]
 }
 
-model ProductItemSize {
-  productItemId String
-  sizeId String
-  productItem ProductItem @relation(fields: [productItemId], references: [id])
-  size Size @relation(fields: [sizeId], references: [id])
-
-  @@id([productItemId, sizeId])
-}
-
 model ProductItem{
   id String @id @default(cuid())
   productId String
   colorId String
   sizeIds String[]
+  images String[]
   numInStocks Int
   currentPrice Float
   originalPrice Float
@@ -202,34 +193,17 @@ model ProductItem{
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
-
-  images Image[]
-  sizes ProductItemSize[]
 }
 
 model Size{
   id String @id @default(cuid())
   storeId String
-  productItemIds String[]
   name String
   value String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  productItems ProductItemSize[]
-}
-
-model Image{
-  id String @id @default(cuid())
-  storeId String
-  productItemId String
-  url String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  productItems ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
 }
 
 model Color{

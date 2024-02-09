@@ -1,25 +1,71 @@
-import { v4 as uuidv4 } from "uuid";
 import { storage } from "./firebase";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
+
+const readFileContents = async (file: any) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = (e: any) => {
+      resolve(e.target.result);
+    };
+
+    reader.onerror = reject;
+  });
+};
+
+export const readAllFiles = async (files: any) => {
+  const results = await Promise.all(
+    files.map(async (file: any) => {
+      const fileContents = await readFileContents(file);
+
+      return {
+        name: file.name,
+        base64: fileContents,
+      };
+    })
+  );
+
+  return results;
+};
+
+export const uploadProductImages = async ({
+  selectedFiles,
+  userId,
+  storeId,
+}: {
+  selectedFiles: any[];
+  userId: string | undefined;
+  storeId: string | undefined;
+}) => {
+  if (selectedFiles.length < 1 || !userId) return;
+
+  const uploadPromises = selectedFiles.map(async (file) => {
+    const storagePath = `products/${userId}/${storeId}/${file.name}`;
+
+    const imageRef = ref(storage, storagePath);
+
+    await uploadString(imageRef, file.base64, "data_url");
+
+    return getDownloadURL(imageRef);
+  });
+
+  const imageUrls = await Promise.all(uploadPromises);
+
+  return imageUrls;
+};
 
 export const uploadToStorage = async ({
   file,
   userId,
-  forProduct,
-  productItemId,
 }: {
   file: string;
   userId: string | undefined;
-  forProduct?: boolean;
-  productItemId?: string;
 }) => {
   if (!userId) return;
 
-  const storagePath = forProduct
-    ? `sellers/${userId}/productItem/${
-        productItemId ? productItemId : uuidv4()
-      }`
-    : `profile/${userId}`;
+  const storagePath = `profile/${userId}`;
 
   const imageRef = ref(storage, storagePath);
 
