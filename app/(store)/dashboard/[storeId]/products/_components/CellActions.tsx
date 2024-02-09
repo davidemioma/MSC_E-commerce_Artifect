@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Status from "./Status";
 import { toast } from "sonner";
 import { ProductCol } from "./Columns";
 import axios, { AxiosError } from "axios";
@@ -6,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import AlertModal from "@/components/modal/AlertModal";
 import { useParams, useRouter } from "next/navigation";
-import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
 import ViewProductModal from "@/components/modal/ViewProductModal";
+import { MoreVertical, Edit, Trash, Eye, View } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,8 @@ const CellActions = ({ data }: Props) => {
   const [open, setOpen] = useState(false);
 
   const [viewProduct, setViewProduct] = useState(false);
+
+  const [viewStatus, setViewStatus] = useState(false);
 
   const { mutate: onDelete, isPending } = useMutation({
     mutationKey: ["delete-product-modal"],
@@ -67,6 +70,13 @@ const CellActions = ({ data }: Props) => {
         productId={data.id}
       />
 
+      <Status
+        open={viewStatus}
+        status={data.status}
+        statusFeedback={data.statusFeedback}
+        onOpenChange={() => setViewStatus(false)}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -82,8 +92,16 @@ const CellActions = ({ data }: Props) => {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
+            onClick={() => setViewStatus(true)}
+            disabled={isPending}
+          >
+            <View className="w-4 h-4 mr-2" />
+            View Status
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
             onClick={() => setViewProduct(true)}
-            disabled={false}
+            disabled={isPending}
           >
             <Eye className="w-4 h-4 mr-2" />
             Preview
@@ -93,13 +111,13 @@ const CellActions = ({ data }: Props) => {
             onClick={() =>
               router.push(`/dashboard/${data.storeId}/products/${data.id}`)
             }
-            disabled={false}
+            disabled={isPending}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setOpen(true)} disabled={false}>
+          <DropdownMenuItem onClick={() => setOpen(true)} disabled={isPending}>
             <Trash className="w-4 h-4 mr-2" />
             Delete
           </DropdownMenuItem>
