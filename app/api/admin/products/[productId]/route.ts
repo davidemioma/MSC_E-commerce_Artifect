@@ -3,6 +3,50 @@ import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductStatusSchema } from "@/lib/validators/product-status";
 
+export async function GET(
+  request: Request,
+  { params }: { params: { productId: string } }
+) {
+  try {
+    const { productId } = params;
+
+    if (!productId) {
+      return new NextResponse("Product Id is required", { status: 400 });
+    }
+
+    const { user } = await currentUser();
+
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { role } = await currentRole();
+
+    if (role !== "ADMIN") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const product = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+      },
+      include: {
+        productItems: {
+          include: {
+            color: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(product);
+  } catch (err) {
+    console.log("[PRODUCT_ADMIN_GET]", err);
+
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: { productId: string } }
