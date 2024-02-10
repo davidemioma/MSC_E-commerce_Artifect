@@ -1,21 +1,18 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { SizeSchema } from "@/lib/validators/size";
 import { currentRole, currentUser } from "@/lib/auth";
+import { postcodeValidator } from "postcode-validator";
+import { StoreSettingsSchema } from "@/lib/validators/storeSettings";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
+  { params }: { params: { storeId: string } }
 ) {
   try {
-    const { storeId, sizeId } = params;
+    const { storeId } = params;
 
     if (!storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
-    }
-
-    if (!sizeId) {
-      return new NextResponse("Size Id is required", { status: 400 });
     }
 
     //Check if there is a current user
@@ -46,40 +43,33 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, value } = SizeSchema.parse(body);
+    const { name, country, postcode, description, logo } =
+      StoreSettingsSchema.parse(body);
 
-    //Check if category name exists
-    const size = await prismadb.size.findFirst({
-      where: {
-        id: {
-          not: sizeId,
-        },
-        storeId,
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-      },
-    });
+    //Check if postcode is valid
+    const locationIsValid = postcodeValidator(postcode, country);
 
-    if (size) {
-      return new NextResponse("Name already taken!", { status: 409 });
+    if (!locationIsValid) {
+      return new NextResponse("Invalid postcode!", { status: 400 });
     }
 
-    await prismadb.size.update({
+    await prismadb.store.update({
       where: {
-        id: sizeId,
-        storeId,
+        id: storeId,
+        userId: user.id,
       },
       data: {
         name,
-        value,
+        country,
+        postcode,
+        description,
+        logo,
       },
     });
 
-    return NextResponse.json("Size Updated!");
+    return NextResponse.json("Store Updated!");
   } catch (err) {
-    console.log("[SIZE_UPDATE]", err);
+    console.log("[STORE_UPDATE]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }
@@ -87,17 +77,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
+  { params }: { params: { storeId: string } }
 ) {
   try {
-    const { storeId, sizeId } = params;
+    const { storeId } = params;
 
     if (!storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
-    }
-
-    if (!sizeId) {
-      return new NextResponse("Size Id is required", { status: 400 });
     }
 
     //Check if there is a current user
@@ -126,16 +112,46 @@ export async function DELETE(
       return new NextResponse("Store not found!", { status: 404 });
     }
 
-    await prismadb.size.delete({
+    //Delete all categories
+    await prismadb.category.deleteMany({
       where: {
-        id: sizeId,
         storeId,
       },
     });
 
-    return NextResponse.json("Size Deleted!");
+    //Delete all colors
+    await prismadb.color.deleteMany({
+      where: {
+        storeId,
+      },
+    });
+
+    //Delete all sizes
+    await prismadb.size.deleteMany({
+      where: {
+        storeId,
+      },
+    });
+
+    //Delete all Product
+    await prismadb.product.deleteMany({
+      where: {
+        storeId,
+        userId: user.id,
+      },
+    });
+
+    //Delete Store
+    await prismadb.store.delete({
+      where: {
+        id: storeId,
+        userId: user.id,
+      },
+    });
+
+    return NextResponse.json("Store Deleted!");
   } catch (err) {
-    console.log("[SIZE_DELETE]", err);
+    console.log("[STORE_DELETE]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

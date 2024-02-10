@@ -78,8 +78,6 @@ export const createStore = async (values: StoreValidator) => {
         email
       );
 
-      console.log({ storeVerificationToken, code });
-
       if (!storeVerificationToken) {
         return { error: "Invalid code!" };
       }

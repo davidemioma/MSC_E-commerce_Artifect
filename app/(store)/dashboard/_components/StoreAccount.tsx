@@ -30,7 +30,10 @@ const StoreAccount = ({ currentStore }: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={user?.image || "/no-profile.jpeg"} />
+          <AvatarImage
+            className="object-cover"
+            src={user?.image || "/no-profile.jpeg"}
+          />
         </Avatar>
       </DropdownMenuTrigger>
 

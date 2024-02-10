@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
+import { storeStatus } from "@prisma/client";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
 import NotApproved from "./_components/NotApproved";
@@ -33,7 +34,7 @@ export default async function ProductsPage({
     return redirect("/store");
   }
 
-  if (store.status !== "APPROVED") {
+  if (store.status !== storeStatus.APPROVED) {
     return (
       <div className="w-full h-[calc(100vh-110px)] flex items-center justify-center">
         <NotApproved

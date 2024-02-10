@@ -49,7 +49,7 @@ export async function POST(
       where: {
         storeId,
         name: {
-          contains: name,
+          equals: name,
           mode: "insensitive",
         },
       },

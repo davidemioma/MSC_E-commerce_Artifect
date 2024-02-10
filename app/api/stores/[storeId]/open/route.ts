@@ -1,9 +1,9 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { ColorSchema } from "@/lib/validators/color";
+import { storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 
-export async function POST(
+export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string } }
 ) {
@@ -40,36 +40,39 @@ export async function POST(
       return new NextResponse("Store not found!", { status: 404 });
     }
 
-    const body = await request.json();
-
-    const { name, value } = ColorSchema.parse(body);
-
-    //Check if category name exists
-    const color = await prismadb.color.findFirst({
-      where: {
-        storeId,
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-      },
-    });
-
-    if (color) {
-      return new NextResponse(`${name} already taken!`, { status: 409 });
+    //Check if store has been closed
+    if (store.status !== storeStatus.CLOSED) {
+      return new NextResponse("Unauthorized, store is not closed!", {
+        status: 404,
+      });
     }
 
-    await prismadb.color.create({
-      data: {
-        name,
-        value,
+    //UnArchived all products that belongs to that store.
+    await prismadb.product.updateMany({
+      where: {
         storeId,
+        userId: user.id,
+      },
+      data: {
+        status: "REVIEWING",
+        statusFeedback: "Welcome back, Your product is under review.",
       },
     });
 
-    return NextResponse.json("Color Created!");
+    await prismadb.store.update({
+      where: {
+        id: storeId,
+        userId: user.id,
+      },
+      data: {
+        status: "REVIEWING",
+        statusFeedback: "Welcome back, Your store is under review.",
+      },
+    });
+
+    return NextResponse.json("Store Opened!");
   } catch (err) {
-    console.log("[COLOR_CREATE]", err);
+    console.log("[STORE_OPENED]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

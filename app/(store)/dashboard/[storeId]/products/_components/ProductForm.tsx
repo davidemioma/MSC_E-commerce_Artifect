@@ -441,6 +441,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
+                            min={0}
                             disabled={isPending || deletingItem}
                             placeholder="Price"
                           />
@@ -461,6 +462,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
+                            min={0}
                             disabled={isPending || deletingItem}
                             placeholder="Discount"
                           />
@@ -481,6 +483,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
+                            min={1}
                             disabled={isPending || deletingItem}
                             placeholder="Number In Stocks"
                           />

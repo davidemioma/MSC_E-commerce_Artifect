@@ -59,13 +59,15 @@ export const uploadProductImages = async ({
 export const uploadToStorage = async ({
   file,
   userId,
+  pathname,
 }: {
   file: string;
   userId: string | undefined;
+  pathname?: string;
 }) => {
   if (!userId) return;
 
-  const storagePath = `profile/${userId}`;
+  const storagePath = pathname ? pathname : `profile/${userId}/image`;
 
   const imageRef = ref(storage, storagePath);
 

@@ -6,7 +6,7 @@ import "react-quill/dist/quill.snow.css";
 import { Textarea } from "./ui/textarea";
 
 type Props = {
-  value: string;
+  value: string | undefined;
   onChange: (value: string) => void;
   disabled: boolean;
 };

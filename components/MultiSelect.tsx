@@ -1,7 +1,8 @@
 "use client ";
 
-import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { useOnClickOutside } from "usehooks-ts";
 
 type OptionType = {
   value: string;
@@ -15,6 +16,8 @@ type Props = {
 };
 
 const MultiSelect = ({ value, onChange, options }: Props) => {
+  const ref = useRef(null);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOption = (selectedValue: string) => {
@@ -25,8 +28,10 @@ const MultiSelect = ({ value, onChange, options }: Props) => {
     onChange(newValue);
   };
 
+  useOnClickOutside(ref, () => setIsOpen(false));
+
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
         type="button"
         className="bg-background w-full h-10 flex items-center justify-between py-2 px-3 border border-input rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"

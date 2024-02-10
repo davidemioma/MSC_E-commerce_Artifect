@@ -1,7 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
-import { CategorySchema } from "@/lib/validators/category";
 
 export async function GET(
   request: Request,

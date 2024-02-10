@@ -1,9 +1,9 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { ColorSchema } from "@/lib/validators/color";
+import { storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 
-export async function POST(
+export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string } }
 ) {
@@ -40,36 +40,42 @@ export async function POST(
       return new NextResponse("Store not found!", { status: 404 });
     }
 
-    const body = await request.json();
-
-    const { name, value } = ColorSchema.parse(body);
-
-    //Check if category name exists
-    const color = await prismadb.color.findFirst({
-      where: {
-        storeId,
-        name: {
-          equals: name,
-          mode: "insensitive",
-        },
-      },
-    });
-
-    if (color) {
-      return new NextResponse(`${name} already taken!`, { status: 409 });
+    //Check if store has been approved
+    if (store.status !== storeStatus.APPROVED) {
+      return new NextResponse(
+        "Unauthorized, store needs to be approved before you can close it!",
+        { status: 404 }
+      );
     }
 
-    await prismadb.color.create({
-      data: {
-        name,
-        value,
+    //Archived all products that belongs to that store.
+    await prismadb.product.updateMany({
+      where: {
         storeId,
+        userId: user.id,
+      },
+      data: {
+        status: "ARCHIVED",
+        statusFeedback:
+          "Your product has been archived. It will not longer be visible to the customers. To change this open your store from your settings",
       },
     });
 
-    return NextResponse.json("Color Created!");
+    await prismadb.store.update({
+      where: {
+        id: storeId,
+        userId: user.id,
+      },
+      data: {
+        status: "CLOSED",
+        statusFeedback:
+          "Your store has been closed and products belonging to this store is now invisible to customers. If you change your mind, you can reopen your store at any time from your settings.",
+      },
+    });
+
+    return NextResponse.json("Store Closed!");
   } catch (err) {
-    console.log("[COLOR_CREATE]", err);
+    console.log("[STORE_CLOSED]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

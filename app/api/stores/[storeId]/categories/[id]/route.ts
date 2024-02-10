@@ -56,7 +56,7 @@ export async function PATCH(
         },
         storeId,
         name: {
-          contains: name,
+          equals: name,
           mode: "insensitive",
         },
       },
