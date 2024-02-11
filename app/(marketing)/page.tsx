@@ -1,7 +1,13 @@
-"use client";
+import Feed from "./_components/Feed";
+import Container from "@/components/Container";
+import { getHomePageProducts } from "@/data/product";
 
-import { signOut } from "next-auth/react";
+export default async function Home() {
+  const products = await getHomePageProducts();
 
-export default function Home() {
-  return <button onClick={() => signOut()}>Home</button>;
+  return (
+    <Container>
+      <Feed initialData={products} />
+    </Container>
+  );
 }

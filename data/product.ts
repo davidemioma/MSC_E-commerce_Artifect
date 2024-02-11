@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { getProductStatusValue } from "@/lib/utils";
+import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 
 export const getProductsByAdmin = async ({
   status,
@@ -56,6 +57,34 @@ export const getProductsByAdmin = async ({
         },
       });
     }
+
+    return products;
+  } catch (err) {
+    return [];
+  }
+};
+
+export const getHomePageProducts = async () => {
+  try {
+    const products = await prismadb.product.findMany({
+      where: {
+        status: "APPROVED",
+      },
+      include: {
+        category: true,
+        productItems: {
+          where: {
+            numInStocks: {
+              gt: 0,
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: INFINITE_SCROLL_PAGINATION_RESULTS,
+    });
 
     return products;
   } catch (err) {

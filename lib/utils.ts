@@ -6,6 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const INFINITE_SCROLL_PAGINATION_RESULTS = 1;
+
 export const formatPrice = (
   price: number | string,
   options: {

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { storage } from "./firebase";
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
@@ -42,7 +43,9 @@ export const uploadProductImages = async ({
   if (selectedFiles.length < 1 || !userId) return;
 
   const uploadPromises = selectedFiles.map(async (file) => {
-    const storagePath = `products/${userId}/${storeId}/${file.name}`;
+    const storagePath = `products/${userId}/${storeId}/${uuidv4()}-${
+      file.name
+    }`;
 
     const imageRef = ref(storage, storagePath);
 
