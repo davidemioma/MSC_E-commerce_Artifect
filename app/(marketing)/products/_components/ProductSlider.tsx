@@ -27,10 +27,10 @@ const ProductSlider = ({ images }: Props) => {
           {images.map((img, i) => (
             <div
               key={i}
-              className="relative w-full h-[60vh] border shadow-md rounded-lg overflow-hidden"
+              className="relative w-full h-[70vh] border shadow-md rounded-lg overflow-hidden"
             >
               <Image
-                className="object-contain"
+                className="object-cover"
                 fill
                 src={img}
                 alt={`product-item-${i}`}
