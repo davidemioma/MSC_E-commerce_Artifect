@@ -2,10 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { cn } from "@/lib/utils";
 
 type Props = {
   images: string[];
@@ -59,7 +59,7 @@ const ProductImg = ({ images }: Props) => {
           className="relative w-full aspect-video md:aspect-square overflow-hidden"
         >
           <Image
-            className="object-contain"
+            className="object-cover"
             fill
             src={img}
             alt={`product-item-${i}`}

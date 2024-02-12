@@ -441,6 +441,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
+                            step="0.01"
                             min={0}
                             disabled={isPending || deletingItem}
                             placeholder="Price"
@@ -462,6 +463,7 @@ const ProductForm = ({ data }: Props) => {
                           <Input
                             {...field}
                             type="number"
+                            step="0.01"
                             min={0}
                             disabled={isPending || deletingItem}
                             placeholder="Discount"

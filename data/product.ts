@@ -91,3 +91,35 @@ export const getHomePageProducts = async () => {
     return [];
   }
 };
+
+export const getProductById = async (productId: string) => {
+  try {
+    if (!productId) {
+      return null;
+    }
+
+    const product = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+      },
+      include: {
+        category: true,
+        productItems: {
+          where: {
+            numInStocks: {
+              gt: 0,
+            },
+          },
+        },
+      },
+    });
+
+    if (product?.status !== "APPROVED") {
+      return null;
+    }
+
+    return product;
+  } catch (err) {
+    return null;
+  }
+};

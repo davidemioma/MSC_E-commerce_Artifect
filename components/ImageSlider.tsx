@@ -28,7 +28,7 @@ const ImageSlider = ({ images }: Props) => {
               className="relative w-full h-40 border rounded-lg overflow-hidden"
             >
               <Image
-                className="object-contain"
+                className="object-cover"
                 fill
                 src={img}
                 alt={`product-item-${i}`}
@@ -42,7 +42,7 @@ const ImageSlider = ({ images }: Props) => {
         <div className="flex flex-col gap-4">
           <div className="relative w-full h-40 rounded-lg border overflow-hidden">
             <Image
-              className="object-contain"
+              className="object-cover"
               fill
               src={images[index]}
               alt="product-img"
