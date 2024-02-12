@@ -48,6 +48,17 @@ export const createStore = async (values: StoreValidator) => {
   });
 
   if (!storeExists) {
+    //Check if user has up to five stores
+    const userStores = await prismadb.store.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (userStores.length >= 5) {
+      return { error: "Sellers can't have more than 5 stores!" };
+    }
+
     //Create Store
     const store = await prismadb.store.create({
       data: {

@@ -93,7 +93,7 @@ const StoreModal = () => {
   return (
     <Modal
       title="Create your Store"
-      description="Add a new store to create and manage products"
+      description="Add a new store to create and manage products, You can create up to 5 stores."
       isOpen={storeModal.isOpen}
       onClose={() => storeModal.onClose()}
     >

@@ -23,6 +23,10 @@ export default auth((req) => {
   //These are all the authentication routes
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  if (nextUrl.pathname.includes("/products")) {
+    return null;
+  }
+
   //Do noting if is API auth route
   if (isApiAuthRoute) {
     return null;
