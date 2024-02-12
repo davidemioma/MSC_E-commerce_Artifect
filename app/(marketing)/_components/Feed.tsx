@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Category, Product, ProductItem } from "@prisma/client";
+import Product from "./Product";
+import { ProductType } from "@/types";
+import Empty from "@/components/Empty";
+import Spinner from "@/components/Spinner";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
-
-type ProductType = Product & {
-  category: Category;
-  productItems: ProductItem[];
-};
 
 type Props = {
   initialData: ProductType[];
@@ -34,28 +32,32 @@ const Feed = ({ initialData }: Props) => {
   }, [entry, fetchNextPage]);
 
   if (products.length === 0) {
-    return <div>No Products</div>;
+    return <Empty message="Sorry, no products found! Try again later." />;
   }
 
   return (
     <>
-      <div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {products.map((product, i) => {
           if (i === products.length - 1) {
             return (
               <div key={product.id} ref={ref}>
-                <div>Product</div>
+                <Product product={product} />
               </div>
             );
           } else {
-            return <div key={product.id}>Product</div>;
+            return <Product key={product.id} product={product} />;
           }
         })}
       </div>
 
-      {isFetchingNextPage && <div>Spinner</div>}
+      {isFetchingNextPage && <Spinner />}
 
-      {error && <div>Error</div>}
+      {error && (
+        <div className="py-5 text-center text-sm text-red-500 font-medium">
+          Could not get products! Try refreshing the page.
+        </div>
+      )}
     </>
   );
 };
