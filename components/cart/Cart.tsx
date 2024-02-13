@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { CartType } from "@/types";
 import { ShoppingCartIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import useCurrentUser from "@/hooks/use-current-user";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +15,22 @@ import {
 } from "@/components/ui/sheet";
 
 const Cart = () => {
+  const { user } = useCurrentUser();
+
   const [isMounted, setIsMounted] = useState(false);
+
+  const {
+    data: cart,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["get-cart-item", user?.id],
+    queryFn: async () => {
+      const res = await axios.get("/api/cart");
+
+      return res.data as CartType;
+    },
+  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -28,13 +47,15 @@ const Cart = () => {
         />
 
         <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          0
+          {cart?.cartItems.length || 0}
         </span>
       </SheetTrigger>
 
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
-          <SheetTitle className="py-2.5">Cart (0)</SheetTitle>
+          <SheetTitle className="py-2.5">
+            Cart ({cart?.cartItems.length || 0})
+          </SheetTitle>
         </SheetHeader>
 
         <div>Items</div>

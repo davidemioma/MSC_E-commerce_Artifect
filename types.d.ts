@@ -5,6 +5,8 @@ import {
   Available,
   Size,
   Color,
+  Cart,
+  CartItem,
 } from "@prisma/client";
 
 export type AvailableType = Available & { size: Size };
@@ -23,4 +25,14 @@ export type RouteType = {
   href: string;
   label: string;
   active: boolean;
+};
+
+export type CartItemType = CartItem & {
+  product: Product | null;
+  productItem: ProductItem | null;
+  availableItem: AvailableType | null;
+};
+
+export type CartType = Cart & {
+  cartItems: CartItemType[];
 };

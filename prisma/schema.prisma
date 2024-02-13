@@ -289,11 +289,15 @@ model CartItem{
   productItemId String
   availableItemId String
   quantity Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
   availableItem Available @relation(fields: [availableItemId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId, productItemId, availableItemId], name: "cartId_productId_productItemId_availableItemId")
 }
 
 model Order{

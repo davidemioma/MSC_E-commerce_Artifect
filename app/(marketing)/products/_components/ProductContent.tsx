@@ -2,12 +2,16 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { toast } from "sonner";
 import { Size } from "@prisma/client";
+import axios, { AxiosError } from "axios";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/use-current-user";
+import { CartItemValidator } from "@/lib/validators/cart-item";
 import { ProductItemType, ProductType } from "../../../../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   product: ProductType;
@@ -16,17 +20,43 @@ type Props = {
 const ProductContent = ({ product }: Props) => {
   const { user } = useCurrentUser();
 
+  const queryClient = useQueryClient();
+
   const [curSize, setCurSize] = useState<Size | undefined>(undefined);
 
   const [curProductItem, setCurProductItem] = useState<
     ProductItemType | undefined
   >(product.productItems?.[0]);
 
+  const [curAvailableId, setCurAvailableId] = useState("");
+
   const currentSizes =
     curProductItem?.availableItems?.map((item) => ({
+      availableItemId: item.id,
       size: item.size,
       inStock: item.numInStocks > 0,
     })) || [];
+
+  const { mutate: addToCart, isPending } = useMutation({
+    mutationKey: ["add-to-cart"],
+    mutationFn: async (values: CartItemValidator) => {
+      await axios.post("/api/cart", values);
+    },
+    onSuccess: () => {
+      toast.success("Item added to cart!");
+
+      queryClient.invalidateQueries({
+        queryKey: ["get-cart-item"],
+      });
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+    },
+  });
 
   return (
     <div className="w-full grid md:grid-cols-2">
@@ -82,13 +112,14 @@ const ProductContent = ({ product }: Props) => {
 
         <div className="w-full flex flex-wrap gap-2 mb-5">
           {product.productItems.map((item) => (
-            <div
+            <button
               key={item.id}
               className={cn(
-                "relative w-16 h-16 rounded-lg border border-gray-300 overflow-hidden",
+                "relative w-16 h-16 rounded-lg border border-gray-300 overflow-hidden disabled:cursor-not-allowed",
                 curProductItem?.id === item.id && "border-2 border-black"
               )}
               onClick={() => setCurProductItem(item)}
+              disabled={isPending}
             >
               <Image
                 className="object-cover"
@@ -96,7 +127,7 @@ const ProductContent = ({ product }: Props) => {
                 src={item.images[0]}
                 alt={`product-item-${item.id}`}
               />
-            </div>
+            </button>
           ))}
         </div>
 
@@ -106,10 +137,10 @@ const ProductContent = ({ product }: Props) => {
 
             <div className="w-full max-w-md flex flex-wrap gap-2">
               {currentSizes.map((item, i) => (
-                <div
+                <button
                   key={i}
                   className={cn(
-                    "flex items-center justify-center p-2 rounded-lg cursor-pointer border border-gray-300 overflow-hidden",
+                    "flex items-center justify-center p-2 rounded-lg cursor-pointer border border-gray-300 overflow-hidden disabled:cursor-not-allowed",
                     curSize?.id === item?.size?.id && "border-2 border-black",
                     item.inStock
                       ? "opacity-100"
@@ -119,10 +150,13 @@ const ProductContent = ({ product }: Props) => {
                     if (!item.inStock) return;
 
                     setCurSize(item?.size);
+
+                    setCurAvailableId(item.availableItemId);
                   }}
+                  disabled={!item.inStock || isPending}
                 >
                   {item?.size?.name}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -133,6 +167,14 @@ const ProductContent = ({ product }: Props) => {
           <Button
             className="bg-violet-500 w-full md:max-w-md mt-10 font-semibold rounded-full"
             size="lg"
+            onClick={() =>
+              addToCart({
+                productId: product.id,
+                productItemId: curProductItem?.id || "",
+                availableItemId: curAvailableId,
+              })
+            }
+            disabled={isPending || !curProductItem || !curAvailableId}
           >
             Add To Cart
           </Button>

@@ -147,6 +147,9 @@ export const getProductById = async (productId: string) => {
               include: {
                 size: true,
               },
+              orderBy: {
+                createdAt: "asc",
+              },
             },
           },
         },
