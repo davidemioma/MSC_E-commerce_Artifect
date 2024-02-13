@@ -70,6 +70,7 @@ model User {
   products Product[]
   reviews Review[]
   orders Order[]
+  cart Cart[]
 }
 
 model Account {
@@ -178,6 +179,7 @@ model Product{
   reviews Review[]
   orderItems OrderItem[]
   availableItems Available[]
+  cartItems CartItem[]
 }
 
 model Category{
@@ -204,6 +206,8 @@ model Available{
   size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+
+  cartItems CartItem[]
 }
 
 model ProductItem{
@@ -222,6 +226,7 @@ model ProductItem{
 
   orderItems OrderItem[]
   availableItems Available[]
+  cartItems CartItem[]
 }
 
 model Size{
@@ -264,6 +269,31 @@ model Review{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Cart{
+  id String @id @default(cuid())
+  userId String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cartItems CartItem[]
+}
+
+model CartItem{
+  id String @id @default(cuid())
+  cartId String 
+  productId String
+  productItemId String
+  availableItemId String
+  quantity Int @default(1)
+
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+  availableItem Available @relation(fields: [availableItemId], references: [id], onDelete: Cascade)
 }
 
 model Order{

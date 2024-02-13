@@ -128,6 +128,7 @@ const ProductContent = ({ product }: Props) => {
           </div>
         )}
 
+        {/* Change it to only users in production */}
         {user && user.role !== "ADMIN" && (
           <Button
             className="bg-violet-500 w-full md:max-w-md mt-10 font-semibold rounded-full"
