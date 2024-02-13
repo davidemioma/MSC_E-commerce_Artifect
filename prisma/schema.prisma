@@ -40,6 +40,19 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  OUTFORDELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+  REFUNDED
+  FAILED
+}
+
 model User {
   id String @id @default(cuid()) 
   name String? 
@@ -56,7 +69,7 @@ model User {
   stores Store[]
   products Product[]
   reviews Review[]
-  ratings Rating[]
+  orders Order[]
 }
 
 model Account {
@@ -133,7 +146,7 @@ model Store{
   category Category[]
   color Color[]
   reviews Review[]
-  ratings Rating[]
+  orderItems OrderItem[]
 }
 
 model StoreVerificationToken {
@@ -163,7 +176,8 @@ model Product{
   
   productItems ProductItem[]
   reviews Review[]
-  ratings Rating[]
+  orderItems OrderItem[]
+  availableItems Available[]
 }
 
 model Category{
@@ -178,13 +192,25 @@ model Category{
   products Product[]
 }
 
+model Available{
+  id String @id @default(cuid())
+  sizeId String
+  numInStocks Int @default(0)
+  productId String
+  productItemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+}
+
 model ProductItem{
   id String @id @default(cuid())
   productId String
   colorId String
-  sizeIds String[]
   images String[]
-  numInStocks Int
   currentPrice Float
   originalPrice Float
   discount Float @default(0)
@@ -193,6 +219,9 @@ model ProductItem{
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+  availableItems Available[]
 }
 
 model Size{
@@ -204,6 +233,9 @@ model Size{
   updatedAt DateTime @updatedAt
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+  availableItems Available[]
 }
 
 model Color{
@@ -224,6 +256,7 @@ model Review{
   userId String
   storeId String
   productId String
+  value Int
   comment String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -233,18 +266,35 @@ model Review{
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-model Rating{
+model Order{
   id String @id @default(cuid())
   userId String
-  storeId String
-  productId String
-  value Int
+  address String
+  status OrderStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  OrderItem OrderItem[]
+}
+
+model OrderItem{
+  id String @id @default(cuid())
+  orderId String
+  storeId String
+  productId String
+  productItemId String
+  sizeId String
+  quantity Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
 }
 
 
