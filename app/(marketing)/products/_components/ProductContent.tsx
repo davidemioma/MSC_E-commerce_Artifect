@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios";
 import Image from "next/image";
+import { Size } from "@prisma/client";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ProductType } from "../../../../types";
-import { useQuery } from "@tanstack/react-query";
-import { ProductItem, Size } from "@prisma/client";
 import useCurrentUser from "@/hooks/use-current-user";
+import { ProductItemType, ProductType } from "../../../../types";
 
 type Props = {
   product: ProductType;
@@ -20,27 +18,15 @@ const ProductContent = ({ product }: Props) => {
 
   const [curSize, setCurSize] = useState<Size | undefined>(undefined);
 
-  const [curProductItem, setCurProductItem] = useState<ProductItem | undefined>(
-    product.productItems?.[0]
-  );
+  const [curProductItem, setCurProductItem] = useState<
+    ProductItemType | undefined
+  >(product.productItems?.[0]);
 
-  const {
-    data: sizes,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["item-sizes-product-details", curProductItem?.id],
-    queryFn: async () => {
-      if (!curProductItem || curProductItem?.sizeIds.length < 1) return;
-
-      const res = await axios.post("/api/sizes", {
-        storeId: product.storeId,
-        sizeIds: curProductItem?.sizeIds || [],
-      });
-
-      return res.data as Size[];
-    },
-  });
+  const currentSizes =
+    curProductItem?.availableItems?.map((item) => ({
+      size: item.size,
+      inStock: item.numInStocks > 0,
+    })) || [];
 
   return (
     <div className="w-full grid md:grid-cols-2">
@@ -114,21 +100,28 @@ const ProductContent = ({ product }: Props) => {
           ))}
         </div>
 
-        {!isLoading && !isError && sizes && (
+        {currentSizes && currentSizes?.length > 0 && (
           <div className="space-y-2">
             <h2 className="text-lg font-semibold">Available Sizes:</h2>
 
             <div className="w-full max-w-md flex flex-wrap gap-2">
-              {sizes.map((size) => (
+              {currentSizes.map((item, i) => (
                 <div
-                  key={size.id}
+                  key={i}
                   className={cn(
                     "flex items-center justify-center p-2 rounded-lg cursor-pointer border border-gray-300 overflow-hidden",
-                    curSize?.id === size.id && "border-2 border-black"
+                    curSize?.id === item?.size?.id && "border-2 border-black",
+                    item.inStock
+                      ? "opacity-100"
+                      : "opacity-70 cursor-not-allowed"
                   )}
-                  onClick={() => setCurSize(size)}
+                  onClick={() => {
+                    if (!item.inStock) return;
+
+                    setCurSize(item?.size);
+                  }}
                 >
-                  {size.name}
+                  {item?.size?.name}
                 </div>
               ))}
             </div>

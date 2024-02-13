@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { ProductItemType } from "@/types";
 import { cn, formatPrice } from "@/lib/utils";
+import { Product, Size } from ".prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import BtnSpinner from "@/components/BtnSpinner";
 import ImageSlider from "@/components/ImageSlider";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Color, Product, ProductItem, Size } from ".prisma/client";
 import {
   Dialog,
   DialogContent,
@@ -21,11 +22,6 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   productId: string;
-};
-
-type ProductItemType = ProductItem & {
-  color: Color;
-  size: Size;
 };
 
 type ProductType = Product & {
@@ -54,22 +50,8 @@ const ViewProduct = ({ isOpen, onClose, productId }: Props) => {
 
   const currentProductItem = product?.productItems[activeItemIndex];
 
-  const {
-    data: sizes,
-    isLoading: sizesLoading,
-    isError: sizesError,
-  } = useQuery({
-    queryKey: ["admin-product-item-sizes", currentProductItem?.id],
-    queryFn: async () => {
-      if (!currentProductItem || currentProductItem?.sizeIds.length < 1) return;
-
-      const res = await axios.post(`/api/admin/sizes`, {
-        sizeIds: currentProductItem?.sizeIds || [],
-      });
-
-      return res.data as Size[];
-    },
-  });
+  const currentSizes =
+    currentProductItem?.availableItems?.map((item) => item.size) || [];
 
   useEffect(() => {
     setMounted(true);
@@ -115,25 +97,6 @@ const ViewProduct = ({ isOpen, onClose, productId }: Props) => {
               <ImageSlider images={currentProductItem?.images ?? []} />
 
               <div className="flex items-center justify-between">
-                <div className="flex-1 text-sm">
-                  <div className="flex items-center gap-1">
-                    <div className="font-bold">Color: </div>
-
-                    <div
-                      style={{
-                        backgroundColor: currentProductItem?.color.value,
-                      }}
-                      className="w-5 h-5 rounded-full"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <div className="font-bold">In Stock: </div>
-
-                    <div>{currentProductItem?.numInStocks}</div>
-                  </div>
-                </div>
-
                 {currentProductItem?.discount ? (
                   <div className="flex items-center gap-2 font-semibold">
                     <span>
@@ -167,29 +130,21 @@ const ViewProduct = ({ isOpen, onClose, productId }: Props) => {
                 )}
               </div>
 
-              {sizesLoading && <BtnSpinner />}
-
-              {sizesError && (
-                <div className="text-sm text-red-500 text-center">
-                  Could not load sizes. Refresh the page and try again
-                </div>
-              )}
-
-              {!sizesError && !sizesLoading && sizes && sizes?.length > 0 && (
+              {currentSizes && currentSizes.length > 0 && (
                 <div className="space-y-2">
                   <h1 className="text-lg font-bold">Sizes:</h1>
 
                   <div className="flex flex-wrap gap-3">
-                    {sizes.map((size) => (
+                    {currentSizes?.map((size) => (
                       <div
-                        key={size.id}
+                        key={size?.id}
                         className={cn(
                           "p-2 text-sm border rounded-lg cursor-pointer",
-                          activeSize?.id === size.id && "border-2 border-black"
+                          activeSize?.id === size?.id && "border-2 border-black"
                         )}
                         onClick={() => setActiveSize(size)}
                       >
-                        {size.name}
+                        {size?.name}
                       </div>
                     ))}
                   </div>
@@ -200,7 +155,7 @@ const ViewProduct = ({ isOpen, onClose, productId }: Props) => {
                 <h1 className="text-lg font-bold">Choose Options:</h1>
 
                 <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
-                  {product.productItems.map((item, i) => (
+                  {product?.productItems.map((item, i) => (
                     <div
                       key={item.id}
                       className={cn(

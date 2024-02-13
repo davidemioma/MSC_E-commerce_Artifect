@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const AvailableItemSchema = z.object({
   id: z.string(),
-  numInStocks: z.coerce.number().min(1),
+  numInStocks: z.coerce.number(),
   sizeId: z.string().min(1, { message: "Size is required." }),
 });
 

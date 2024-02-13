@@ -116,20 +116,42 @@ export const getProductById = async (productId: string) => {
     const product = await prismadb.product.findUnique({
       where: {
         id: productId,
+        status: "APPROVED",
+        productItems: {
+          some: {
+            availableItems: {
+              some: {
+                numInStocks: {
+                  gt: 0,
+                },
+              },
+            },
+          },
+        },
       },
       include: {
         category: true,
         productItems: {
+          where: {
+            availableItems: {
+              some: {
+                numInStocks: {
+                  gt: 0,
+                },
+              },
+            },
+          },
           include: {
-            availableItems: true,
+            color: true,
+            availableItems: {
+              include: {
+                size: true,
+              },
+            },
           },
         },
       },
     });
-
-    if (product?.status !== "APPROVED") {
-      return null;
-    }
 
     return product;
   } catch (err) {
