@@ -19,13 +19,28 @@ export async function GET(request: Request) {
     const products = await prismadb.product.findMany({
       where: {
         status: "APPROVED",
+        productItems: {
+          some: {
+            availableItems: {
+              some: {
+                numInStocks: {
+                  gt: 0,
+                },
+              },
+            },
+          },
+        },
       },
       include: {
         category: true,
         productItems: {
           where: {
-            numInStocks: {
-              gt: 0,
+            availableItems: {
+              some: {
+                numInStocks: {
+                  gt: 0,
+                },
+              },
             },
           },
         },

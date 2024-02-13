@@ -62,31 +62,43 @@ export async function POST(
     }
 
     //Create Product
-    await prismadb.product.create({
+    const product = await prismadb.product.create({
       data: {
         userId: user.id,
         storeId,
         name,
         categoryId,
         description,
-        productItems: {
-          createMany: {
-            data: productItems.map((item) => ({
-              sizeIds: item.sizeIds,
-              images: item.images,
-              colorId: item.colorId,
-              numInStocks: item.numInStocks,
-              discount: item.discount,
-              originalPrice: item.price,
-              currentPrice: getCurrentPrice({
-                price: item.price,
-                discount: item.discount || 0,
-              }),
-            })),
-          },
-        },
       },
     });
+
+    //Create product items
+    await Promise.all(
+      productItems.map(async (item) => {
+        const productItem = await prismadb.productItem.create({
+          data: {
+            productId: product?.id,
+            images: item.images,
+            colorId: item.colorId || undefined,
+            discount: item.discount,
+            originalPrice: item.price,
+            currentPrice: getCurrentPrice({
+              price: item.price,
+              discount: item.discount || 0,
+            }),
+          },
+        });
+
+        await prismadb.available.createMany({
+          data: item.availableItems.map((item) => ({
+            productId: product?.id,
+            productItemId: productItem.id,
+            sizeId: item.sizeId,
+            numInStocks: item.numInStocks,
+          })),
+        });
+      })
+    );
 
     return NextResponse.json("Product Created!");
   } catch (err) {

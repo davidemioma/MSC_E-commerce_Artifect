@@ -59,22 +59,22 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
 
   const currentProductItem = product?.productItems[activeItemIndex];
 
-  const {
-    data: sizes,
-    isLoading: sizesLoading,
-    isError: sizesError,
-  } = useQuery({
-    queryKey: ["product-item-sizes", currentProductItem?.id],
-    queryFn: async () => {
-      if (!currentProductItem || currentProductItem?.sizeIds.length < 1) return;
+  // const {
+  //   data: sizes,
+  //   isLoading: sizesLoading,
+  //   isError: sizesError,
+  // } = useQuery({
+  //   queryKey: ["product-item-sizes", currentProductItem?.id],
+  //   queryFn: async () => {
+  //     if (!currentProductItem || currentProductItem?.sizeIds.length < 1) return;
 
-      const res = await axios.post(`/api/stores/${params.storeId}/sizes/some`, {
-        sizeIds: currentProductItem?.sizeIds || [],
-      });
+  //     const res = await axios.post(`/api/stores/${params.storeId}/sizes/some`, {
+  //       sizeIds: currentProductItem?.sizeIds || [],
+  //     });
 
-      return res.data as Size[];
-    },
-  });
+  //     return res.data as Size[];
+  //   },
+  // });
 
   useEffect(() => {
     setMounted(true);
@@ -82,164 +82,166 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
 
   if (!mounted) return null;
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Preview Product</DialogTitle>
+  return <div></div>;
 
-          <DialogDescription>
-            This is a preview of how your product will be displayed to potential
-            customers.
-          </DialogDescription>
-        </DialogHeader>
+  // return (
+  //   <Dialog open={isOpen} onOpenChange={onClose}>
+  //     <DialogContent>
+  //       <DialogHeader>
+  //         <DialogTitle>Preview Product</DialogTitle>
 
-        {isLoading && (
-          <div className="w-full flex items-center justify-center py-4">
-            <BtnSpinner />
-          </div>
-        )}
+  //         <DialogDescription>
+  //           This is a preview of how your product will be displayed to potential
+  //           customers.
+  //         </DialogDescription>
+  //       </DialogHeader>
 
-        {isError && (
-          <div className="w-full flex items-center justify-center py-4">
-            <p>No product found! Try again.</p>
-          </div>
-        )}
+  //       {isLoading && (
+  //         <div className="w-full flex items-center justify-center py-4">
+  //           <BtnSpinner />
+  //         </div>
+  //       )}
 
-        {product && (
-          <ScrollArea className="w-full h-[50vh] scrollbar-hide">
-            <div className="space-y-6">
-              {product.status !== "APPROVED" && (
-                <div className="bg-red-100 p-2 rounded-lg">
-                  <p className="text-sm text-red-500">
-                    Your product is currently undergoing our review process and
-                    will be made visible to customers once it receives approval.
-                  </p>
-                </div>
-              )}
+  //       {isError && (
+  //         <div className="w-full flex items-center justify-center py-4">
+  //           <p>No product found! Try again.</p>
+  //         </div>
+  //       )}
 
-              <div className="space-y-1">
-                <h1 className="text-xl font-bold">{product.name}</h1>
+  //       {product && (
+  //         <ScrollArea className="w-full h-[50vh] scrollbar-hide">
+  //           <div className="space-y-6">
+  //             {product.status !== "APPROVED" && (
+  //               <div className="bg-red-100 p-2 rounded-lg">
+  //                 <p className="text-sm text-red-500">
+  //                   Your product is currently undergoing our review process and
+  //                   will be made visible to customers once it receives approval.
+  //                 </p>
+  //               </div>
+  //             )}
 
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-              </div>
+  //             <div className="space-y-1">
+  //               <h1 className="text-xl font-bold">{product.name}</h1>
 
-              <ImageSlider images={currentProductItem?.images ?? []} />
+  //               <div
+  //                 className="text-sm"
+  //                 dangerouslySetInnerHTML={{ __html: product.description }}
+  //               />
+  //             </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex-1 text-sm">
-                  <div className="flex items-center gap-1">
-                    <div className="font-bold">Color: </div>
+  //             <ImageSlider images={currentProductItem?.images ?? []} />
 
-                    <div
-                      style={{
-                        backgroundColor: currentProductItem?.color.value,
-                      }}
-                      className="w-5 h-5 rounded-full"
-                    />
-                  </div>
+  //             <div className="flex items-center justify-between">
+  //               <div className="flex-1 text-sm">
+  //                 <div className="flex items-center gap-1">
+  //                   <div className="font-bold">Color: </div>
 
-                  <div className="flex items-center gap-1">
-                    <div className="font-bold">In Stock: </div>
+  //                   <div
+  //                     style={{
+  //                       backgroundColor: currentProductItem?.color.value,
+  //                     }}
+  //                     className="w-5 h-5 rounded-full"
+  //                   />
+  //                 </div>
 
-                    <div>{currentProductItem?.numInStocks}</div>
-                  </div>
-                </div>
+  //                 <div className="flex items-center gap-1">
+  //                   <div className="font-bold">In Stock: </div>
 
-                {currentProductItem?.discount ? (
-                  <div className="flex items-center gap-2 font-semibold">
-                    <span>
-                      {formatPrice(currentProductItem?.currentPrice || 0, {
-                        currency: "GBP",
-                      })}
-                    </span>
+  //                   {/* <div>{currentProductItem?.numInStocks}</div> */}
+  //                 </div>
+  //               </div>
 
-                    <span className="line-through text-gray-500">
-                      {formatPrice(currentProductItem?.originalPrice || 0, {
-                        currency: "GBP",
-                      })}
-                    </span>
+  //               {currentProductItem?.discount ? (
+  //                 <div className="flex items-center gap-2 font-semibold">
+  //                   <span>
+  //                     {formatPrice(currentProductItem?.currentPrice || 0, {
+  //                       currency: "GBP",
+  //                     })}
+  //                   </span>
 
-                    <span
-                      className={cn(
-                        currentProductItem.discount > 1
-                          ? "text-green-500"
-                          : "text-red-500"
-                      )}
-                    >
-                      {currentProductItem.discount}% off
-                    </span>
-                  </div>
-                ) : (
-                  <div className="font-semibold">
-                    {formatPrice(currentProductItem?.currentPrice || 0, {
-                      currency: "GBP",
-                    })}
-                  </div>
-                )}
-              </div>
+  //                   <span className="line-through text-gray-500">
+  //                     {formatPrice(currentProductItem?.originalPrice || 0, {
+  //                       currency: "GBP",
+  //                     })}
+  //                   </span>
 
-              {sizesLoading && <BtnSpinner />}
+  //                   <span
+  //                     className={cn(
+  //                       currentProductItem.discount > 1
+  //                         ? "text-green-500"
+  //                         : "text-red-500"
+  //                     )}
+  //                   >
+  //                     {currentProductItem.discount}% off
+  //                   </span>
+  //                 </div>
+  //               ) : (
+  //                 <div className="font-semibold">
+  //                   {formatPrice(currentProductItem?.currentPrice || 0, {
+  //                     currency: "GBP",
+  //                   })}
+  //                 </div>
+  //               )}
+  //             </div>
 
-              {sizesError && (
-                <div className="text-sm text-red-500 text-center">
-                  Could not load sizes. Refresh the page and try again
-                </div>
-              )}
+  //             {sizesLoading && <BtnSpinner />}
 
-              {!sizesError && !sizesLoading && sizes && sizes?.length > 0 && (
-                <div className="space-y-2">
-                  <h1 className="text-lg font-bold">Sizes:</h1>
+  //             {sizesError && (
+  //               <div className="text-sm text-red-500 text-center">
+  //                 Could not load sizes. Refresh the page and try again
+  //               </div>
+  //             )}
 
-                  <div className="flex flex-wrap gap-3">
-                    {sizes.map((size) => (
-                      <div
-                        key={size.id}
-                        className={cn(
-                          "p-2 text-sm border rounded-lg cursor-pointer",
-                          activeSize?.id === size.id && "border-2 border-black"
-                        )}
-                        onClick={() => setActiveSize(size)}
-                      >
-                        {size.name}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+  //             {!sizesError && !sizesLoading && sizes && sizes?.length > 0 && (
+  //               <div className="space-y-2">
+  //                 <h1 className="text-lg font-bold">Sizes:</h1>
 
-              <div className="space-y-2">
-                <h1 className="text-lg font-bold">Choose Options:</h1>
+  //                 <div className="flex flex-wrap gap-3">
+  //                   {sizes.map((size) => (
+  //                     <div
+  //                       key={size.id}
+  //                       className={cn(
+  //                         "p-2 text-sm border rounded-lg cursor-pointer",
+  //                         activeSize?.id === size.id && "border-2 border-black"
+  //                       )}
+  //                       onClick={() => setActiveSize(size)}
+  //                     >
+  //                       {size.name}
+  //                     </div>
+  //                   ))}
+  //                 </div>
+  //               </div>
+  //             )}
 
-                <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
-                  {product.productItems.map((item, i) => (
-                    <div
-                      key={item.id}
-                      className={cn(
-                        "relative w-20 h-20 border rounded-lg cursor-pointer overflow-hidden",
-                        i === activeItemIndex && "border-2 border-black"
-                      )}
-                      onClick={() => setActiveItemIndex(i)}
-                    >
-                      <Image
-                        className="object-cover"
-                        fill
-                        src={item.images[0]}
-                        alt="product-item"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </ScrollArea>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+  //             <div className="space-y-2">
+  //               <h1 className="text-lg font-bold">Choose Options:</h1>
+
+  //               <div className="grid grid-cols-4 md:grid-cols-5 gap-3">
+  //                 {product.productItems.map((item, i) => (
+  //                   <div
+  //                     key={item.id}
+  //                     className={cn(
+  //                       "relative w-20 h-20 border rounded-lg cursor-pointer overflow-hidden",
+  //                       i === activeItemIndex && "border-2 border-black"
+  //                     )}
+  //                     onClick={() => setActiveItemIndex(i)}
+  //                   >
+  //                     <Image
+  //                       className="object-cover"
+  //                       fill
+  //                       src={item.images[0]}
+  //                       alt="product-item"
+  //                     />
+  //                   </div>
+  //                 ))}
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </ScrollArea>
+  //       )}
+  //     </DialogContent>
+  //   </Dialog>
+  // );
 };
 
 export default ViewProductModal;

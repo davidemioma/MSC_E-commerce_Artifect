@@ -86,6 +86,9 @@ export async function PATCH(
           in: [...productItems.map((item) => item.id)],
         },
       },
+      include: {
+        availableItems: true,
+      },
     });
 
     //if there are existing product items update them else create new ones.
@@ -102,34 +105,76 @@ export async function PATCH(
               productId: product.id,
             },
             data: {
-              sizeIds: item.sizeIds,
-              colorId: item.colorId,
+              colorId: item.colorId || undefined,
               images: item.images,
               discount: item.discount || 0,
               originalPrice: item.price,
-              numInStocks: item.numInStocks,
               currentPrice: getCurrentPrice({
                 price: item.price,
                 discount: item.discount || 0,
               }),
             },
           });
+
+          const updatedAvailableItems = item.availableItems;
+
+          await Promise.all(
+            updatedAvailableItems.map(async (item) => {
+              const existingAvaliableItem = existingItem.availableItems.find(
+                (existingItem) => existingItem.id === item.id
+              );
+
+              if (existingAvaliableItem) {
+                await prismadb.available.update({
+                  where: {
+                    id: item.id,
+                    productId: product.id,
+                    productItemId: existingItem.id,
+                  },
+                  data: {
+                    sizeId: item.sizeId,
+                    numInStocks: item.numInStocks,
+                  },
+                });
+              } else {
+                await prismadb.available.create({
+                  data: {
+                    productId: product.id,
+                    productItemId: existingItem.id,
+                    sizeId: item.sizeId,
+                    numInStocks: item.numInStocks,
+                  },
+                });
+              }
+            })
+          );
         } else {
-          await prismadb.productItem.create({
+          const productItem = await prismadb.productItem.create({
             data: {
               productId: product.id,
-              sizeIds: item.sizeIds,
-              colorId: item.colorId,
+              colorId: item.colorId || undefined,
               images: item.images,
               discount: item.discount || 0,
               originalPrice: item.price,
-              numInStocks: item.numInStocks,
               currentPrice: getCurrentPrice({
                 price: item.price,
                 discount: item.discount || 0,
               }),
             },
           });
+
+          await Promise.all(
+            item.availableItems.map(async (item) => {
+              await prismadb.available.create({
+                data: {
+                  productId: product.id,
+                  productItemId: productItem.id,
+                  sizeId: item.sizeId,
+                  numInStocks: item.numInStocks,
+                },
+              });
+            })
+          );
         }
       })
     );

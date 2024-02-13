@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
+import AvailableForm from "./AvailableForm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
 import ImageUpload from "@/components/ImageUpload";
-import MultiSelect from "@/components/MultiSelect";
-import SizeModal from "@/components/modal/SizeModal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import ColorModal from "@/components/modal/ColorModal";
@@ -19,7 +18,14 @@ import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { ProductValidator, ProductSchema } from "@/lib/validators/product";
-import { Category, Color, Product, ProductItem, Size } from "@prisma/client";
+import {
+  Available,
+  Category,
+  Color,
+  Product,
+  ProductItem,
+  Size,
+} from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -36,9 +42,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+type ProductItemType = ProductItem & {
+  availableItems: Available[];
+};
+
 type Props = {
   data?: Product & {
-    productItems: ProductItem[];
+    productItems: ProductItemType[];
   };
 };
 
@@ -51,11 +61,10 @@ const ProductForm = ({ data }: Props) => {
 
   const formattedProductItems = data?.productItems.map((item) => ({
     id: item.id,
-    colorId: item.colorId || "",
+    colorId: item.colorId || undefined,
     price: item.originalPrice,
     discount: item.discount,
-    numInStocks: item.numInStocks,
-    sizeIds: item.sizeIds || [],
+    availableItems: item.availableItems || [],
     images: item.images || [],
   }));
 
@@ -112,7 +121,7 @@ const ProductForm = ({ data }: Props) => {
   const { mutate: deleteItem, isPending: deletingItem } = useMutation({
     mutationKey: ["delete-product-item"],
     mutationFn: async (id: string) => {
-      if (!id && data?.id) return;
+      if (!id || data?.id) return;
 
       await axios.delete(
         `/api/stores/${params.storeId}/products/${data?.id}/items/${id}`
@@ -178,6 +187,8 @@ const ProductForm = ({ data }: Props) => {
       } else {
         toast.error("Something went wrong");
       }
+
+      console.log(err);
     },
   });
 
@@ -304,15 +315,14 @@ const ProductForm = ({ data }: Props) => {
               onClick={() =>
                 append({
                   id: "",
-                  sizeIds: [],
                   images: [],
                   colorId: "",
                   price: 0,
                   discount: 0,
-                  numInStocks: 1,
+                  availableItems: [],
                 })
               }
-              disabled={isPending}
+              disabled={isPending || deletingItem}
             />
           </div>
 
@@ -341,37 +351,18 @@ const ProductForm = ({ data }: Props) => {
                   )}
                 />
 
-                <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Controller
-                    name={`productItems.${index}.sizeIds`}
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <span>Sizes</span>
+                <AvailableForm
+                  form={form}
+                  index={index}
+                  sizes={sizes || []}
+                  productId={data?.id || undefined}
+                  disabled={isPending || deletingItem}
+                  availableItems={
+                    data?.productItems?.[index]?.availableItems || []
+                  }
+                />
 
-                          <SizeModal>
-                            <AddBtn disabled={isPending || deletingItem} />
-                          </SizeModal>
-                        </FormLabel>
-
-                        <FormControl>
-                          <MultiSelect
-                            {...field}
-                            options={
-                              sizes?.map((size) => ({
-                                value: size.id,
-                                label: size.name,
-                              })) || []
-                            }
-                          />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
+                <div className="w-full grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <Controller
                     name={`productItems.${index}.colorId`}
                     control={form.control}
@@ -427,9 +418,7 @@ const ProductForm = ({ data }: Props) => {
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <Controller
                     name={`productItems.${index}.price`}
                     control={form.control}
@@ -452,6 +441,7 @@ const ProductForm = ({ data }: Props) => {
                       </FormItem>
                     )}
                   />
+
                   <Controller
                     name={`productItems.${index}.discount`}
                     control={form.control}
@@ -467,27 +457,6 @@ const ProductForm = ({ data }: Props) => {
                             min={0}
                             disabled={isPending || deletingItem}
                             placeholder="Discount"
-                          />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Controller
-                    name={`productItems.${index}.numInStocks`}
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Number In Stocks</FormLabel>
-
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="number"
-                            min={1}
-                            disabled={isPending || deletingItem}
-                            placeholder="Number In Stocks"
                           />
                         </FormControl>
 

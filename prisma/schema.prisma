@@ -195,7 +195,7 @@ model Category{
 model Available{
   id String @id @default(cuid())
   sizeId String
-  numInStocks Int @default(0)
+  numInStocks Int
   productId String
   productItemId String
   createdAt DateTime @default(now())
@@ -209,7 +209,7 @@ model Available{
 model ProductItem{
   id String @id @default(cuid())
   productId String
-  colorId String
+  colorId String?
   images String[]
   currentPrice Float
   originalPrice Float
@@ -218,7 +218,7 @@ model ProductItem{
   updatedAt DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  color Color? @relation(fields: [colorId], references: [id], onDelete: Cascade)
 
   orderItems OrderItem[]
   availableItems Available[]

@@ -1,17 +1,22 @@
 import { z } from "zod";
 
+const AvailableItemSchema = z.object({
+  id: z.string(),
+  numInStocks: z.coerce.number().min(1),
+  sizeId: z.string().min(1, { message: "Size is required." }),
+});
+
 const ProductItemSchema = z.object({
   id: z.string(),
-  colorId: z.string().min(1, { message: "Color is required." }),
+  colorId: z.optional(z.string()),
   price: z.coerce.number().min(1, { message: "Price is required." }),
   discount: z.optional(z.coerce.number()),
-  numInStocks: z.coerce.number().min(1),
-  sizeIds: z
-    .array(z.string())
-    .min(1, { message: "At least one size is required." }),
   images: z
     .array(z.string())
     .min(1, { message: "At least one image is required." }),
+  availableItems: z
+    .array(AvailableItemSchema)
+    .min(1, { message: "At least one available item is required." }),
 });
 
 export const ProductSchema = z.object({
