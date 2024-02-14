@@ -28,8 +28,8 @@ export type RouteType = {
 };
 
 export type CartItemType = CartItem & {
-  product: Product | null;
-  productItem: ProductItem | null;
+  product: (Product & { category: Category }) | null;
+  productItem: (ProductItem & { color: Color }) | null;
   availableItem: AvailableType | null;
 };
 

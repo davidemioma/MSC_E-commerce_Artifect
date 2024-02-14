@@ -2,21 +2,26 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
+import Empty from "../Empty";
+import Spinner from "../Spinner";
+import CartItem from "./CartItem";
 import { CartType } from "@/types";
+import { buttonVariants } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
 import { ShoppingCartIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import useCurrentUser from "@/hooks/use-current-user";
+import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetFooter,
 } from "@/components/ui/sheet";
 
 const Cart = () => {
-  const { user } = useCurrentUser();
-
   const [isMounted, setIsMounted] = useState(false);
 
   const {
@@ -24,13 +29,20 @@ const Cart = () => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["get-cart-item", user?.id],
+    queryKey: ["get-cart-item"],
     queryFn: async () => {
       const res = await axios.get("/api/cart");
 
       return res.data as CartType;
     },
   });
+
+  const cartTotal =
+    cart?.cartItems.reduce(
+      (total, item) =>
+        total + ((item.productItem?.currentPrice || 0) * item.quantity || 0),
+      0
+    ) || 0;
 
   useEffect(() => {
     setIsMounted(true);
@@ -58,7 +70,72 @@ const Cart = () => {
           </SheetTitle>
         </SheetHeader>
 
-        <div>Items</div>
+        {isLoading && (
+          <div className="h-full">
+            <Spinner />
+          </div>
+        )}
+
+        {isError && <Empty message="Could not get item! Try again later" />}
+
+        {!isLoading && !isError && cart?.cartItems && (
+          <>
+            {cart?.cartItems?.length > 0 ? (
+              <ScrollArea>
+                <div className="space-y-5">
+                  {cart?.cartItems?.map((item) => (
+                    <CartItem key={item.id} cartItem={item} />
+                  ))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
+            )}
+          </>
+        )}
+
+        {!isLoading && !isError && cart?.cartItems && (
+          <div className="space-y-2 text-sm">
+            <div className="flex">
+              <span className="flex-1">Shipping</span>
+
+              <span className="font-semibold">
+                {formatPrice(SHIPPING_FEE, { currency: "GBP" })}
+              </span>
+            </div>
+
+            <div className="flex">
+              <span className="flex-1">Transaction Fee</span>
+
+              <span className="font-semibold">
+                {formatPrice(TRANSACTION_FEE, { currency: "GBP" })}
+              </span>
+            </div>
+
+            <div className="flex">
+              <span className="flex-1">Total</span>
+
+              <span className="font-semibold">
+                {formatPrice(cartTotal + TRANSACTION_FEE, { currency: "GBP" })}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {!isLoading && !isError && cart?.cartItems && (
+          <SheetFooter>
+            <SheetTrigger asChild>
+              <Link
+                href="/checkout"
+                className={buttonVariants({
+                  className: "w-full bg-violet-500",
+                })}
+              >
+                Continue to Checkout
+              </Link>
+            </SheetTrigger>
+          </SheetFooter>
+        )}
       </SheetContent>
     </Sheet>
   );

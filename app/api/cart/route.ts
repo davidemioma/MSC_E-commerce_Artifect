@@ -27,8 +27,16 @@ export async function GET(request: Request) {
       include: {
         cartItems: {
           include: {
-            product: true,
-            productItem: true,
+            product: {
+              include: {
+                category: true,
+              },
+            },
+            productItem: {
+              include: {
+                color: true,
+              },
+            },
             availableItem: {
               include: {
                 size: true,

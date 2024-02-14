@@ -6,6 +6,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const TRANSACTION_FEE = 1;
+
+export const SHIPPING_FEE = 0;
+
 export const INFINITE_SCROLL_PAGINATION_RESULTS = 20;
 
 export const formatPrice = (
