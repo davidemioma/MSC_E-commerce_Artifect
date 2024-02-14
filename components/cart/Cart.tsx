@@ -38,9 +38,9 @@ const Cart = () => {
   });
 
   const cartTotal =
-    cart?.cartItems.reduce(
+    cart?.cartItems?.reduce(
       (total, item) =>
-        total + ((item.productItem?.currentPrice || 0) * item.quantity || 0),
+        total + ((item.productItem?.currentPrice || 0) * item?.quantity || 0),
       0
     ) || 0;
 
@@ -59,14 +59,14 @@ const Cart = () => {
         />
 
         <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          {cart?.cartItems.length || 0}
+          {cart?.cartItems?.length || 0}
         </span>
       </SheetTrigger>
 
       <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
           <SheetTitle className="py-2.5">
-            Cart ({cart?.cartItems.length || 0})
+            Cart ({cart?.cartItems?.length || 0})
           </SheetTitle>
         </SheetHeader>
 

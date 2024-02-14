@@ -2,14 +2,14 @@
 
 import React, { useEffect } from "react";
 import Product from "./Product";
-import { ProductType } from "@/types";
 import Empty from "@/components/Empty";
 import Spinner from "@/components/Spinner";
+import { HomeProductType } from "@/types";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
 
 type Props = {
-  initialData: ProductType[];
+  initialData: HomeProductType[];
 };
 
 const Feed = ({ initialData }: Props) => {

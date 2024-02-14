@@ -21,6 +21,11 @@ export type ProductType = Product & {
   productItems: ProductItemType[];
 };
 
+export type HomeProductType = Product & {
+  category: Category;
+  productItems: ProductItem[];
+};
+
 export type RouteType = {
   href: string;
   label: string;

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import { UserRole } from "@prisma/client";
 import Cart from "@/components/cart/Cart";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ const NavBar = () => {
             <div className="flex items-center gap-2 sm:gap-4">
               <UserAccount />
 
-              <Cart />
+              {user.role !== UserRole.ADMIN && <Cart />}
             </div>
           ) : (
             <Button variant="outline">
