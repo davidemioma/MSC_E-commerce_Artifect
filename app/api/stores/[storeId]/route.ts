@@ -1,4 +1,5 @@
 import prismadb from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { postcodeValidator } from "postcode-validator";
@@ -25,7 +26,7 @@ export async function PATCH(
     //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "SELLER") {
+    if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -43,8 +44,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, country, postcode, description, logo } =
-      StoreSettingsSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = StoreSettingsSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, country, postcode, description, logo } = validatedBody;
 
     //Check if postcode is valid
     const locationIsValid = postcodeValidator(postcode, country);
@@ -67,7 +75,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Store Updated!");
+    return NextResponse.json({ message: "Store Updated!" });
   } catch (err) {
     console.log("[STORE_UPDATE]", err);
 
@@ -149,7 +157,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Store Deleted!");
+    return NextResponse.json({ message: "Store Deleted!" });
   } catch (err) {
     console.log("[STORE_DELETE]", err);
 

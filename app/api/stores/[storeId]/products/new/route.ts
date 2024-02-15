@@ -51,8 +51,15 @@ export async function POST(
 
     const body = await request.json();
 
-    const { name, categoryId, description, productItems } =
-      ProductSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = ProductSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, categoryId, description, productItems } = validatedBody;
 
     //Check if there is at least one product item
     if (productItems.length < 1) {
@@ -100,7 +107,7 @@ export async function POST(
       })
     );
 
-    return NextResponse.json("Product Created!");
+    return NextResponse.json({ message: "Product Created!" });
   } catch (err) {
     console.log("[PRODUCT_CREATE]", err);
 

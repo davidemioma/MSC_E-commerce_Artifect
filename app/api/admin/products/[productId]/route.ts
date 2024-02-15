@@ -87,7 +87,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { status, statusFeedback } = ProductStatusSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = ProductStatusSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { status, statusFeedback } = validatedBody;
 
     if (!status || !statusFeedback) {
       return new NextResponse("Status and feedback required!", { status: 400 });
@@ -103,7 +111,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Status updated!");
+    return NextResponse.json({ message: "Status updated!" });
   } catch (err) {
     console.log("[PRODUCT_STATUS_PATCH]", err);
 

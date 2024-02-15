@@ -70,7 +70,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Store Opened!");
+    return NextResponse.json({ message: "Store Opened!" });
   } catch (err) {
     console.log("[STORE_OPENED]", err);
 

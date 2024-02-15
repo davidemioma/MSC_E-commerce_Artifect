@@ -46,7 +46,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name } = CategorySchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = CategorySchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name } = validatedBody;
 
     //Check if category name exists
     const category = await prismadb.category.findFirst({
@@ -76,7 +84,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Category Updated!");
+    return NextResponse.json({ message: "Category Updated!" });
   } catch (err) {
     console.log("[CATEGORY_UPDATE]", err);
 
@@ -132,7 +140,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Category Deleted!");
+    return NextResponse.json({ message: "Category Deleted!" });
   } catch (err) {
     console.log("[CATEGORY_DELETE]", err);
 

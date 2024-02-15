@@ -42,7 +42,15 @@ export async function POST(
 
     const body = await request.json();
 
-    const { name, value } = ColorSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = ColorSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, value } = validatedBody;
 
     //Check if category name exists
     const color = await prismadb.color.findFirst({
@@ -67,7 +75,7 @@ export async function POST(
       },
     });
 
-    return NextResponse.json("Color Created!");
+    return NextResponse.json({ message: "Color Created!" });
   } catch (err) {
     console.log("[COLOR_CREATE]", err);
 

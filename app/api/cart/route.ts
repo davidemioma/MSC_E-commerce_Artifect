@@ -15,8 +15,7 @@ export async function GET(request: Request) {
 
     const { role } = await currentRole();
 
-    //Change it to user in production
-    if (role === UserRole.ADMIN) {
+    if (role !== UserRole.USER) {
       return NextResponse.json({ cart: null });
     }
 
@@ -72,10 +71,10 @@ export async function POST(request: Request) {
 
     const { role } = await currentRole();
 
-    //Change it to user in production
-    if (role === UserRole.ADMIN) {
+    //Check if current role is USER
+    if (role !== UserRole.USER) {
       return new NextResponse(
-        "User does not have permission to add items to the cart.",
+        "You do not have permission to add items to the cart.",
         { status: 401 }
       );
     }

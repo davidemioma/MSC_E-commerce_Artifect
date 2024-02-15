@@ -79,7 +79,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Item Deleted!");
+    return NextResponse.json({ message: "Item Deleted!" });
   } catch (err) {
     console.log("[AVAILABLE_ITEM_DELETE]", err);
 

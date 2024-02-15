@@ -77,7 +77,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Product Item Deleted!");
+    return NextResponse.json({ message: "Product Item Deleted!" });
   } catch (err) {
     console.log("[PRODUCT_ITEM_DELETE]", err);
 

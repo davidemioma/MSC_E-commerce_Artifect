@@ -10,7 +10,7 @@ import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/use-current-user";
 import { CartItemValidator } from "@/lib/validators/cart-item";
-import { ProductItemType, ProductType } from "../../../../types";
+import { ProductItemType, ProductType } from "../../../../../types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {

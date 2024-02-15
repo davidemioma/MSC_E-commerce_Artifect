@@ -34,11 +34,11 @@ export async function PATCH(
       });
     }
 
-    //Check if user is not an admin
+    //Check if user role is user
     const { role } = await currentRole();
 
-    if (role === UserRole.ADMIN) {
-      return new NextResponse("Unauthorized, admin's can delete cartItem", {
+    if (role !== UserRole.USER) {
+      return new NextResponse("Unauthorized, Only users can delete cartItem", {
         status: 401,
       });
     }
@@ -132,11 +132,11 @@ export async function DELETE(
       });
     }
 
-    //Check if user is not an admin
+    //Check if user role is USER
     const { role } = await currentRole();
 
-    if (role === UserRole.ADMIN) {
-      return new NextResponse("Unauthorized, admin's can delete cartItem", {
+    if (role === UserRole.USER) {
+      return new NextResponse("Unauthorized, Only users can delete cartItem", {
         status: 401,
       });
     }

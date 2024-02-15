@@ -42,7 +42,15 @@ export async function POST(
 
     const body = await request.json();
 
-    const { name, value } = SizeSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = SizeSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, value } = validatedBody;
 
     //Check if category name exists
     const size = await prismadb.size.findFirst({
@@ -67,7 +75,7 @@ export async function POST(
       },
     });
 
-    return NextResponse.json("Size Created!");
+    return NextResponse.json({ message: "Size Created!" });
   } catch (err) {
     console.log("[SIZE_CREATE]", err);
 

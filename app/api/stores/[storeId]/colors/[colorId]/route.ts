@@ -46,7 +46,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, value } = ColorSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = ColorSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, value } = validatedBody;
 
     //Check if category name exists
     const color = await prismadb.color.findFirst({
@@ -77,7 +85,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Color Updated!");
+    return NextResponse.json({ message: "Color Updated!" });
   } catch (err) {
     console.log("[COLOR_UPDATE]", err);
 
@@ -133,7 +141,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Color Deleted!");
+    return NextResponse.json({ message: "Color Deleted!" });
   } catch (err) {
     console.log("[COLOR_DELETE]", err);
 

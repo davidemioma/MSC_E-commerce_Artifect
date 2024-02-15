@@ -73,7 +73,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Store Closed!");
+    return NextResponse.json({ message: "Store Closed!" });
   } catch (err) {
     console.log("[STORE_CLOSED]", err);
 

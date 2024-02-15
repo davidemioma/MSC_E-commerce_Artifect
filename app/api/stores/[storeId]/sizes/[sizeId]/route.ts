@@ -46,7 +46,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, value } = SizeSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = SizeSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, value } = validatedBody;
 
     //Check if category name exists
     const size = await prismadb.size.findFirst({
@@ -77,7 +85,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Size Updated!");
+    return NextResponse.json({ messsage: "Size Updated!" });
   } catch (err) {
     console.log("[SIZE_UPDATE]", err);
 
@@ -133,7 +141,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Size Deleted!");
+    return NextResponse.json({ message: "Size Deleted!" });
   } catch (err) {
     console.log("[SIZE_DELETE]", err);
 

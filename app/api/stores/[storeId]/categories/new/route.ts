@@ -42,7 +42,15 @@ export async function POST(
 
     const body = await request.json();
 
-    const { name } = CategorySchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = CategorySchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name } = validatedBody;
 
     //Check if category name exists
     const category = await prismadb.category.findFirst({
@@ -66,7 +74,7 @@ export async function POST(
       },
     });
 
-    return NextResponse.json("Category Created!");
+    return NextResponse.json({ message: "Category Created!" });
   } catch (err) {
     console.log("[CATEGORY_CREATE]", err);
 

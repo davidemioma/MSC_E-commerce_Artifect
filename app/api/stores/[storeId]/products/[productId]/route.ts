@@ -55,8 +55,15 @@ export async function PATCH(
 
     const body = await request.json();
 
-    const { name, categoryId, description, productItems } =
-      ProductSchema.parse(body);
+    let validatedBody;
+
+    try {
+      validatedBody = ProductSchema.parse(body);
+    } catch (err) {
+      return NextResponse.json("Invalid Credentials", { status: 400 });
+    }
+
+    const { name, categoryId, description, productItems } = validatedBody;
 
     //Check if there is at least one product item
     if (productItems.length < 1) {
@@ -192,7 +199,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json("Product Updated!");
+    return NextResponse.json({ message: "Product Updated!" });
   } catch (err) {
     console.log("[PRODUCT_UPDATE]", err);
 
@@ -270,7 +277,7 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json("Product Deleted!");
+    return NextResponse.json({ message: "Product Deleted!" });
   } catch (err) {
     console.log("[PRODUCT_DELETE]", err);
 
