@@ -94,6 +94,11 @@ export const getHomePageProducts = async () => {
             },
           },
         },
+        reviews: {
+          select: {
+            value: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -151,6 +156,11 @@ export const getProductById = async (productId: string) => {
                 createdAt: "asc",
               },
             },
+          },
+        },
+        reviews: {
+          select: {
+            value: true,
           },
         },
       },

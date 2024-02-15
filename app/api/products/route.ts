@@ -44,6 +44,11 @@ export async function GET(request: Request) {
             },
           },
         },
+        reviews: {
+          select: {
+            value: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

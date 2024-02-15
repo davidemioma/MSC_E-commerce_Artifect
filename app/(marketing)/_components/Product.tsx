@@ -2,12 +2,13 @@
 
 import React from "react";
 import ProductImg from "./ProductImg";
-import { ProductType } from "@/types";
+import { HomeProductType } from "@/types";
 import { useRouter } from "next/navigation";
 import { cn, formatPrice } from "@/lib/utils";
+import AverageRating from "@/components/AverageRating";
 
 type Props = {
-  product: ProductType;
+  product: HomeProductType;
 };
 const Product = ({ product }: Props) => {
   const router = useRouter();
@@ -34,9 +35,12 @@ const Product = ({ product }: Props) => {
           {product.productItems?.length} Colors
         </p>
 
-        <div className="my-2">Ratings</div>
+        <AverageRating
+          className="my-2"
+          ratings={product.reviews.map((review) => review.value)}
+        />
 
-        <div className="text-sm mb-2">
+        <div className="text-sm my-2">
           {product.productItems?.[0]?.discount ? (
             <div className="flex items-center gap-2 font-semibold">
               <span>

@@ -22,9 +22,20 @@ export type ProductType = Product & {
   productItems: ProductItemType[];
 };
 
+export type ProductDetailType = Product & {
+  category: Category;
+  productItems: ProductItemType[];
+  reviews: {
+    value: number;
+  }[];
+};
+
 export type HomeProductType = Product & {
   category: Category;
   productItems: ProductItem[];
+  reviews: {
+    value: number;
+  }[];
 };
 
 export type RouteType = {

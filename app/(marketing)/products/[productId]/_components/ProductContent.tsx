@@ -9,12 +9,13 @@ import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Size, UserRole } from "@prisma/client";
 import useCurrentUser from "@/hooks/use-current-user";
+import AverageRating from "@/components/AverageRating";
 import { CartItemValidator } from "@/lib/validators/cart-item";
-import { ProductItemType, ProductType } from "../../../../../types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ProductItemType, ProductDetailType } from "../../../../../types";
 
 type Props = {
-  product: ProductType;
+  product: ProductDetailType;
 };
 
 const ProductContent = ({ product }: Props) => {
@@ -68,7 +69,9 @@ const ProductContent = ({ product }: Props) => {
 
           <p className="text-gray-500">{product.category.name}</p>
 
-          <div>Ratings</div>
+          <AverageRating
+            ratings={product?.reviews?.map((review) => review?.value)}
+          />
         </div>
 
         <div
