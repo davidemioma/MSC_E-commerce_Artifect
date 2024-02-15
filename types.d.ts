@@ -7,6 +7,7 @@ import {
   Color,
   Cart,
   CartItem,
+  Review,
 } from "@prisma/client";
 
 export type AvailableType = Available & { size: Size };
@@ -40,4 +41,11 @@ export type CartItemType = CartItem & {
 
 export type CartType = Cart & {
   cartItems: CartItemType[];
+};
+
+export type ReviewType = Review & {
+  user: {
+    name: string | null;
+    image: string | null;
+  };
 };

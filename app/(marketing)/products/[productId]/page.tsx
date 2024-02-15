@@ -1,6 +1,6 @@
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Reviews from "./_components/Reviews";
+import Reviews from "./_components/reviews/Reviews";
 import Container from "@/components/Container";
 import { getProductById } from "@/data/product";
 import ProductContent from "./_components/ProductContent";
@@ -33,21 +33,21 @@ export default async function ProductPage({
   });
 
   return (
-    <Container>
-      <div className="w-full space-y-14">
+    <div className="w-full space-y-5">
+      <Container>
         <ProductContent product={product} />
+      </Container>
 
-        <div>Seller</div>
+      <div>Seller</div>
 
-        <div>Recommended items</div>
+      <div>Recommended items</div>
 
-        <Reviews
-          productId={productId}
-          initialData={reviews}
-          reviewCount={reviewCount}
-          hasReviewed={hasReviewed}
-        />
-      </div>
-    </Container>
+      <Reviews
+        productId={productId}
+        initialData={reviews}
+        reviewCount={reviewCount}
+        hasReviewed={hasReviewed}
+      />
+    </div>
   );
 }

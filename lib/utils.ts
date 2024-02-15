@@ -12,7 +12,7 @@ export const SHIPPING_FEE = 0;
 
 export const INFINITE_SCROLL_PAGINATION_RESULTS = 20;
 
-export const INFINITE_SCROLL_REVIEWS_RESULT = 3;
+export const INFINITE_SCROLL_REVIEWS_RESULT = 2;
 
 export const formatPrice = (
   price: number | string,

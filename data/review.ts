@@ -9,6 +9,14 @@ export const getReviewsForProduct = async (productId: string) => {
       where: {
         productId,
       },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },

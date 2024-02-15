@@ -262,7 +262,9 @@ model Review{
   storeId String
   productId String
   value Int
+  reason String
   comment String
+  helpful String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
