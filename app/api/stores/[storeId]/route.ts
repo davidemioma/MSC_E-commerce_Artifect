@@ -104,7 +104,7 @@ export async function DELETE(
     //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "SELLER") {
+    if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

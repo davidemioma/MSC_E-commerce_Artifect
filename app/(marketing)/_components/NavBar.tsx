@@ -23,7 +23,7 @@ const NavBar = () => {
             <div className="flex items-center gap-2 sm:gap-4">
               <UserAccount />
 
-              {user.role !== UserRole.ADMIN && <Cart />}
+              {user.role === UserRole.USER && <Cart />}
             </div>
           ) : (
             <Button variant="outline">

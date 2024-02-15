@@ -2,6 +2,7 @@ import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { SizeSchema } from "@/lib/validators/size";
 import { currentRole, currentUser } from "@/lib/auth";
+import { UserRole } from "@prisma/client";
 
 export async function PATCH(
   request: Request,
@@ -28,7 +29,7 @@ export async function PATCH(
     //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "SELLER") {
+    if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -118,7 +119,7 @@ export async function DELETE(
     //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "SELLER") {
+    if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

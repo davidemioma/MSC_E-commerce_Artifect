@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
+import { UserRole } from "@prisma/client";
 
 export async function GET(
   request: Request,
@@ -23,7 +24,7 @@ export async function GET(
     //Check if user is a seller
     const { role } = await currentRole();
 
-    if (role !== "SELLER") {
+    if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

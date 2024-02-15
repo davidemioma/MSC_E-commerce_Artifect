@@ -164,7 +164,7 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json("Item added to cart!");
+    return NextResponse.json({ message: "Item added to cart!" });
   } catch (err) {
     console.log("[CART_ITEM_CREATE]", err);
 

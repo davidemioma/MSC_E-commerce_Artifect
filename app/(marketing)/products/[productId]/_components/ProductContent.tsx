@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { Size } from "@prisma/client";
 import axios, { AxiosError } from "axios";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Size, UserRole } from "@prisma/client";
 import useCurrentUser from "@/hooks/use-current-user";
 import { CartItemValidator } from "@/lib/validators/cart-item";
 import { ProductItemType, ProductType } from "../../../../../types";
@@ -162,8 +162,7 @@ const ProductContent = ({ product }: Props) => {
           </div>
         )}
 
-        {/* Change it to only users in production */}
-        {user && user.role !== "ADMIN" && (
+        {user && user.role === UserRole.USER && (
           <Button
             className="bg-violet-500 w-full md:max-w-md mt-10 font-semibold rounded-full"
             size="lg"
