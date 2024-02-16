@@ -148,6 +148,18 @@ model Store{
   color Color[]
   reviews Review[]
   orderItems OrderItem[]
+  Banners Banner[]
+}
+
+model Banner{
+  id String @id @default(cuid())
+  storeId String
+  image String
+  active Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model StoreVerificationToken {
@@ -200,6 +212,8 @@ model Available{
   numInStocks Int
   productId String
   productItemId String
+  currentPrice Float
+  originalPrice Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
  
@@ -213,20 +227,28 @@ model Available{
 model ProductItem{
   id String @id @default(cuid())
   productId String
-  colorId String?
+  colorIds String[] @default([])
   images String[]
-  currentPrice Float
-  originalPrice Float
   discount Float @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  color Color? @relation(fields: [colorId], references: [id], onDelete: Cascade)
 
   orderItems OrderItem[]
   availableItems Available[]
   cartItems CartItem[]
+}
+
+model Color{
+  id String @id @default(cuid())
+  storeId String
+  name String
+  value String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Size{
@@ -241,19 +263,6 @@ model Size{
 
   orderItems OrderItem[]
   availableItems Available[]
-}
-
-model Color{
-  id String @id @default(cuid())
-  storeId String
-  name String
-  value String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
-  productItems ProductItem[]
 }
 
 model Review{

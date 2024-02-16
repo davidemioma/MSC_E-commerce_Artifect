@@ -8,8 +8,8 @@ import ImageSlider from "../ImageSlider";
 import { ProductItemType } from "@/types";
 import { useParams } from "next/navigation";
 import { cn, formatPrice } from "@/lib/utils";
-import { Product, Size } from ".prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { Product, Size, Color } from ".prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
@@ -36,6 +36,8 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
 
   const [activeItemIndex, setActiveItemIndex] = useState(0);
 
+  const [priceIndex, setPriceIndex] = useState(0);
+
   const [activeSize, setActiveSize] = useState<Size | null>(null);
 
   const {
@@ -54,6 +56,24 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
   });
 
   const currentProductItem = product?.productItems[activeItemIndex];
+
+  const {
+    data: colors,
+    isLoading: colorsLoading,
+    isError: colorsError,
+  } = useQuery({
+    queryKey: ["product-modal-colors", currentProductItem?.id],
+    queryFn: async () => {
+      if (currentProductItem?.colorIds.length === 0) return;
+
+      const res = await axios.post(
+        `/api/stores/${params.storeId}/colors/some`,
+        { colorIds: currentProductItem?.colorIds }
+      );
+
+      return res.data as Color[];
+    },
+  });
 
   const currentSizes =
     currentProductItem?.availableItems?.map((item) => item.size) || [];
@@ -115,32 +135,46 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                 {currentProductItem?.discount ? (
                   <div className="flex items-center gap-2 font-semibold">
                     <span>
-                      {formatPrice(currentProductItem?.currentPrice || 0, {
-                        currency: "GBP",
-                      })}
+                      {formatPrice(
+                        currentProductItem?.availableItems?.[priceIndex]
+                          ?.currentPrice || 0,
+                        {
+                          currency: "GBP",
+                        }
+                      )}
                     </span>
 
                     <span className="line-through text-gray-500">
-                      {formatPrice(currentProductItem?.originalPrice || 0, {
-                        currency: "GBP",
-                      })}
+                      {formatPrice(
+                        currentProductItem?.availableItems?.[priceIndex]
+                          ?.originalPrice || 0,
+                        {
+                          currency: "GBP",
+                        }
+                      )}
                     </span>
 
-                    <span
-                      className={cn(
-                        currentProductItem.discount > 1
-                          ? "text-green-500"
-                          : "text-red-500"
-                      )}
-                    >
-                      {currentProductItem.discount}% off
-                    </span>
+                    {currentProductItem?.discount > 0 && (
+                      <span
+                        className={cn(
+                          currentProductItem?.discount > 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                        )}
+                      >
+                        {currentProductItem?.discount}% off
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div className="font-semibold">
-                    {formatPrice(currentProductItem?.currentPrice || 0, {
-                      currency: "GBP",
-                    })}
+                    {formatPrice(
+                      currentProductItem?.availableItems?.[priceIndex]
+                        ?.currentPrice || 0,
+                      {
+                        currency: "GBP",
+                      }
+                    )}
                   </div>
                 )}
               </div>
@@ -150,14 +184,20 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                   <h1 className="text-lg font-bold">Sizes:</h1>
 
                   <div className="flex flex-wrap gap-3">
-                    {currentSizes?.map((size) => (
+                    {currentSizes?.map((size, i) => (
                       <div
                         key={size?.id}
                         className={cn(
                           "p-2 text-sm border rounded-lg cursor-pointer",
-                          activeSize?.id === size?.id && "border-2 border-black"
+                          activeSize?.id === size?.id &&
+                            "border-2 border-black",
+                          priceIndex === i && "border-2 border-black"
                         )}
-                        onClick={() => setActiveSize(size)}
+                        onClick={() => {
+                          setActiveSize(size);
+
+                          setPriceIndex(i);
+                        }}
                       >
                         {size?.name}
                       </div>
@@ -165,6 +205,25 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                   </div>
                 </div>
               )}
+
+              {!colorsError &&
+                !colorsLoading &&
+                colors &&
+                colors.length > 0 && (
+                  <div className="space-y-2">
+                    <h1 className="text-lg font-bold">Colors:</h1>
+
+                    <div className="flex flex-wrap gap-2">
+                      {colors?.map((color) => (
+                        <div
+                          key={color.id}
+                          style={{ backgroundColor: color.value }}
+                          className="w-5 h-5 rounded-full border"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               <div className="space-y-2">
                 <h1 className="text-lg font-bold">Choose Options:</h1>

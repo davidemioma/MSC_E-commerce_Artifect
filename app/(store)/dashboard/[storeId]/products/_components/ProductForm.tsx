@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button";
 import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
 import ImageUpload from "@/components/ImageUpload";
+import MultiSelect from "@/components/MultiSelect";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import ColorModal from "@/components/modal/ColorModal";
 import AlertModal from "@/components/modal/AlertModal";
+import TooltipContainer from "@/components/TooltipContainer";
 import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
@@ -61,10 +63,15 @@ const ProductForm = ({ data }: Props) => {
 
   const formattedProductItems = data?.productItems.map((item) => ({
     id: item.id,
-    colorId: item.colorId || undefined,
-    price: item.originalPrice,
+    colorIds: item.colorIds || [],
     discount: item.discount,
-    availableItems: item.availableItems || [],
+    availableItems:
+      item.availableItems.map((item) => ({
+        id: item.id,
+        numInStocks: item.numInStocks,
+        sizeId: item.sizeId,
+        price: item.originalPrice,
+      })) || [],
     images: item.images || [],
   }));
 
@@ -114,7 +121,7 @@ const ProductForm = ({ data }: Props) => {
     queryFn: async () => {
       const res = await axios.get(`/api/stores/${params.storeId}/colors`);
 
-      return res.data;
+      return res.data as Color[];
     },
   });
 
@@ -239,7 +246,9 @@ const ProductForm = ({ data }: Props) => {
                       <span>Category</span>
 
                       <CategoryModal>
-                        <AddBtn disabled={isPending || deletingItem} />
+                        <TooltipContainer message="Add new category">
+                          <AddBtn disabled={isPending || deletingItem} />
+                        </TooltipContainer>
                       </CategoryModal>
                     </FormLabel>
 
@@ -311,19 +320,20 @@ const ProductForm = ({ data }: Props) => {
           <div className="flex items-center gap-2 pt-16 lg:pt-10">
             <h4 className="text-xl font-bold">Add Product Details</h4>
 
-            <AddBtn
-              onClick={() =>
-                append({
-                  id: "",
-                  images: [],
-                  colorId: "",
-                  price: 0,
-                  discount: 0,
-                  availableItems: [],
-                })
-              }
-              disabled={isPending || deletingItem}
-            />
+            <TooltipContainer message="Customise your product">
+              <AddBtn
+                onClick={() =>
+                  append({
+                    id: "",
+                    images: [],
+                    colorIds: [],
+                    discount: 0,
+                    availableItems: [],
+                  })
+                }
+                disabled={isPending || deletingItem}
+              />
+            </TooltipContainer>
           </div>
 
           <div className="space-y-6">
@@ -364,77 +374,34 @@ const ProductForm = ({ data }: Props) => {
 
                 <div className="w-full grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <Controller
-                    name={`productItems.${index}.colorId`}
+                    name={`productItems.${index}.colorIds`}
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center gap-2">
-                          <span>Color</span>
+                          <span>Colors</span>
 
                           <ColorModal>
-                            <AddBtn disabled={isPending || deletingItem} />
+                            <TooltipContainer message="Add new color">
+                              <AddBtn disabled={isPending || deletingItem} />
+                            </TooltipContainer>
                           </ColorModal>
                         </FormLabel>
 
                         <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            disabled={isPending || deletingItem}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Choose Color" />
-                              </SelectTrigger>
-                            </FormControl>
-
-                            <SelectContent>
-                              {colorsLoading && (
-                                <div className="py-4">
-                                  <BtnSpinner />
-                                </div>
-                              )}
-
-                              {colors?.length === 0 && (
-                                <div className="flex items-center justify-center py-4 text-sm">
-                                  No color found! Create a new color.
-                                </div>
-                              )}
-
-                              {!colorsLoading && !colorsError && colors && (
-                                <>
-                                  {colors?.map((color: Color) => (
-                                    <SelectItem key={color.id} value={color.id}>
-                                      {color.name}
-                                    </SelectItem>
-                                  ))}
-                                </>
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    name={`productItems.${index}.price`}
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Price (£)</FormLabel>
-
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="number"
-                            step="0.01"
-                            min={0}
-                            disabled={isPending || deletingItem}
-                            placeholder="Price"
-                          />
+                          {!colorsError &&
+                            !colorsLoading &&
+                            colors &&
+                            colors.length > 0 && (
+                              <MultiSelect
+                                options={colors.map((color) => ({
+                                  value: color.id,
+                                  label: color.name,
+                                }))}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
                         </FormControl>
 
                         <FormMessage />

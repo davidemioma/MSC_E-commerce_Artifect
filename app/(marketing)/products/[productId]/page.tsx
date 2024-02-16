@@ -9,6 +9,7 @@ import {
   getReviewCount,
   checkIfReviewed,
 } from "@/data/review";
+import { UserRole } from "@prisma/client";
 
 export default async function ProductPage({
   params: { productId },

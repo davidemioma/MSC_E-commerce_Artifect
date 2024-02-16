@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { UserRole, storeStatus } from "@prisma/client";
 import { getCurrentPrice } from "@/lib/utils";
+import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
@@ -112,14 +112,9 @@ export async function PATCH(
               productId: product.id,
             },
             data: {
-              colorId: item.colorId || undefined,
+              colorIds: item.colorIds || [],
               images: item.images,
               discount: item.discount || 0,
-              originalPrice: item.price,
-              currentPrice: getCurrentPrice({
-                price: item.price,
-                discount: item.discount || 0,
-              }),
             },
           });
 
@@ -141,6 +136,11 @@ export async function PATCH(
                   data: {
                     sizeId: item.sizeId,
                     numInStocks: item.numInStocks,
+                    originalPrice: item.price,
+                    currentPrice: getCurrentPrice({
+                      price: item.price,
+                      discount: existingItem.discount || 0,
+                    }),
                   },
                 });
               } else {
@@ -150,6 +150,11 @@ export async function PATCH(
                     productItemId: existingItem.id,
                     sizeId: item.sizeId,
                     numInStocks: item.numInStocks,
+                    originalPrice: item.price,
+                    currentPrice: getCurrentPrice({
+                      price: item.price,
+                      discount: existingItem.discount || 0,
+                    }),
                   },
                 });
               }
@@ -159,14 +164,9 @@ export async function PATCH(
           const productItem = await prismadb.productItem.create({
             data: {
               productId: product.id,
-              colorId: item.colorId || undefined,
+              colorIds: item.colorIds || [],
               images: item.images,
               discount: item.discount || 0,
-              originalPrice: item.price,
-              currentPrice: getCurrentPrice({
-                price: item.price,
-                discount: item.discount || 0,
-              }),
             },
           });
 
@@ -178,6 +178,11 @@ export async function PATCH(
                   productItemId: productItem.id,
                   sizeId: item.sizeId,
                   numInStocks: item.numInStocks,
+                  originalPrice: item.price,
+                  currentPrice: getCurrentPrice({
+                    price: item.price,
+                    discount: productItem.discount || 0,
+                  }),
                 },
               });
             })
@@ -342,7 +347,6 @@ export async function GET(
       include: {
         productItems: {
           include: {
-            color: true,
             availableItems: {
               include: {
                 size: true,

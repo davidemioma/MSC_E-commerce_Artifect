@@ -27,6 +27,11 @@ const Header = ({ stores }: Props) => {
       active: pathname === `/dashboard/${params.storeId}`,
     },
     {
+      href: `/dashboard/${params.storeId}/banners`,
+      label: "Banners",
+      active: pathname === `/dashboard/${params.storeId}/banners`,
+    },
+    {
       href: `/dashboard/${params.storeId}/categories`,
       label: "Categories",
       active: pathname === `/dashboard/${params.storeId}/categories`,

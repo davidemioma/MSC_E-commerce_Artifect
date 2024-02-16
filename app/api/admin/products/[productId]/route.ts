@@ -34,7 +34,6 @@ export async function GET(
       include: {
         productItems: {
           include: {
-            color: true,
             availableItems: {
               include: {
                 size: true,

@@ -4,12 +4,12 @@ const AvailableItemSchema = z.object({
   id: z.string(),
   numInStocks: z.coerce.number(),
   sizeId: z.string().min(1, { message: "Size is required." }),
+  price: z.coerce.number().min(1, { message: "Price is required." }),
 });
 
 const ProductItemSchema = z.object({
   id: z.string(),
-  colorId: z.optional(z.string()),
-  price: z.coerce.number().min(1, { message: "Price is required." }),
+  colorIds: z.array(z.string()),
   discount: z.optional(z.coerce.number()),
   images: z
     .array(z.string())

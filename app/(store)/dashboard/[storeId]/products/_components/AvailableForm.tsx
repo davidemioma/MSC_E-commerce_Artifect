@@ -25,6 +25,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import TooltipContainer from "@/components/TooltipContainer";
 
 type Props = {
   form: UseFormReturn<ProductValidator>;
@@ -78,16 +79,19 @@ const AvailableForm = ({
       <div className="flex items-center gap-2">
         <h4 className="text-lg font-bold">Add Size</h4>
 
-        <AddBtn
-          onClick={() =>
-            append({
-              id: "",
-              sizeId: "",
-              numInStocks: 0,
-            })
-          }
-          disabled={disabled || isPending}
-        />
+        <TooltipContainer message="Add sizes for product items with unique prices">
+          <AddBtn
+            onClick={() =>
+              append({
+                id: "",
+                sizeId: "",
+                price: 0,
+                numInStocks: 0,
+              })
+            }
+            disabled={disabled || isPending}
+          />
+        </TooltipContainer>
       </div>
 
       <div className="space-y-6">
@@ -103,7 +107,9 @@ const AvailableForm = ({
                       <span>Size</span>
 
                       <SizeModal>
-                        <AddBtn disabled={disabled || isPending} />
+                        <TooltipContainer message="Add a new size">
+                          <AddBtn disabled={disabled || isPending} />
+                        </TooltipContainer>
                       </SizeModal>
                     </FormLabel>
 
@@ -137,6 +143,29 @@ const AvailableForm = ({
                           )}
                         </SelectContent>
                       </Select>
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Controller
+                name={`productItems.${index}.availableItems.${i}.price`}
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (£)</FormLabel>
+
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        step="0.01"
+                        min={0}
+                        disabled={disabled || isPending}
+                        placeholder="Price"
+                      />
                     </FormControl>
 
                     <FormMessage />

@@ -18,7 +18,11 @@ export default async function ProductPage({
     include: {
       productItems: {
         include: {
-          availableItems: true,
+          availableItems: {
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",

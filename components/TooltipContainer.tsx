@@ -15,7 +15,7 @@ const TooltipContainer = ({ children, message }: Props) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{children}</TooltipTrigger>
+        <TooltipTrigger type="button">{children}</TooltipTrigger>
 
         <TooltipContent>
           <p>{message}</p>

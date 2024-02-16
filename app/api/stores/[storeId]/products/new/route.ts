@@ -86,13 +86,8 @@ export async function POST(
           data: {
             productId: product?.id,
             images: item.images,
-            colorId: item.colorId || undefined,
+            colorIds: item.colorIds || [],
             discount: item.discount,
-            originalPrice: item.price,
-            currentPrice: getCurrentPrice({
-              price: item.price,
-              discount: item.discount || 0,
-            }),
           },
         });
 
@@ -102,6 +97,11 @@ export async function POST(
             productItemId: productItem.id,
             sizeId: item.sizeId,
             numInStocks: item.numInStocks,
+            originalPrice: item.price,
+            currentPrice: getCurrentPrice({
+              price: item.price,
+              discount: productItem.discount || 0,
+            }),
           })),
         });
       })
