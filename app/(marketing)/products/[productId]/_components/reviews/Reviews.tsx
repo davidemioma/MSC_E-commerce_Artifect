@@ -121,6 +121,7 @@ const Reviews = ({
                               <div className="flex items-center gap-1">
                                 {new Array(5).fill("").map((_, index) => (
                                   <button
+                                    key={index}
                                     type="button"
                                     disabled={isPending}
                                     onClick={() => field.onChange(index + 1)}

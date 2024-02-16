@@ -14,7 +14,6 @@ import {
 export type AvailableType = Available & { size: Size };
 
 export type ProductItemType = ProductItem & {
-  color: Color | null;
   availableItems: AvailableType[];
 };
 
@@ -37,7 +36,7 @@ export type ProductDetailType = Product & {
 
 export type HomeProductType = Product & {
   category: Category;
-  productItems: ProductItem[];
+  productItems: ProductItemType[];
   reviews: {
     value: number;
   }[];
@@ -51,7 +50,7 @@ export type RouteType = {
 
 export type CartItemType = CartItem & {
   product: (Product & { category: Category }) | null;
-  productItem: (ProductItem & { color: Color }) | null;
+  productItem: ProductItem | null;
   availableItem: AvailableType | null;
 };
 

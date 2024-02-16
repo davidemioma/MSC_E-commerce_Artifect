@@ -50,6 +50,9 @@ export default async function StorePage({
             },
           },
         },
+        include: {
+          availableItems: true,
+        },
       },
       reviews: {
         select: {

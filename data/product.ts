@@ -93,6 +93,9 @@ export const getHomePageProducts = async () => {
               },
             },
           },
+          include: {
+            availableItems: true,
+          },
         },
         reviews: {
           select: {
@@ -153,13 +156,12 @@ export const getProductById = async (productId: string) => {
             },
           },
           include: {
-            color: true,
             availableItems: {
               include: {
                 size: true,
               },
               orderBy: {
-                createdAt: "asc",
+                createdAt: "desc",
               },
             },
           },

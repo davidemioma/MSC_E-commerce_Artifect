@@ -31,11 +31,7 @@ export async function GET(request: Request) {
                 category: true,
               },
             },
-            productItem: {
-              include: {
-                color: true,
-              },
-            },
+            productItem: true,
             availableItem: {
               include: {
                 size: true,

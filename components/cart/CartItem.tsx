@@ -88,17 +88,6 @@ const CartItem = ({ cartItem }: Props) => {
               {cartItem.product?.category?.name}
             </p>
 
-            {cartItem.productItem?.color && (
-              <div className="flex items-center gap-2 text-sm">
-                <div>Color:</div>
-
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: cartItem.productItem.color.value }}
-                />
-              </div>
-            )}
-
             <p className="text-sm">
               Size: {cartItem.availableItem?.size?.name}
             </p>
@@ -106,7 +95,7 @@ const CartItem = ({ cartItem }: Props) => {
         </div>
 
         <div className="font-semibold">
-          {formatPrice(cartItem.productItem?.currentPrice || 0, {
+          {formatPrice(cartItem.availableItem?.currentPrice || 0, {
             currency: "GBP",
           })}
         </div>

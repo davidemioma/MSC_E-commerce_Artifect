@@ -29,11 +29,7 @@ const Product = ({ product }: Props) => {
       <div className="px-2 py-3">
         <h2 className="w-full text-lg font-bold truncate">{product.name}</h2>
 
-        <p className="text-xs text-gray-500">{product.category?.name}</p>
-
-        <p className="text-xs text-gray-500">
-          {product.productItems?.length} Colors
-        </p>
+        <p className="text-sm text-gray-500">{product.category?.name}</p>
 
         <AverageRating
           className="my-2"
@@ -44,15 +40,23 @@ const Product = ({ product }: Props) => {
           {product.productItems?.[0]?.discount ? (
             <div className="flex items-center gap-2 font-semibold">
               <span>
-                {formatPrice(product.productItems?.[0]?.currentPrice || 0, {
-                  currency: "GBP",
-                })}
+                {formatPrice(
+                  product.productItems?.[0]?.availableItems?.[0]
+                    ?.currentPrice || 0,
+                  {
+                    currency: "GBP",
+                  }
+                )}
               </span>
 
               <span className="line-through text-gray-500">
-                {formatPrice(product.productItems?.[0]?.originalPrice || 0, {
-                  currency: "GBP",
-                })}
+                {formatPrice(
+                  product.productItems?.[0]?.availableItems?.[0]
+                    ?.originalPrice || 0,
+                  {
+                    currency: "GBP",
+                  }
+                )}
               </span>
 
               <span
@@ -67,9 +71,13 @@ const Product = ({ product }: Props) => {
             </div>
           ) : (
             <div className="font-semibold">
-              {formatPrice(product.productItems?.[0]?.currentPrice || 0, {
-                currency: "GBP",
-              })}
+              {formatPrice(
+                product.productItems?.[0]?.availableItems?.[0]?.currentPrice ||
+                  0,
+                {
+                  currency: "GBP",
+                }
+              )}
             </div>
           )}
         </div>

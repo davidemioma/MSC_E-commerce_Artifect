@@ -2,11 +2,11 @@ import Link from "next/link";
 import Feed from "./_components/Feed";
 import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import { ArrowRight } from "lucide-react";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
 import { getHomePageProducts } from "@/data/product";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default async function Home() {
   const { user } = await currentUser();
@@ -26,8 +26,8 @@ export default async function Home() {
 
               <p className="max-w-prose text-lg text-gray-500">
                 Welcome to LocalMart 🛍 - your trusted source for top-quality
-                products. We check everything to make sure it's the best you can
-                find!
+                products. We check everything to make sure it&apos;s the best
+                you can find!
               </p>
 
               {user?.role === UserRole.USER && (

@@ -29,7 +29,7 @@ const UserAccount = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-[250px]" align="end">
-        <DropdownMenuLabel>{user?.name}'s Account</DropdownMenuLabel>
+        <DropdownMenuLabel>{user?.name}&apos;s Account</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 

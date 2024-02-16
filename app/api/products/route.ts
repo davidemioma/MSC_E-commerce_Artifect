@@ -43,7 +43,11 @@ export async function GET(request: Request) {
               },
             },
           },
+          include: {
+            availableItems: true,
+          },
         },
+
         reviews: {
           select: {
             value: true,

@@ -8,14 +8,14 @@ import axios, { AxiosError } from "axios";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Size, UserRole } from "@prisma/client";
 import useCurrentUser from "@/hooks/use-current-user";
 import AverageRating from "@/components/AverageRating";
+import { Size, Color, UserRole } from "@prisma/client";
 import TooltipContainer from "@/components/TooltipContainer";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { CartItemValidator } from "@/lib/validators/cart-item";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProductItemType, ProductDetailType } from "../../../../../types";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
 type Props = {
   product: ProductDetailType;
@@ -28,9 +28,28 @@ const ProductContent = ({ product }: Props) => {
 
   const [curSize, setCurSize] = useState<Size | undefined>(undefined);
 
+  const [priceIndex, setPriceIndex] = useState(0);
+
   const [curProductItem, setCurProductItem] = useState<
     ProductItemType | undefined
   >(product.productItems?.[0]);
+
+  const {
+    data: colors,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["product-details-colors", curProductItem?.id],
+    queryFn: async () => {
+      if (curProductItem?.colorIds.length === 0) return;
+
+      const res = await axios.post(`/api/products/${product.id}/colors/some`, {
+        colorIds: curProductItem?.colorIds,
+      });
+
+      return res.data as Color[];
+    },
+  });
 
   const [curAvailableId, setCurAvailableId] = useState("");
 
@@ -39,6 +58,8 @@ const ProductContent = ({ product }: Props) => {
       availableItemId: item.id,
       size: item.size,
       inStock: item.numInStocks > 0,
+      originalPrice: item.originalPrice,
+      currentPrice: item.currentPrice,
     })) || [];
 
   const { mutate: addToCart, isPending } = useMutation({
@@ -86,13 +107,13 @@ const ProductContent = ({ product }: Props) => {
           {curProductItem?.discount ? (
             <div className="flex items-center gap-2 font-semibold">
               <span>
-                {formatPrice(curProductItem?.currentPrice || 0, {
+                {formatPrice(currentSizes?.[priceIndex]?.currentPrice || 0, {
                   currency: "GBP",
                 })}
               </span>
 
               <span className="line-through text-gray-500">
-                {formatPrice(curProductItem?.originalPrice || 0, {
+                {formatPrice(currentSizes?.[priceIndex]?.originalPrice || 0, {
                   currency: "GBP",
                 })}
               </span>
@@ -109,14 +130,14 @@ const ProductContent = ({ product }: Props) => {
             </div>
           ) : (
             <div className="font-semibold">
-              {formatPrice(curProductItem?.currentPrice || 0, {
+              {formatPrice(currentSizes?.[priceIndex]?.currentPrice || 0, {
                 currency: "GBP",
               })}
             </div>
           )}
         </div>
 
-        <div className="w-full flex flex-wrap gap-2 mb-5">
+        <div className="w-full flex flex-wrap gap-2">
           {product.productItems.map((item) => (
             <button
               key={item.id}
@@ -137,8 +158,24 @@ const ProductContent = ({ product }: Props) => {
           ))}
         </div>
 
+        {!isError && !isLoading && colors && colors.length > 0 && (
+          <div className="space-y-2 mt-5">
+            <h2 className="text-lg font-semibold">Product Colors:</h2>
+
+            <div className="w-full max-w-md flex flex-wrap gap-2">
+              {colors.map((color) => (
+                <div
+                  key={color.id}
+                  style={{ backgroundColor: color.value }}
+                  className="w-4 h-4 rounded-full border overflow-hidden"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {currentSizes && currentSizes?.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-2 mt-5">
             <h2 className="text-lg font-semibold">Available Sizes:</h2>
 
             <div className="w-full max-w-md flex flex-wrap gap-2">
@@ -154,6 +191,8 @@ const ProductContent = ({ product }: Props) => {
                   )}
                   onClick={() => {
                     if (!item.inStock) return;
+
+                    setPriceIndex(i);
 
                     setCurSize(item?.size);
 

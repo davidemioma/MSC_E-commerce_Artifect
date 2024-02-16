@@ -133,7 +133,7 @@ const ImageUpload = ({
             {Array.isArray(base64) && base64?.length > 0 && (
               <div className="w-[200px] h-[200px] grid grid-col-2 gap-2">
                 {base64.map((url, i) => (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2" key={i}>
                     <div className="relative w-full h-full rounded-lg border">
                       <Image className="object-cover" src={url} fill alt="" />
                     </div>

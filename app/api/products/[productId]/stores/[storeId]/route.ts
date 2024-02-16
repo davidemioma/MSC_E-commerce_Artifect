@@ -79,6 +79,9 @@ export async function GET(
               },
             },
           },
+          include: {
+            availableItems: true,
+          },
         },
         reviews: {
           select: {

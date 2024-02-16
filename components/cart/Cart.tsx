@@ -37,12 +37,19 @@ const Cart = () => {
     },
   });
 
+  const emptyCart =
+    !isLoading &&
+    !isError &&
+    (!cart || !cart.cartItems || cart.cartItems.length === 0);
+
   const cartTotal =
-    cart?.cartItems?.reduce(
+    (cart?.cartItems?.reduce(
       (total, item) =>
-        total + ((item.productItem?.currentPrice || 0) * item?.quantity || 0),
+        total + ((item.availableItem?.currentPrice || 0) * item?.quantity || 0),
       0
-    ) || 0;
+    ) || 0) +
+    TRANSACTION_FEE +
+    SHIPPING_FEE;
 
   useEffect(() => {
     setIsMounted(true);
@@ -78,9 +85,13 @@ const Cart = () => {
 
         {isError && <Empty message="Could not get item! Try again later" />}
 
+        {emptyCart && (
+          <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
+        )}
+
         {!isLoading && !isError && cart?.cartItems && (
           <>
-            {cart?.cartItems?.length > 0 ? (
+            {cart?.cartItems?.length > 0 && (
               <ScrollArea>
                 <div className="space-y-5">
                   {cart?.cartItems?.map((item) => (
@@ -88,8 +99,6 @@ const Cart = () => {
                   ))}
                 </div>
               </ScrollArea>
-            ) : (
-              <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
             )}
           </>
         )}
@@ -116,7 +125,7 @@ const Cart = () => {
               <span className="flex-1">Total</span>
 
               <span className="font-semibold">
-                {formatPrice(cartTotal + TRANSACTION_FEE, { currency: "GBP" })}
+                {formatPrice(cartTotal, { currency: "GBP" })}
               </span>
             </div>
           </div>
