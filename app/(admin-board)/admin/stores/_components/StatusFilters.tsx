@@ -27,7 +27,7 @@ const StatusFilters = () => {
     };
 
     pushToUrl();
-  }, [value, router]);
+  }, [value]);
 
   return (
     <Combobox frameworks={storeCategories} value={value} setValue={setValue} />

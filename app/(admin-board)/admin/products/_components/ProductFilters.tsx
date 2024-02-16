@@ -27,7 +27,7 @@ const ProductFilters = () => {
     };
 
     pushToUrl();
-  }, [value, router]);
+  }, [value]);
 
   return (
     <Combobox

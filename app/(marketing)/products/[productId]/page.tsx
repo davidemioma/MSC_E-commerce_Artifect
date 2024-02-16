@@ -10,6 +10,7 @@ import {
   checkIfReviewed,
 } from "@/data/review";
 import { UserRole } from "@prisma/client";
+import prismadb from "@/lib/prisma";
 
 export default async function ProductPage({
   params: { productId },
@@ -31,6 +32,47 @@ export default async function ProductPage({
   const hasReviewed = await checkIfReviewed({
     userId: user?.id || "",
     productId,
+  });
+
+  const recommendedProduct = await prismadb.product.findMany({
+    where: {
+      OR: [
+        {
+          category: {
+            OR: [
+              {
+                name: {
+                  contains: product.category.name,
+                },
+              },
+              {
+                name: {
+                  equals: product.category.name,
+                },
+              },
+            ],
+          },
+        },
+        {
+          OR: [
+            {
+              name: {
+                contains: product.name,
+              },
+            },
+            {
+              name: {
+                equals: product.name,
+              },
+            },
+          ],
+        },
+      ],
+    },
+    take: 10,
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return (

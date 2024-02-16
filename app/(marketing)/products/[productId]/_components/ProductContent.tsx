@@ -160,15 +160,18 @@ const ProductContent = ({ product }: Props) => {
 
         {!isError && !isLoading && colors && colors.length > 0 && (
           <div className="space-y-2 mt-5">
-            <h2 className="text-lg font-semibold">Product Colors:</h2>
+            <h2 className="text-lg font-semibold">
+              Product Color{colors.length > 1 ? "s" : ""}:
+            </h2>
 
             <div className="w-full max-w-md flex flex-wrap gap-2">
               {colors.map((color) => (
-                <div
-                  key={color.id}
-                  style={{ backgroundColor: color.value }}
-                  className="w-4 h-4 rounded-full border overflow-hidden"
-                />
+                <TooltipContainer key={color.id} message={color.name}>
+                  <div
+                    style={{ backgroundColor: color.value }}
+                    className="w-4 h-4 rounded-full border overflow-hidden"
+                  />
+                </TooltipContainer>
               ))}
             </div>
           </div>
