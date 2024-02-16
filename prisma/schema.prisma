@@ -154,6 +154,7 @@ model Store{
 model Banner{
   id String @id @default(cuid())
   storeId String
+  name String
   image String
   active Boolean @default(false)
   createdAt DateTime @default(now())
