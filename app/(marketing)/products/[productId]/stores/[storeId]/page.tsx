@@ -1,3 +1,4 @@
+import Image from "next/image";
 import prismadb from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { MdVerified } from "react-icons/md";
@@ -15,6 +16,13 @@ export default async function StorePage({
   const store = await prismadb.store.findUnique({
     where: {
       id: storeId,
+    },
+    include: {
+      Banners: {
+        where: {
+          active: true,
+        },
+      },
     },
   });
 
@@ -74,8 +82,29 @@ export default async function StorePage({
 
   return (
     <div className="w-full space-y-10">
-      <div className="relative w-full h-40 md:h-[50vh] bg-white overflow-hidden">
-        Store Banner
+      <div className="relative w-full h-40 md:h-[50vh] bg-white overflow-hidden border-b shadow-sm">
+        {store.Banners[0].image ? (
+          <Image
+            className="object-cover"
+            src={store.Banners[0].image}
+            fill
+            alt="store-banner"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full max-w-3xl mx-auto flex flex-col items-center gap-6 text-center">
+              <h1 className="text-4xl sm:text-6xl text-gray-900 font-bold tracking-tight">
+                High-Quality <span className="text-violet-500">Products</span>{" "}
+                You Can Trust, Every Time.
+              </h1>
+
+              <p className="max-w-prose text-lg text-gray-500">
+                LocalMart 🛍 - your trusted source for top-quality products. We
+                check everything to make sure it&apos;s the best you can find!
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <Container>
