@@ -8,6 +8,7 @@ import {
   Cart,
   CartItem,
   Review,
+  Store,
 } from "@prisma/client";
 
 export type AvailableType = Available & { size: Size };
@@ -24,6 +25,10 @@ export type ProductType = Product & {
 
 export type ProductDetailType = Product & {
   category: Category;
+  store: {
+    name: string;
+    logo: string | null;
+  };
   productItems: ProductItemType[];
   reviews: {
     value: number;

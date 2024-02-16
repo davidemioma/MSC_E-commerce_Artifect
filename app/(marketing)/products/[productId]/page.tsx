@@ -38,8 +38,6 @@ export default async function ProductPage({
         <ProductContent product={product} />
       </Container>
 
-      <div>Seller</div>
-
       <div>Recommended items</div>
 
       <Reviews

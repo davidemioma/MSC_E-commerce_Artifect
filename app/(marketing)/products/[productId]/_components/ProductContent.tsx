@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+import { MailPlus } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
@@ -10,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Size, UserRole } from "@prisma/client";
 import useCurrentUser from "@/hooks/use-current-user";
 import AverageRating from "@/components/AverageRating";
+import TooltipContainer from "@/components/TooltipContainer";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { CartItemValidator } from "@/lib/validators/cart-item";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProductItemType, ProductDetailType } from "../../../../../types";
@@ -165,9 +169,34 @@ const ProductContent = ({ product }: Props) => {
           </div>
         )}
 
+        {user && user.role === UserRole.USER && user.id !== product.userId && (
+          <div className="flex items-center gap-3 mt-4 mb-10">
+            <Link href={`/products/${product.id}/stores/${product.storeId}`}>
+              <div className="flex items-center gap-2">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={product.store.logo || "/no-profile.jpeg"} />
+                </Avatar>
+
+                <p className="text-sm font-semibold">{product.store.name}</p>
+              </div>
+            </Link>
+
+            <TooltipContainer message="Message Store">
+              <button
+                type="button"
+                className="bg-violet-500 w-8 h-8 flex items-center justify-center text-white rounded-full hover:opacity-75 disabled:opacity-75 animate-pulse"
+                disabled={isPending}
+                onClick={() => {}}
+              >
+                <MailPlus className="w-4 h-4" />
+              </button>
+            </TooltipContainer>
+          </div>
+        )}
+
         {user && user.role === UserRole.USER && (
           <Button
-            className="bg-violet-500 w-full md:max-w-md mt-10 font-semibold rounded-full"
+            className="bg-violet-500 w-full md:max-w-md font-semibold rounded-full"
             size="lg"
             onClick={() =>
               addToCart({

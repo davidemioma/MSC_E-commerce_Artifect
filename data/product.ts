@@ -136,6 +136,12 @@ export const getProductById = async (productId: string) => {
       },
       include: {
         category: true,
+        store: {
+          select: {
+            name: true,
+            logo: true,
+          },
+        },
         productItems: {
           where: {
             availableItems: {
