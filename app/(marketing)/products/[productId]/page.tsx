@@ -1,16 +1,16 @@
+import prismadb from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Reviews from "./_components/reviews/Reviews";
 import Container from "@/components/Container";
 import { getProductById } from "@/data/product";
+import Reviews from "./_components/reviews/Reviews";
 import ProductContent from "./_components/ProductContent";
+import Recommendation from "./_components/Recommendation";
 import {
   getReviewsForProduct,
   getReviewCount,
   checkIfReviewed,
 } from "@/data/review";
-import { UserRole } from "@prisma/client";
-import prismadb from "@/lib/prisma";
 
 export default async function ProductPage({
   params: { productId },
@@ -36,6 +36,9 @@ export default async function ProductPage({
 
   const recommendedProduct = await prismadb.product.findMany({
     where: {
+      id: {
+        not: product.id,
+      },
       OR: [
         {
           category: {
@@ -69,6 +72,32 @@ export default async function ProductPage({
         },
       ],
     },
+    include: {
+      category: true,
+      productItems: {
+        where: {
+          availableItems: {
+            some: {
+              numInStocks: {
+                gt: 0,
+              },
+            },
+          },
+        },
+        include: {
+          availableItems: {
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
+        },
+      },
+      reviews: {
+        select: {
+          value: true,
+        },
+      },
+    },
     take: 10,
     orderBy: {
       createdAt: "desc",
@@ -81,7 +110,7 @@ export default async function ProductPage({
         <ProductContent product={product} />
       </Container>
 
-      <div>Recommended items</div>
+      <Recommendation products={recommendedProduct} />
 
       <Reviews
         productId={productId}

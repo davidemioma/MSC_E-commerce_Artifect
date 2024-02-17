@@ -20,7 +20,7 @@ const Product = ({ product }: Props) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm md:hover:scale-105 transition-transform duration-300"
+      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
     >
       <ProductImg
         images={product?.productItems?.map((item) => item.images[0]) || []}
