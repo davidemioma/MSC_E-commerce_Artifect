@@ -11,6 +11,7 @@ import { Available, Size } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import SizeModal from "@/components/modal/SizeModal";
 import { ProductValidator } from "@/lib/validators/product";
+import TooltipContainer from "@/components/TooltipContainer";
 import { UseFormReturn, useFieldArray, Controller } from "react-hook-form";
 import {
   Select,
@@ -25,7 +26,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import TooltipContainer from "@/components/TooltipContainer";
 
 type Props = {
   form: UseFormReturn<ProductValidator>;
@@ -46,7 +46,7 @@ const AvailableForm = ({
 }: Props) => {
   const params = useParams();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, prepend, remove } = useFieldArray({
     control: form.control,
     name: `productItems.${index}.availableItems`,
   });
@@ -82,7 +82,7 @@ const AvailableForm = ({
         <TooltipContainer message="Add sizes for product items with unique prices">
           <AddBtn
             onClick={() =>
-              append({
+              prepend({
                 id: "",
                 sizeId: "",
                 price: 0,

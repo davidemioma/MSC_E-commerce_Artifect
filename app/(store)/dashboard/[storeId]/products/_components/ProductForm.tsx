@@ -85,7 +85,7 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, prepend, remove } = useFieldArray({
     control: form.control,
     name: "productItems",
   });
@@ -317,13 +317,21 @@ const ProductForm = ({ data }: Props) => {
             />
           </div>
 
-          <div className="flex items-center gap-2 pt-16 lg:pt-10">
+          <div className="pt-16 lg:pt-10" />
+
+          {form.formState.errors.productItems && (
+            <div className="text-red-500 text-sm">
+              {form.formState.errors.productItems.message}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
             <h4 className="text-xl font-bold">Add Product Details</h4>
 
             <TooltipContainer message="Customise your product">
               <AddBtn
                 onClick={() =>
-                  append({
+                  prepend({
                     id: "",
                     images: [],
                     colorIds: [],

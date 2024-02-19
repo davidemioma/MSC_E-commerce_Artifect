@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/modal/AlertModal";
+import ConfirmModal from "@/components/modal/ConfirmModal";
 import { MoreVertical, Edit, Trash, Eye } from "lucide-react";
 import {
   DropdownMenu,
@@ -17,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ConfirmModal from "@/components/modal/ConfirmModal";
 
 type Props = {
   data: Banner;
