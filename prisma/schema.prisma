@@ -40,6 +40,19 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum QueryStatus {
+  NEW
+  REVIEWING
+  AWAITINGRESPONSE
+  PROCESSING
+  RESOLVED
+  NOTRESOLVED
+  CANCELLED
+  CLOSED
+  REFUNDISSUED
+  RETURNINITIAED
+}
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -71,6 +84,8 @@ model User {
   reviews Review[]
   orders Order[]
   cart Cart[]
+  queries Query[]
+  messages Message[]
 }
 
 model Account {
@@ -341,6 +356,38 @@ model CartItem{
   availableItem Available @relation(fields: [availableItemId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId, productItemId, availableItemId], name: "cartId_productId_productItemId_availableItemId")
+}
+
+model Query{
+  id String @id @default(cuid())
+  userId String
+  ticketNumber String @default(cuid()) @unique
+  status QueryStatus @default(NEW)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@index([userId])
+  @@index([ticketNumber])
+}
+
+model Message{
+  id String @id @default(cuid())
+  queryId String
+  userId String
+  text String
+  image String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  query Query @relation(fields: [queryId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([queryId])
+  @@index([userId])
 }
 
 model Order{

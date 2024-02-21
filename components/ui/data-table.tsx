@@ -3,6 +3,9 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import QueryFilters from "@/app/(admin-board)/admin/queries/_components/QueryFilters";
+import StatusFilters from "@/app/(admin-board)/admin/stores/_components/StatusFilters";
+import ProductFilters from "@/app/(admin-board)/admin/products/_components/ProductFilters";
 import {
   SortingState,
   ColumnDef,
@@ -22,8 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import StatusFilters from "@/app/(admin-board)/admin/stores/_components/StatusFilters";
-import ProductFilters from "@/app/(admin-board)/admin/products/_components/ProductFilters";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -31,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   searchKey: string;
   isStores?: boolean;
   isProducts?: boolean;
+  isQueries?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -39,6 +41,7 @@ export function DataTable<TData, TValue>({
   searchKey,
   isStores,
   isProducts,
+  isQueries,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -75,6 +78,8 @@ export function DataTable<TData, TValue>({
         {isStores && <StatusFilters />}
 
         {isProducts && <ProductFilters />}
+
+        {isQueries && <QueryFilters />}
       </div>
 
       <div className="rounded-md border">

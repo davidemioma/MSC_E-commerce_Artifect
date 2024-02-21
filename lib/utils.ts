@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ProductStatus, storeStatus } from "@prisma/client";
+import { ProductStatus, QueryStatus, storeStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -151,6 +151,96 @@ export const getProductStatusValue = (status: string) => {
       break;
     default:
       statusValue = "PENDING";
+      break;
+  }
+
+  return statusValue;
+};
+
+export const queryCategories = [
+  {
+    value: "all",
+    label: "All",
+  },
+  {
+    value: "user",
+    label: "User",
+  },
+  {
+    value: "seller",
+    label: "Seller",
+  },
+  {
+    value: "new",
+    label: "New",
+  },
+  {
+    value: "awaitingresponse",
+    label: "Awaiting Response",
+  },
+  {
+    value: "processing",
+    label: "Processing",
+  },
+  {
+    value: "resolved",
+    label: "Resolved",
+  },
+  {
+    value: "notresolved",
+    label: "Not Resolved",
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+  },
+  {
+    value: "closed",
+    label: "Closed",
+  },
+  {
+    value: "refundissued",
+    label: "Refund Issued",
+  },
+  {
+    value: "returninitiated",
+    label: "Return Initiated",
+  },
+];
+
+export const getQueryStatusValue = (status: string) => {
+  let statusValue: QueryStatus;
+
+  switch (status) {
+    case "new":
+      statusValue = QueryStatus.NEW;
+      break;
+    case "awaitingresponse":
+      statusValue = QueryStatus.AWAITINGRESPONSE;
+      break;
+    case "processing":
+      statusValue = QueryStatus.PROCESSING;
+      break;
+    case "resolved":
+      statusValue = QueryStatus.RESOLVED;
+      break;
+    case "notresolved":
+      statusValue = QueryStatus.NOTRESOLVED;
+      break;
+    case "cancelled":
+      statusValue = QueryStatus.CANCELLED;
+      break;
+    case "closed":
+      statusValue = QueryStatus.CLOSED;
+      break;
+    case "refundissued":
+      statusValue = QueryStatus.REFUNDISSUED;
+      break;
+    case "returninitiated":
+      statusValue = QueryStatus.RETURNINITIAED;
+      break;
+    default:
+      statusValue = QueryStatus.NEW;
       break;
   }
 

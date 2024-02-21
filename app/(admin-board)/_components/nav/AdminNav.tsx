@@ -37,6 +37,11 @@ const AdminNav = () => {
       label: "Orders",
       active: pathname === `/admin/orders`,
     },
+    {
+      href: `/admin/queries`,
+      label: "Queries",
+      active: pathname === `/admin/queries`,
+    },
   ];
   return (
     <nav className="h-14 bg-white flex items-center border-b border-gray-200 shadow-sm">
