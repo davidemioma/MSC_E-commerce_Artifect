@@ -3,7 +3,6 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import QueryFilters from "@/app/(admin-board)/admin/queries/_components/QueryFilters";
 import StatusFilters from "@/app/(admin-board)/admin/stores/_components/StatusFilters";
 import ProductFilters from "@/app/(admin-board)/admin/products/_components/ProductFilters";
 import {
@@ -78,8 +77,6 @@ export function DataTable<TData, TValue>({
         {isStores && <StatusFilters />}
 
         {isProducts && <ProductFilters />}
-
-        {isQueries && <QueryFilters />}
       </div>
 
       <div className="rounded-md border">
