@@ -5,15 +5,19 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { CartItemType } from "@/types";
-import { formatPrice } from "@/lib/utils";
 import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { cn, formatPrice } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   cartItem: CartItemType;
+  isCheckout?: boolean;
 };
 
-const CartItem = ({ cartItem }: Props) => {
+const CartItem = ({ cartItem, isCheckout }: Props) => {
+  const router = useRouter();
+
   const queryClient = useQueryClient();
 
   const { mutate: removeItem, isPending } = useMutation({
@@ -58,6 +62,8 @@ const CartItem = ({ cartItem }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["get-cart-item"],
       });
+
+      isCheckout && router.refresh();
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -69,7 +75,12 @@ const CartItem = ({ cartItem }: Props) => {
   });
 
   return (
-    <div className="space-y-5 pb-8 border-b">
+    <div
+      className={cn(
+        "space-y-5 pb-8 border-b",
+        isCheckout && "bg-white p-5 rounded-lg border-none shadow-sm"
+      )}
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-2">
           <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg border overflow-hidden">
