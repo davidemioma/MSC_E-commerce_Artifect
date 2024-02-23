@@ -63,6 +63,11 @@ export async function POST(request: Request) {
             id: true,
             name: true,
             storeId: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
         productItem: {
@@ -90,30 +95,6 @@ export async function POST(request: Request) {
       });
     }
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-
-    cartItems.forEach((item) => {
-      const unit_amount = Math.round(item.availableItem.currentPrice * 100);
-
-      line_items.push({
-        price_data: {
-          product_data: {
-            name: item?.product.name,
-            images: item.productItem.images,
-          },
-          unit_amount,
-          currency: "gbp",
-        },
-        quantity: item.quantity,
-      });
-    });
-
-    if (line_items.length === 0) {
-      return new NextResponse("Stripe Error! Line items empty", {
-        status: 400,
-      });
-    }
-
     const order = await prismadb.order.create({
       data: {
         userId: user.id,
@@ -136,7 +117,18 @@ export async function POST(request: Request) {
     );
 
     const session = await stripe.checkout.sessions.create({
-      line_items,
+      line_items: cartItems.map((item) => ({
+        price_data: {
+          currency: "GBP",
+          unit_amount: Math.round(item.availableItem.currentPrice * 100),
+          product_data: {
+            name: item?.product.name,
+            description: item.product.category.name,
+            images: item.productItem.images,
+          },
+        },
+        quantity: item.quantity,
+      })),
       mode: "payment",
       payment_method_types: ["card"],
       billing_address_collection: "required",
