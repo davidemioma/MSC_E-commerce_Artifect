@@ -103,48 +103,54 @@ const Cart = () => {
           </>
         )}
 
-        {!isLoading && !isError && cart?.cartItems && (
-          <div className="space-y-2 text-sm">
-            <div className="flex">
-              <span className="flex-1">Shipping</span>
+        {!isLoading &&
+          !isError &&
+          cart?.cartItems &&
+          cart.cartItems.length > 0 && (
+            <div className="space-y-2 text-sm">
+              <div className="flex">
+                <span className="flex-1">Shipping</span>
 
-              <span className="font-semibold">
-                {formatPrice(SHIPPING_FEE, { currency: "GBP" })}
-              </span>
+                <span className="font-semibold">
+                  {formatPrice(SHIPPING_FEE, { currency: "GBP" })}
+                </span>
+              </div>
+
+              <div className="flex">
+                <span className="flex-1">Transaction Fee</span>
+
+                <span className="font-semibold">
+                  {formatPrice(TRANSACTION_FEE, { currency: "GBP" })}
+                </span>
+              </div>
+
+              <div className="flex">
+                <span className="flex-1">Total</span>
+
+                <span className="font-semibold">
+                  {formatPrice(cartTotal, { currency: "GBP" })}
+                </span>
+              </div>
             </div>
+          )}
 
-            <div className="flex">
-              <span className="flex-1">Transaction Fee</span>
-
-              <span className="font-semibold">
-                {formatPrice(TRANSACTION_FEE, { currency: "GBP" })}
-              </span>
-            </div>
-
-            <div className="flex">
-              <span className="flex-1">Total</span>
-
-              <span className="font-semibold">
-                {formatPrice(cartTotal, { currency: "GBP" })}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {!isLoading && !isError && cart?.cartItems && (
-          <SheetFooter>
-            <SheetTrigger asChild>
-              <Link
-                href="/checkout"
-                className={buttonVariants({
-                  className: "w-full bg-violet-500",
-                })}
-              >
-                Continue to Checkout
-              </Link>
-            </SheetTrigger>
-          </SheetFooter>
-        )}
+        {!isLoading &&
+          !isError &&
+          cart?.cartItems &&
+          cart.cartItems.length > 0 && (
+            <SheetFooter>
+              <SheetTrigger asChild>
+                <Link
+                  href="/checkout"
+                  className={buttonVariants({
+                    className: "w-full bg-violet-500",
+                  })}
+                >
+                  Continue to Checkout
+                </Link>
+              </SheetTrigger>
+            </SheetFooter>
+          )}
       </SheetContent>
     </Sheet>
   );

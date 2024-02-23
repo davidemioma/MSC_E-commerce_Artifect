@@ -47,6 +47,12 @@ const UserAccount = () => {
           </DropdownMenuItem>
         )}
 
+        {role === "USER" && (
+          <DropdownMenuItem asChild>
+            <Link href={"/orders"}>My Orders</Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem>
           <Link href={"/settings"}>Settings</Link>
         </DropdownMenuItem>
