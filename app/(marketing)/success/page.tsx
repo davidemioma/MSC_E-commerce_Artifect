@@ -39,8 +39,9 @@ export default function SuccessPage() {
           </h1>
 
           <p className="max-w-prose text-base sm:text-lg text-gray-500">
-            Your order is confirmed! We're thrilled to have you with us. Keep an
-            eye on your inbox for the order details and tracking information.
+            Your order is confirmed! We&apos;re thrilled to have you with us.
+            Keep an eye on your inbox for the order details and tracking
+            information.
           </p>
 
           <p className="text-violet-500 text-sm font-semibold">
