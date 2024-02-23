@@ -236,6 +236,7 @@ model Available{
   productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
 
   cartItems CartItem[]
+  OrderItem OrderItem[]
 
   @@index([sizeId])
   @@index([productId])
@@ -284,7 +285,6 @@ model Size{
 
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  orderItems OrderItem[]
   availableItems Available[]
 
   @@index([storeId])
@@ -346,7 +346,6 @@ model CartItem{
 model Order{
   id String @id @default(cuid())
   userId String
-  address String
   status OrderStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -364,22 +363,22 @@ model OrderItem{
   storeId String
   productId String
   productItemId String
-  sizeId String
+  availableItemId String
   quantity Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  size Size @relation(fields: [sizeId], references: [id], onDelete: Cascade)
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  availableItem Available @relation(fields: [availableItemId], references: [id], onDelete: Cascade)
   productItem ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
   @@index([storeId])
   @@index([productId])
   @@index([productItemId])
-  @@index([sizeId])
+  @@index([availableItemId])
 }
 
 
