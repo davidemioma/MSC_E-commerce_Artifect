@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Routes from "./Routes";
+import { RouteType } from "@/types";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
