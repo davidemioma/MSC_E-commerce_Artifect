@@ -44,7 +44,11 @@ export async function GET(request: Request) {
             },
           },
           include: {
-            availableItems: true,
+            availableItems: {
+              include: {
+                size: true,
+              },
+            },
           },
         },
 

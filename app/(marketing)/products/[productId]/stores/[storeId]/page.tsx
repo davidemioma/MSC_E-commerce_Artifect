@@ -59,7 +59,11 @@ export default async function StorePage({
           },
         },
         include: {
-          availableItems: true,
+          availableItems: {
+            include: {
+              size: true,
+            },
+          },
         },
       },
       reviews: {

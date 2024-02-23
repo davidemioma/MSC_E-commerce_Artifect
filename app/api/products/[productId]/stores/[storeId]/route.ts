@@ -80,7 +80,11 @@ export async function GET(
             },
           },
           include: {
-            availableItems: true,
+            availableItems: {
+              include: {
+                size: true,
+              },
+            },
           },
         },
         reviews: {
