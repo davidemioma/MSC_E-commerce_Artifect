@@ -94,7 +94,11 @@ export const getHomePageProducts = async () => {
             },
           },
           include: {
-            availableItems: true,
+            availableItems: {
+              include: {
+                size: true,
+              },
+            },
           },
         },
         reviews: {
