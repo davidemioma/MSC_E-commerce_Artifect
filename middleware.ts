@@ -14,6 +14,9 @@ export default auth((req) => {
 
   const isLoggedIn = !!req.auth;
 
+  // Check if the route is /api/webhook
+  const isWebhookRoute = nextUrl.pathname === "/api/webhook";
+
   //The are routes that starts with /api/auth
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
 
@@ -22,6 +25,10 @@ export default auth((req) => {
 
   //These are all the authentication routes
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isWebhookRoute) {
+    return null; // Do nothing and allow the request to proceed
+  }
 
   if (nextUrl.pathname.includes("/products")) {
     return null;

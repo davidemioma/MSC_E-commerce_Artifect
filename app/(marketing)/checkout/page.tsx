@@ -65,7 +65,10 @@ export default async function CheckoutPage() {
           )}
         </div>
 
-        <OrderSummary cartItems={cart?.cartItems || []} />
+        <OrderSummary
+          cartId={cart?.id || ""}
+          cartItems={cart?.cartItems || []}
+        />
       </main>
     </Container>
   );

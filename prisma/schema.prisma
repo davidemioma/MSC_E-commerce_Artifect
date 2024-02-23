@@ -41,9 +41,8 @@ enum ProductStatus {
 }
 
 enum OrderStatus {
-  PENDING
-  CONFIRMED
   PROCESSING
+  CONFIRMED
   SHIPPED
   OUTFORDELIVERY
   DELIVERED
@@ -346,13 +345,14 @@ model CartItem{
 model Order{
   id String @id @default(cuid())
   userId String
-  status OrderStatus @default(PENDING)
+  address String?
+  status OrderStatus @default(PROCESSING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  OrderItem OrderItem[]
+  orderItems OrderItem[]
 
   @@index([userId])
 }

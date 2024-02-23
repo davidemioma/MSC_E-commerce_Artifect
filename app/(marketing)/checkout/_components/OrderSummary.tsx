@@ -11,10 +11,11 @@ import { CartItemsValidator } from "@/lib/validators/cart-item";
 import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
 
 type Props = {
+  cartId: string;
   cartItems: CartItemType[];
 };
 
-const OrderSummary = ({ cartItems }: Props) => {
+const OrderSummary = ({ cartId, cartItems }: Props) => {
   const cartTotal =
     (cartItems?.reduce(
       (total, item) =>
@@ -75,21 +76,34 @@ const OrderSummary = ({ cartItems }: Props) => {
         </div>
       </div>
 
+      <h1 className="text-lg font-bold">Test Card</h1>
+
+      <div className="space-y-2 text-sm">
+        <div className="flex">
+          <span className="flex-1">Card Number</span>
+
+          <span className="font-semibold">4242 4242 4242 4242</span>
+        </div>
+
+        <div className="flex">
+          <span className="flex-1">Expiry Datae</span>
+
+          <span className="font-semibold">04/24</span>
+        </div>
+
+        <div className="flex">
+          <span className="flex-1">CVV</span>
+
+          <span className="font-semibold">242</span>
+        </div>
+      </div>
+
       <Button
         className="w-full bg-violet-500 hover:bg-violet-600 hover:opacity-75 disabled:opacity-75 disabled:cursor-not-allowed"
         size="lg"
         type="button"
         disabled={cartItems?.length === 0 || isPending}
-        onClick={() =>
-          createStripeSession({
-            cartItems: cartItems.map((item) => ({
-              productId: item.productId,
-              productItemId: item.productItemId,
-              availableItemId: item.availableItemId,
-              quantity: item.quantity,
-            })),
-          })
-        }
+        onClick={() => createStripeSession({ cartId })}
       >
         {isPending ? <BtnSpinner /> : "Checkout"}
       </Button>

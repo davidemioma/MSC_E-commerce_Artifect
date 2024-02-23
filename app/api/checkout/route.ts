@@ -1,9 +1,9 @@
 import Stripe from "stripe";
 import prismadb from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
-import { ProductStatus, UserRole } from "@prisma/client";
 import { CartItemsSchema } from "@/lib/validators/cart-item";
 
 export async function POST(request: Request) {
@@ -37,84 +37,75 @@ export async function POST(request: Request) {
       return NextResponse.json("Invalid Credentials", { status: 400 });
     }
 
-    const { cartItems } = validatedBody;
+    const { cartId } = validatedBody;
 
-    if (cartItems.length === 0) {
-      return new NextResponse("Cart items are required", { status: 400 });
+    //Check if user has a cart
+    const cart = await prismadb.cart.findUnique({
+      where: {
+        id: cartId,
+        userId: user.id,
+      },
+    });
+
+    if (!cart) {
+      return new NextResponse("Your cart is empty! Try adding to cart.", {
+        status: 400,
+      });
     }
 
-    const products = (
-      await Promise.all(
-        cartItems.map(async (item) => {
-          const product = await prismadb.product.findUnique({
-            where: {
-              id: item.productId,
-              status: ProductStatus.APPROVED,
-            },
-            select: {
-              id: true,
-              name: true,
-              storeId: true,
-            },
-          });
+    const cartItems = await prismadb.cartItem.findMany({
+      where: {
+        cartId: cart.id,
+      },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            storeId: true,
+          },
+        },
+        productItem: {
+          select: {
+            id: true,
+            images: true,
+          },
+        },
+        availableItem: {
+          select: {
+            id: true,
+            currentPrice: true,
+            numInStocks: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-          const productItem = await prismadb.productItem.findUnique({
-            where: {
-              id: item.productItemId,
-            },
-            select: {
-              id: true,
-              images: true,
-            },
-          });
-
-          const availableItem = await prismadb.available.findUnique({
-            where: {
-              id: item.availableItemId,
-            },
-            select: {
-              id: true,
-              currentPrice: true,
-              numInStocks: true,
-            },
-          });
-
-          if (!product || !productItem || !availableItem) {
-            return null;
-          }
-
-          return {
-            product,
-            productItem,
-            availableItem,
-            quantity: item.quantity,
-          };
-        })
-      )
-    ).filter(Boolean);
-
-    if (products.length === 0) {
-      return new NextResponse("Sorry, You have no product.", {
+    if (cartItems.length === 0) {
+      return new NextResponse("Your cart is empty! Try adding to cart.", {
         status: 400,
       });
     }
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
-    products.forEach((element) => {
-      if (element !== null) {
-        line_items.push({
-          quantity: element.quantity,
-          price_data: {
-            currency: "GBP",
-            product_data: {
-              name: element.product.name,
-              images: element.productItem.images,
-            },
-            unit_amount: Math.round(element.availableItem.currentPrice) * 100,
+    cartItems.forEach((item) => {
+      const unit_amount = Math.round(item.availableItem.currentPrice * 100);
+
+      line_items.push({
+        price_data: {
+          product_data: {
+            name: item?.product.name,
+            images: item.productItem.images,
           },
-        });
-      }
+          unit_amount,
+          currency: "gbp",
+        },
+        quantity: item.quantity,
+      });
     });
 
     if (line_items.length === 0) {
@@ -130,19 +121,17 @@ export async function POST(request: Request) {
     });
 
     await Promise.all(
-      products.map(async (element) => {
-        if (element !== null) {
-          await prismadb.orderItem.create({
-            data: {
-              orderId: order.id,
-              storeId: element?.product.storeId,
-              productId: element?.product.id,
-              productItemId: element?.productItem.id,
-              availableItemId: element?.availableItem.id,
-              quantity: element?.quantity,
-            },
-          });
-        }
+      cartItems.map(async (item) => {
+        await prismadb.orderItem.create({
+          data: {
+            orderId: order.id,
+            storeId: item?.product.storeId,
+            productId: item?.product.id,
+            productItemId: item?.productItem.id,
+            availableItemId: item?.availableItem.id,
+            quantity: item?.quantity,
+          },
+        });
       })
     );
 
