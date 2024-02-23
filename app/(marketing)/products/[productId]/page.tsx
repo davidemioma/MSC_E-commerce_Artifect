@@ -86,6 +86,9 @@ export default async function ProductPage({
         },
         include: {
           availableItems: {
+            include: {
+              size: true,
+            },
             orderBy: {
               createdAt: "desc",
             },
