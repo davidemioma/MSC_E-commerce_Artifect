@@ -8,9 +8,11 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<OrderCol>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => <div className="font-bold ">#{row.original.id}</div>,
+    accessorKey: "trackingId",
+    header: "Tracking ID",
+    cell: ({ row }) => (
+      <div className="font-bold ">#{row.original.trackingId}</div>
+    ),
   },
   {
     accessorKey: "items",

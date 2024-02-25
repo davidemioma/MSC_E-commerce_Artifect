@@ -348,7 +348,8 @@ model CartItem{
 model Order{
   id String @id @default(cuid())
   userId String
-  address String?
+  address String? 
+  trackingId String? @unique
   status OrderStatus @default(PROCESSING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -358,6 +359,7 @@ model Order{
   orderItems OrderItem[]
 
   @@index([userId])
+  @@index([trackingId])
 }
 
 model OrderItem{

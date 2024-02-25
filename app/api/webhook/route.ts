@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
+import { generateTrackingId } from "@/lib/functions";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -65,6 +66,26 @@ export async function POST(req: Request) {
       },
     });
 
+    //Generate Tracking ID and checking for uniqueness.
+    let trackingId;
+
+    let isUnique = false;
+
+    while (!isUnique) {
+      trackingId = generateTrackingId(10);
+
+      const itExists = await prismadb.order.findUnique({
+        where: {
+          trackingId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      isUnique = itExists === null;
+    }
+
     //Update order address and status
     const order = await prismadb.order.update({
       where: {
@@ -73,6 +94,7 @@ export async function POST(req: Request) {
       data: {
         address: addressString,
         status: OrderStatus.CONFIRMED,
+        trackingId,
       },
       include: {
         orderItems: true,
