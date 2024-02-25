@@ -18,7 +18,7 @@ export const columns: ColumnDef<OrderCol>[] = [
     cell: ({ row }) => (
       <div className="grid gap-2">
         {row.original.orderItems.map((item) => (
-          <div className="flex items-center gap-2">
+          <div key={item.id} className="flex items-center gap-2">
             <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex-shrink-0 rounded-full overflow-hidden">
               <Image
                 className="object-cover"
