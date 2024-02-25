@@ -11,7 +11,13 @@ export const columns: ColumnDef<OrderCol>[] = [
     accessorKey: "trackingId",
     header: "Tracking ID",
     cell: ({ row }) => (
-      <div className="font-bold ">#{row.original.trackingId}</div>
+      <>
+        {row.original.trackingId ? (
+          <div className="font-bold">#{row.original.trackingId}</div>
+        ) : (
+          <div className="font-bold">No tracking ID</div>
+        )}
+      </>
     ),
   },
   {
