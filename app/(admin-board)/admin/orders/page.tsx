@@ -4,33 +4,31 @@ import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
-import { getUserOrdersByStatus } from "@/data/orders";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
+import { getAdminOrdersByStatus } from "@/data/orders";
 
-export default async function OrdersPage({
+export default async function AdminOrdersPage({
   searchParams: { status },
 }: {
-  searchParams: { status: string };
+  searchParams: {
+    status: string;
+  };
 }) {
   const { user } = await currentUser();
 
-  if (!user) {
-    return redirect("/auth/sign-in");
+  if (!user || user.role !== UserRole.ADMIN) {
+    redirect("/");
   }
 
-  if (user.role !== UserRole.USER) {
-    return redirect("/");
-  }
-
-  const orders = await getUserOrdersByStatus({
+  const orders = await getAdminOrdersByStatus({
     userId: user.id,
     status,
   });
 
   return (
     <Container>
-      <Heading title="Your Orders" description="View all orders" />
+      <Heading title="Orders" description="Review and manage orders." />
 
       <Separator className="my-4" />
 
@@ -38,7 +36,7 @@ export default async function OrdersPage({
         columns={columns}
         data={orders}
         isUserOrders
-        userOrderPath="/orders"
+        userOrderPath="/admin/orders"
       />
     </Container>
   );

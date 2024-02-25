@@ -9,6 +9,9 @@ import {
   CartItem,
   Review,
   Store,
+  Order,
+  OrderItem,
+  OrderStatus,
 } from "@prisma/client";
 
 export type AvailableType = Available & { size: Size };
@@ -62,5 +65,38 @@ export type ReviewType = Review & {
   user: {
     name: string | null;
     image: string | null;
+  };
+};
+
+export type OrderItemCol = OrderItem & {
+  product: {
+    name: string;
+  };
+  productItem: {
+    images: string[];
+  };
+  availableItem: {
+    currentPrice: number;
+    size: Size;
+  };
+};
+
+export type OrderCol = Order & {
+  orderItems: OrderItemCol[];
+};
+
+export type StoreOrderCol = OrderItem & {
+  order: {
+    status: OrderStatus;
+  };
+  product: {
+    name: string;
+  };
+  productItem: {
+    images: string[];
+  };
+  availableItem: {
+    currentPrice: number;
+    size: Size;
   };
 };

@@ -24,14 +24,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import OrderFilters from "../OrderFilters";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
+  searchKey?: string;
   isStores?: boolean;
   isProducts?: boolean;
-  isQueries?: boolean;
+  isUserOrders?: boolean;
+  userOrderPath?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,7 +42,8 @@ export function DataTable<TData, TValue>({
   searchKey,
   isStores,
   isProducts,
-  isQueries,
+  isUserOrders,
+  userOrderPath,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -65,18 +68,24 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-4">
-        <Input
-          placeholder="Search..."
-          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        {searchKey && (
+          <Input
+            placeholder="Search..."
+            value={
+              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn(searchKey)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        )}
 
         {isStores && <StatusFilters />}
 
         {isProducts && <ProductFilters />}
+
+        {isUserOrders && userOrderPath && <OrderFilters path={userOrderPath} />}
       </div>
 
       <div className="rounded-md border">

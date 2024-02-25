@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ProductStatus, storeStatus } from "@prisma/client";
+import { OrderStatus, ProductStatus, storeStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -157,6 +157,95 @@ export const getProductStatusValue = (status: string) => {
   return statusValue;
 };
 
+export const orderCategories = [
+  {
+    value: "all",
+    label: "All",
+  },
+  {
+    value: "processing",
+    label: "Processing",
+  },
+  {
+    value: "confirmed",
+    label: "Confirmed",
+  },
+  {
+    value: "readyforshipping",
+    label: "Ready For Shipping",
+  },
+  {
+    value: "shipped",
+    label: "Shipped",
+  },
+  {
+    value: "outfordelivery",
+    label: "Out For Delivery",
+  },
+  {
+    value: "delivered",
+    label: "Delivered",
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+  },
+  {
+    value: "returned",
+    label: "Returned",
+  },
+  {
+    value: "refunded",
+    label: "Refunded",
+  },
+  {
+    value: "failed",
+    label: "Failed",
+  },
+];
+
+export const getOrderStatusValue = (status: string) => {
+  let statusValue: OrderStatus;
+
+  switch (status) {
+    case "processing":
+      statusValue = OrderStatus.PROCESSING;
+      break;
+    case "confirmed":
+      statusValue = OrderStatus.CONFIRMED;
+      break;
+    case "readyforshipping":
+      statusValue = OrderStatus.READYFORSHIPPING;
+      break;
+    case "shipped":
+      statusValue = OrderStatus.SHIPPED;
+      break;
+    case "outfordelivery":
+      statusValue = OrderStatus.OUTFORDELIVERY;
+      break;
+    case "delivered":
+      statusValue = OrderStatus.DELIVERED;
+      break;
+    case "cancelled":
+      statusValue = OrderStatus.CANCELLED;
+      break;
+    case "returned":
+      statusValue = OrderStatus.RETURNED;
+      break;
+    case "refunded":
+      statusValue = OrderStatus.REFUNDED;
+      break;
+    case "failed":
+      statusValue = OrderStatus.FAILED;
+      break;
+    default:
+      statusValue = OrderStatus.PROCESSING;
+      break;
+  }
+
+  return statusValue;
+};
+
 export const getStatusColor = (status: storeStatus) => {
   let color;
 
@@ -209,4 +298,52 @@ export const getProductColor = (status: ProductStatus) => {
   }
 
   return color;
+};
+
+export const canCancel = (status: OrderStatus) => {
+  let cancel = false;
+
+  switch (status) {
+    case "PROCESSING":
+      cancel = true;
+      break;
+    case "CONFIRMED":
+      cancel = true;
+      break;
+    case "CANCELLED":
+      cancel = false;
+      break;
+    case "READYFORSHIPPING":
+      cancel = false;
+      break;
+    case "SHIPPED":
+      cancel = false;
+      break;
+    case "OUTFORDELIVERY":
+      cancel = false;
+      break;
+    case "DELIVERED":
+      cancel = false;
+      break;
+    case "FAILED":
+      cancel = false;
+      break;
+    case "RETURNREQUESTED":
+      cancel = false;
+      break;
+    case "RETURNING":
+      cancel = false;
+      break;
+    case "REFUNDED":
+      cancel = false;
+      break;
+    case "RETURNED":
+      cancel = false;
+      break;
+    default:
+      cancel = false;
+      break;
+  }
+
+  return cancel;
 };
