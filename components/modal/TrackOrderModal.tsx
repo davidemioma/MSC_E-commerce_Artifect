@@ -150,7 +150,7 @@ const TrackOrderModal = ({ isOpen, onClose, order }: Props) => {
   if (order.status === OrderStatus.CANCELLED) {
     content = (
       <div className="flex flex-col gap-5">
-        <p className="text-red-500">Item(s) has been cancelled!</p>
+        <p className="text-red-500">Order has been cancelled!</p>
 
         <div className="space-y-4 p-2 border rounded-lg">
           <h2 className="font-bold text-lg">Delivery Address</h2>

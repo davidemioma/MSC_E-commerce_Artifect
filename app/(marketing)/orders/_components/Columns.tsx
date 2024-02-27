@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { OrderCol } from "@/types";
 import CellActions from "./CellActions";
+import { OrderStatus } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<OrderCol>[] = [
@@ -50,7 +52,15 @@ export const columns: ColumnDef<OrderCol>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className="font-bold text-violet-500">{row.original.status}</div>
+      <div
+        className={cn(
+          "font-bold text-black",
+          row.original.status === OrderStatus.CONFIRMED && "text-green-500",
+          row.original.status === OrderStatus.CANCELLED && "text-red-500"
+        )}
+      >
+        {row.original.status}
+      </div>
     ),
   },
   {

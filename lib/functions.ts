@@ -95,3 +95,36 @@ export const generateTrackingId = (length = 10) => {
 
   return result;
 };
+
+export const getRefundFailedReason = (failure_reason: string | undefined) => {
+  let reason = "";
+
+  switch (failure_reason) {
+    case "charge_for_pending_refund_disputed":
+      reason = "You have already requested to cancel order.";
+      break;
+    case "declined":
+      reason = "You request to cancel order has been declined.";
+      break;
+    case "expired_or_canceled_card":
+      reason = "Your payment card has either expired or is cancelled.";
+      break;
+    case "insufficient_funds":
+      reason = "Refund has failed due to insufficient funds.";
+      break;
+    case "lost_or_stolen_card":
+      reason = "Refund has failed due to loss or theft of the payment card.";
+      break;
+    case "merchant_request":
+      reason = "Unable to cancel your order.";
+      break;
+    case "unknown":
+      reason = "Refund has failed due to an unknown reason.";
+      break;
+    default:
+      reason = "Something went wrong.";
+      break;
+  }
+
+  return reason;
+};
