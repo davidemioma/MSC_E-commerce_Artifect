@@ -27,6 +27,12 @@ export async function POST(req: Request) {
 
   const session = event.data.object as Stripe.Checkout.Session;
 
+  const paymentIntentId = session.payment_intent as string;
+
+  if (!paymentIntentId) {
+    return new NextResponse("Payment Intent ID is required", { status: 400 });
+  }
+
   const userId = session?.metadata?.userId;
 
   if (!userId) {
@@ -53,13 +59,6 @@ export async function POST(req: Request) {
   const addressString = addressComponents.filter((c) => c !== null).join(", ");
 
   if (event.type === "checkout.session.completed") {
-    const paymentIntentId = session.payment_intent as string;
-
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-    //@ts-ignore
-    const chargeId = paymentIntent.charges.data[0].id;
-
     const cart = await prismadb.cart.findUnique({
       where: {
         userId,
@@ -102,6 +101,7 @@ export async function POST(req: Request) {
         address: addressString,
         status: OrderStatus.CONFIRMED,
         trackingId,
+        paymentIntentId,
       },
       include: {
         orderItems: true,

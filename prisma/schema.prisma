@@ -350,7 +350,7 @@ model Order{
   userId String
   address String? 
   trackingId String? @unique
-  stripeChargeId String? @unique
+  paymentIntentId String? @unique
   status OrderStatus @default(PROCESSING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
