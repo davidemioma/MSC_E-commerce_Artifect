@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { OrderCol } from "@/types";
 import { canCancel } from "@/lib/utils";
 import { OrderStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { MoreVertical, Eye, Ban, Undo2 } from "lucide-react";
+import TrackOrderModal from "@/components/modal/TrackOrderModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +21,16 @@ type Props = {
 };
 
 const CellActions = ({ data }: Props) => {
+  const [trackOrder, setTrackOrder] = useState(false);
+
   return (
     <>
+      <TrackOrderModal
+        order={data}
+        isOpen={trackOrder}
+        onClose={() => setTrackOrder(false)}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -36,7 +45,7 @@ const CellActions = ({ data }: Props) => {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => {}}>
+          <DropdownMenuItem onClick={() => setTrackOrder(true)}>
             <Eye className="w-4 h-4 mr-2" />
             Track Order
           </DropdownMenuItem>

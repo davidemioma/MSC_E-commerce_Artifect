@@ -53,6 +53,13 @@ export async function POST(req: Request) {
   const addressString = addressComponents.filter((c) => c !== null).join(", ");
 
   if (event.type === "checkout.session.completed") {
+    const paymentIntentId = session.payment_intent as string;
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    //@ts-ignore
+    const chargeId = paymentIntent.charges.data[0].id;
+
     const cart = await prismadb.cart.findUnique({
       where: {
         userId,
