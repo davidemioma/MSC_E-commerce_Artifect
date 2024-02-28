@@ -131,6 +131,12 @@ export const getStoreOrdersByStatus = async ({
           order: {
             select: {
               status: true,
+              user: {
+                select: {
+                  name: true,
+                  email: true,
+                },
+              },
             },
           },
           product: {
@@ -163,6 +169,12 @@ export const getStoreOrdersByStatus = async ({
           order: {
             select: {
               status: true,
+              user: {
+                select: {
+                  name: true,
+                  email: true,
+                },
+              },
             },
           },
           product: {

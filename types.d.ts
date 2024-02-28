@@ -88,6 +88,10 @@ export type OrderCol = Order & {
 export type StoreOrderCol = OrderItem & {
   order: {
     status: OrderStatus;
+    user: {
+      name: string | null;
+      email: string | null;
+    };
   };
   product: {
     name: string;

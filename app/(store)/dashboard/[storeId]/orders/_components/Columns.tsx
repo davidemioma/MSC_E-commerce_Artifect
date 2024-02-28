@@ -5,8 +5,17 @@ import { format } from "date-fns";
 import { StoreOrderCol } from "@/types";
 import CellActions from "./CellActions";
 import { ColumnDef } from "@tanstack/react-table";
+import { cn, formatPrice } from "@/lib/utils";
+import { OrderStatus } from "@prisma/client";
 
 export const columns: ColumnDef<StoreOrderCol>[] = [
+  {
+    accessorKey: "user",
+    header: "Ordered By",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.original.order.user?.name || ""}</div>
+    ),
+  },
   {
     accessorKey: "items",
     header: "Items",
@@ -37,10 +46,29 @@ export const columns: ColumnDef<StoreOrderCol>[] = [
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "price",
+    header: "Price",
     cell: ({ row }) => (
-      <div className="font-bold text-violet-500">
+      <div className="font-medium">
+        {formatPrice(
+          row.original.quantity * row.original.availableItem.currentPrice,
+          { currency: "GBP" }
+        )}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "status",
+    header: "Order Status",
+    cell: ({ row }) => (
+      <div
+        className={cn(
+          "font-bold text-black",
+          row.original.order.status === OrderStatus.CONFIRMED &&
+            "text-green-500",
+          row.original.order.status === OrderStatus.CANCELLED && "text-red-500"
+        )}
+      >
         {row.original.order.status}
       </div>
     ),
