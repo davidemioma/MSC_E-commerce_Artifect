@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { OrderCol } from "@/types";
+import ReturnOrder from "./ReturnOrder";
 import { canCancel } from "@/lib/utils";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,8 @@ const CellActions = ({ data }: Props) => {
   const [trackOrder, setTrackOrder] = useState(false);
 
   const [cancelOrder, setCancelOrder] = useState(false);
+
+  const [returnOrder, setReturnOrder] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["cancel-order", data.id],
@@ -68,6 +71,14 @@ const CellActions = ({ data }: Props) => {
         />
       )}
 
+      {data.status === OrderStatus.DELIVERED && (
+        <ReturnOrder
+          open={returnOrder}
+          onOpenChange={() => setReturnOrder(false)}
+          order={data}
+        />
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0" disabled={isPending}>
@@ -101,7 +112,10 @@ const CellActions = ({ data }: Props) => {
           )}
 
           {data.status === OrderStatus.DELIVERED && (
-            <DropdownMenuItem onClick={() => {}} disabled={isPending}>
+            <DropdownMenuItem
+              onClick={() => setReturnOrder(true)}
+              disabled={isPending}
+            >
               <Undo2 className="w-4 h-4 mr-2" />
               Return Item(s)
             </DropdownMenuItem>

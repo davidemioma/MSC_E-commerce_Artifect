@@ -84,29 +84,57 @@ const TrackOrderModal = ({ isOpen, onClose, order }: Props) => {
           </div>
 
           <TrackStick
-            isActive={order.status === OrderStatus.READYFORSHIPPING}
+            isActive={
+              order.status === OrderStatus.READYFORSHIPPING ||
+              order.status === OrderStatus.SHIPPED ||
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
           />
 
           <TrackMessage
             Icon={ShoppingBag}
             message="Ready for Shipping"
-            isActive={order.status === OrderStatus.READYFORSHIPPING}
+            isActive={
+              order.status === OrderStatus.READYFORSHIPPING ||
+              order.status === OrderStatus.SHIPPED ||
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
           />
 
-          <TrackStick isActive={order.status === OrderStatus.SHIPPED} />
+          <TrackStick
+            isActive={
+              order.status === OrderStatus.SHIPPED ||
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
+          />
 
           <TrackMessage
             Icon={Container}
             message="Shipped"
-            isActive={order.status === OrderStatus.SHIPPED}
+            isActive={
+              order.status === OrderStatus.SHIPPED ||
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
           />
 
-          <TrackStick isActive={order.status === OrderStatus.OUTFORDELIVERY} />
+          <TrackStick
+            isActive={
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
+          />
 
           <TrackMessage
             Icon={Truck}
             message="Out For Delivery"
-            isActive={order.status === OrderStatus.OUTFORDELIVERY}
+            isActive={
+              order.status === OrderStatus.OUTFORDELIVERY ||
+              order.status === OrderStatus.DELIVERED
+            }
           />
 
           <TrackStick isActive={order.status === OrderStatus.DELIVERED} />
@@ -124,7 +152,9 @@ const TrackOrderModal = ({ isOpen, onClose, order }: Props) => {
   if (order.status === OrderStatus.DELIVERED) {
     content = (
       <div className="flex flex-col gap-5">
-        <p>Item(s) has been delivered!</p>
+        <p className="text-green-500 font-medium">
+          Item(s) has been delivered!
+        </p>
 
         <div className="space-y-4 p-2 border rounded-lg">
           <h2 className="font-bold text-lg">Delivery Address</h2>
