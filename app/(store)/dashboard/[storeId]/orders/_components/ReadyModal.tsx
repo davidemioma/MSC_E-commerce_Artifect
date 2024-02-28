@@ -32,7 +32,8 @@ const ReadyModal = ({ open, onClose, onConfirm, isPending }: Props) => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Are you sure you want to mark this item as 'Ready for Shipping'?
+            Are you sure you want to mark this item as &apos;Ready for
+            Shipping&apos;?
           </AlertDialogTitle>
 
           <AlertDialogDescription>
