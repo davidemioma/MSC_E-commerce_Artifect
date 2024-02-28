@@ -347,3 +347,45 @@ export const canCancel = (status: OrderStatus) => {
 
   return cancel;
 };
+
+export const getOrderStatusText = (status: OrderStatus) => {
+  let text = "";
+
+  switch (status) {
+    case OrderStatus.PROCESSING:
+      text = "Processing";
+      break;
+    case OrderStatus.CONFIRMED:
+      text = "Confirmed";
+      break;
+    case OrderStatus.READYFORSHIPPING:
+      text = "Ready For Shipping";
+      break;
+    case OrderStatus.SHIPPED:
+      text = "Shipped";
+      break;
+    case OrderStatus.OUTFORDELIVERY:
+      text = "Out For Delivery";
+      break;
+    case OrderStatus.DELIVERED:
+      text = "Delivered";
+      break;
+    case OrderStatus.CANCELLED:
+      text = "Cancelled";
+      break;
+    case OrderStatus.RETURNED:
+      text = "Returned";
+      break;
+    case OrderStatus.REFUNDED:
+      text = "Refunded";
+      break;
+    case OrderStatus.FAILED:
+      text = "Failed";
+      break;
+    default:
+      text = "Unknown";
+      break;
+  }
+
+  return text;
+};

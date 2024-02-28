@@ -4,9 +4,9 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { StoreOrderCol } from "@/types";
 import CellActions from "./CellActions";
-import { ColumnDef } from "@tanstack/react-table";
-import { cn, formatPrice } from "@/lib/utils";
 import { OrderStatus } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
+import { cn, formatPrice, getOrderStatusText } from "@/lib/utils";
 
 export const columns: ColumnDef<StoreOrderCol>[] = [
   {
@@ -63,13 +63,13 @@ export const columns: ColumnDef<StoreOrderCol>[] = [
     cell: ({ row }) => (
       <div
         className={cn(
-          "font-bold text-black",
+          "font-bold text-violet-500",
           row.original.order.status === OrderStatus.CONFIRMED &&
             "text-green-500",
           row.original.order.status === OrderStatus.CANCELLED && "text-red-500"
         )}
       >
-        {row.original.order.status}
+        {getOrderStatusText(row.original.order.status)}
       </div>
     ),
   },
