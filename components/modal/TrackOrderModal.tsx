@@ -43,7 +43,9 @@ const TrackMessage = ({
     <div
       className={cn(
         "flex items-center p-2 border rounded-lg shadow-sm",
-        isActive ? "border-green-500" : "border-gray-300"
+        isActive
+          ? "border-green-500 text-green-500 font-medium"
+          : "border-gray-300"
       )}
     >
       <Icon className="w-5 h-5 mr-2" />

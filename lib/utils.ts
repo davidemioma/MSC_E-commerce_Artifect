@@ -310,36 +310,6 @@ export const canCancel = (status: OrderStatus) => {
     case "CONFIRMED":
       cancel = true;
       break;
-    case "CANCELLED":
-      cancel = false;
-      break;
-    case "READYFORSHIPPING":
-      cancel = false;
-      break;
-    case "SHIPPED":
-      cancel = false;
-      break;
-    case "OUTFORDELIVERY":
-      cancel = false;
-      break;
-    case "DELIVERED":
-      cancel = false;
-      break;
-    case "FAILED":
-      cancel = false;
-      break;
-    case "RETURNREQUESTED":
-      cancel = false;
-      break;
-    case "RETURNING":
-      cancel = false;
-      break;
-    case "REFUNDED":
-      cancel = false;
-      break;
-    case "RETURNED":
-      cancel = false;
-      break;
     default:
       cancel = false;
       break;
@@ -388,4 +358,25 @@ export const getOrderStatusText = (status: OrderStatus) => {
   }
 
   return text;
+};
+
+export const adminCanUpdate = (status: OrderStatus) => {
+  let canUpdate = false;
+
+  switch (status) {
+    case "READYFORSHIPPING":
+      canUpdate = true;
+      break;
+    case "SHIPPED":
+      canUpdate = true;
+      break;
+    case "OUTFORDELIVERY":
+      canUpdate = true;
+      break;
+    default:
+      canUpdate = false;
+      break;
+  }
+
+  return canUpdate;
 };

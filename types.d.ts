@@ -104,3 +104,9 @@ export type StoreOrderCol = OrderItem & {
     size: Size;
   };
 };
+
+export type AdminOrderStatusChange =
+  | "READYFORSHIPPING"
+  | "SHIPPED"
+  | "OUTFORDELIVERY"
+  | "DELIVERED";
