@@ -3,6 +3,8 @@ import { TwoFAEmailHtml } from "@/components/email/TwoFactorEmail";
 import { VerificationEmailHtml } from "@/components/email/VerificationEmail";
 import { PasswordResetEmailHtml } from "@/components/email/PasswordResetEmail";
 import { StoreVerificationEmailHtml } from "@/components/email/StoreVerificationEmail";
+import { ConfirmationOrderEmailHtml } from "@/components/email/ConfirmationOrderEmail";
+import { StoreConfirmationEmailHtml } from "@/components/email/StoreConfirmationEmail";
 
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -102,6 +104,63 @@ export const sendStoreVerificationTokenEmail = async ({
       subject: "Store Verification Code",
       html: StoreVerificationEmailHtml({
         code: token,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendConfirmationOrderEmail = async ({
+  email,
+  username,
+  address,
+  totalAmount,
+}: {
+  email: string;
+  username: string;
+  address: string;
+  totalAmount: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Your Order Confirmation",
+      html: ConfirmationOrderEmailHtml({
+        username,
+        address,
+        totalAmount,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendStoreConfirmationEmail = async ({
+  email,
+  storeName,
+  customerName,
+  orderDate,
+  items,
+}: {
+  email: string;
+  storeName: string;
+  customerName: string;
+  orderDate: string;
+  items: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "New Order Alert",
+      html: StoreConfirmationEmailHtml({
+        storeName,
+        customerName,
+        orderDate,
+        items,
       }),
     });
   } catch (err) {

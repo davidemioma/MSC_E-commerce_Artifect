@@ -1,10 +1,16 @@
 import Stripe from "stripe";
+import { format } from "date-fns";
 import prismadb from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
 import { generateTrackingId } from "@/lib/functions";
+import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
+import {
+  sendConfirmationOrderEmail,
+  sendStoreConfirmationEmail,
+} from "@/lib/mail";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -39,10 +45,37 @@ export async function POST(req: Request) {
     return new NextResponse("User ID is required", { status: 400 });
   }
 
+  const user = await prismadb.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      email: true,
+      name: true,
+    },
+  });
+
+  if (!user) {
+    return new NextResponse("User not found", { status: 404 });
+  }
+
   const orderId = session?.metadata?.orderId;
 
   if (!orderId) {
     return new NextResponse("Order ID is required", { status: 400 });
+  }
+
+  const orderExists = await prismadb.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!orderExists) {
+    return new NextResponse("Order not found", { status: 404 });
   }
 
   const address = session?.customer_details?.address;
@@ -104,9 +137,67 @@ export async function POST(req: Request) {
         paymentIntentId,
       },
       include: {
-        orderItems: true,
+        orderItems: {
+          select: {
+            quantity: true,
+            product: {
+              select: {
+                name: true,
+              },
+            },
+            store: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
+            availableItemId: true,
+            availableItem: {
+              select: {
+                currentPrice: true,
+              },
+            },
+          },
+        },
       },
     });
+
+    //Send confirmation email to user and store
+    try {
+      const totalAmount =
+        order?.orderItems?.reduce(
+          (total, item) =>
+            total + item.availableItem?.currentPrice * item?.quantity,
+          0
+        ) +
+        TRANSACTION_FEE +
+        SHIPPING_FEE;
+
+      await sendConfirmationOrderEmail({
+        email: user.email || "",
+        username: user.name || "",
+        address: addressString,
+        totalAmount: `${formatPrice(totalAmount, { currency: "GBP" })}`,
+      });
+
+      await Promise.all(
+        order.orderItems.map(async (item) => {
+          await sendStoreConfirmationEmail({
+            email: item.store.email || "",
+            storeName: item.store.name || "",
+            customerName: user.name || "",
+            orderDate: `${format(order.createdAt, "MMMM do, yyyy")}`,
+            items: `${item.product.name} (Qty: ${
+              item.quantity
+            }), price: ${formatPrice(item.availableItem.currentPrice, {
+              currency: "GBP",
+            })}`,
+          });
+        })
+      );
+    } catch (err) {
+      console.error("Error sending confirmation email to user:", err);
+    }
 
     //Update number of product in stocks for each order item.
     await Promise.all(
