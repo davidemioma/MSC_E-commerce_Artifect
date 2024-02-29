@@ -41,11 +41,19 @@ export async function PATCH(
       },
       select: {
         id: true,
+        status: true,
       },
     });
 
     if (!order) {
       return new NextResponse("Order not found!", { status: 404 });
+    }
+
+    //Check if order status is Delivered
+    if (order.status !== OrderStatus.DELIVERED) {
+      return new NextResponse("You can request a return at this time", {
+        status: 401,
+      });
     }
 
     const body = await request.json();
