@@ -63,9 +63,9 @@ export const EmailTemplate = ({
 
           <Text style={paragraph}>
             We have received your request to return the following item(s) from
-            your order #{orderId}. We understand that sometimes things don't
-            work out, and we're here to help make the return process as smooth
-            as possible.
+            your order #{orderId}. We understand that sometimes things
+            don&apos;t work out, and we&apos;re here to help make the return
+            process as smooth as possible.
           </Text>
 
           <Section style={btnContainer}>
