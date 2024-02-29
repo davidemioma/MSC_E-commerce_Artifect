@@ -1,9 +1,12 @@
+import { format } from "date-fns";
 import prismadb from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { formatPrice } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { UserRole, OrderStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { getRefundFailedReason } from "@/lib/functions";
+import { sendReturnOrderEmail, sendStoreReturnOrderEmail } from "@/lib/mail";
 
 export async function POST(
   request: Request,
@@ -46,6 +49,18 @@ export async function POST(
       where: {
         id: orderId,
       },
+      select: {
+        id: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        paymentIntentId: true,
+        status: true,
+        createdAt: true,
+      },
     });
 
     if (!order) {
@@ -66,11 +81,23 @@ export async function POST(
         orderId,
       },
       select: {
+        reason: true,
         returnItems: {
           select: {
             orderitem: {
               select: {
                 quantity: true,
+                store: {
+                  select: {
+                    email: true,
+                    name: true,
+                  },
+                },
+                product: {
+                  select: {
+                    name: true,
+                  },
+                },
                 availableItem: {
                   select: {
                     id: true,
@@ -113,6 +140,42 @@ export async function POST(
         }
       );
     }
+
+    //Send confirmation to user and store.
+    await sendReturnOrderEmail({
+      email: order.user.email || "",
+      username: order.user.name || "",
+      orderId,
+      orderDate: `${format(order.createdAt, "MMMM do, yyyy")}`,
+      totalAmount: `${formatPrice(
+        returnRequest?.returnItems?.reduce(
+          (total, item) =>
+            total +
+            item.orderitem.availableItem.currentPrice * item.orderitem.quantity,
+          0
+        ),
+        {
+          currency: "GBP",
+        }
+      )}`,
+    });
+
+    await Promise.all(
+      returnRequest.returnItems.map(async (item) => {
+        await sendStoreReturnOrderEmail({
+          email: item.orderitem.store.email || "",
+          storeName: item.orderitem.store.name || "",
+          orderId,
+          orderDate: `${format(order.createdAt, "MMMM do, yyyy")}`,
+          item: `${item.orderitem.product.name} (Qty: ${
+            item.orderitem.quantity
+          }), price: ${formatPrice(item.orderitem.availableItem.currentPrice, {
+            currency: "GBP",
+          })}`,
+          reason: returnRequest.reason,
+        });
+      })
+    );
 
     //Update Order status.
     await prismadb.order.update({

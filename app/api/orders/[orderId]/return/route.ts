@@ -1,5 +1,8 @@
+import { format } from "date-fns";
 import prismadb from "@/lib/prisma";
+import { formatPrice } from "@/lib/utils";
 import { NextResponse } from "next/server";
+import { sendReturnRequestEmail } from "@/lib/mail";
 import { currentRole, currentUser } from "@/lib/auth";
 import { OrderStatus, UserRole } from "@prisma/client";
 import { ReturnSchema } from "@/lib/validators/return";
@@ -92,7 +95,7 @@ export async function PATCH(
     );
 
     //Update order status
-    await prismadb.order.update({
+    const updatedOrder = await prismadb.order.update({
       where: {
         id: order.id,
         userId: user.id,
@@ -100,6 +103,49 @@ export async function PATCH(
       data: {
         status: OrderStatus.RETURNREQUESTED,
       },
+    });
+
+    const returnItems = await prismadb.returnItem.findMany({
+      where: {
+        returnRequestId: returnRequest.id,
+      },
+      select: {
+        orderitem: {
+          select: {
+            quantity: true,
+            product: {
+              select: {
+                name: true,
+              },
+            },
+            availableItem: {
+              select: {
+                currentPrice: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const allItems = returnItems
+      .map(
+        (item) =>
+          `${item.orderitem.product.name} (Qty: ${
+            item.orderitem.quantity
+          }) price: ${formatPrice(item.orderitem.availableItem.currentPrice, {
+            currency: "GBP",
+          })}`
+      )
+      .join(", ");
+
+    //Send confirmation to users
+    await sendReturnRequestEmail({
+      email: user.email || "",
+      username: user.name || "",
+      orderId: updatedOrder.id,
+      orderDate: `${format(updatedOrder.createdAt, "MMMM do, yyyy")}`,
+      items: allItems,
     });
 
     return NextResponse.json({ message: "Refund request has been submitted!" });

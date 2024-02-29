@@ -2,6 +2,14 @@ import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole, OrderStatus } from "@prisma/client";
+import { sendOrderStatusUpdateEmail } from "@/lib/mail";
+import { format } from "date-fns";
+import {
+  SHIPPING_FEE,
+  TRANSACTION_FEE,
+  formatPrice,
+  getOrderStatusText,
+} from "@/lib/utils";
 
 export async function PATCH(
   request: Request,
@@ -98,9 +106,10 @@ export async function PATCH(
 
     const updatedOrder = await prismadb.order.findUnique({
       where: {
-        id: orderItem.orderId,
+        id: updatedOrderItem.orderId,
       },
       select: {
+        id: true,
         orderItems: {
           select: {
             readyToBeShipped: true,
@@ -112,13 +121,54 @@ export async function PATCH(
     if (
       updatedOrder?.orderItems.every((item) => item.readyToBeShipped === true)
     ) {
-      await prismadb.order.update({
+      const newOrder = await prismadb.order.update({
         where: {
           id: updatedOrderItem.orderId,
         },
         data: {
           status: OrderStatus.READYFORSHIPPING,
         },
+        select: {
+          id: true,
+          address: true,
+          status: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          orderItems: {
+            select: {
+              quantity: true,
+              readyToBeShipped: true,
+              availableItem: {
+                select: {
+                  currentPrice: true,
+                },
+              },
+            },
+          },
+          createdAt: true,
+        },
+      });
+
+      //Send confirmation to user
+      const totalAmount =
+        newOrder?.orderItems?.reduce(
+          (total, item) =>
+            total + item.availableItem?.currentPrice * item?.quantity,
+          0
+        ) || 0 + TRANSACTION_FEE + SHIPPING_FEE;
+
+      await sendOrderStatusUpdateEmail({
+        email: newOrder.user.email || "",
+        username: newOrder.user.name || "",
+        orderId: newOrder?.id || "",
+        orderDate: `${format(newOrder?.createdAt || "", "MMMM do, yyyy")}`,
+        orderStatus: getOrderStatusText(newOrder?.status as any) || "",
+        address: newOrder?.address || "",
+        totalAmount: `${formatPrice(totalAmount, { currency: "GBP" })}`,
       });
     }
 

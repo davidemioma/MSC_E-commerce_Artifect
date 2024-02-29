@@ -1,9 +1,12 @@
+import { format } from "date-fns";
 import prismadb from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { formatPrice } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { OrderStatus, UserRole } from "@prisma/client";
 import { getRefundFailedReason } from "@/lib/functions";
+import { sendCancelOrderEmail, sendStoreCancelOrderEmail } from "@/lib/mail";
 
 export async function PATCH(
   request: Request,
@@ -43,10 +46,22 @@ export async function PATCH(
       include: {
         orderItems: {
           select: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+            store: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
             quantity: true,
             availableItem: {
               select: {
                 id: true,
+                currentPrice: true,
               },
             },
           },
@@ -73,6 +88,37 @@ export async function PATCH(
         }
       );
     }
+
+    //Send confirmation email to customer and store.
+    const totalAmount = order?.orderItems?.reduce(
+      (total, item) =>
+        total + item.availableItem?.currentPrice * item?.quantity,
+      0
+    );
+
+    await sendCancelOrderEmail({
+      email: user.email || "",
+      username: user.name || "",
+      orderId: order.id,
+      orderDate: `${format(order.createdAt, "MMMM do, yyyy")}`,
+      totalAmount: `${formatPrice(totalAmount, { currency: "GBP" })}`,
+    });
+
+    await Promise.all(
+      order.orderItems.map(async (item) => {
+        await sendStoreCancelOrderEmail({
+          email: item.store.email || "",
+          storeName: item.store.name || "",
+          orderId: order.id,
+          orderDate: `${format(order.createdAt, "MMMM do, yyyy")}`,
+          item: `${item.product.name} (Qty: ${
+            item.quantity
+          }), price: ${formatPrice(item.availableItem.currentPrice, {
+            currency: "GBP",
+          })}`,
+        });
+      })
+    );
 
     //Update Order status.
     await prismadb.order.update({
