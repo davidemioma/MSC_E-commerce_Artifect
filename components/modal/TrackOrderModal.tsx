@@ -149,7 +149,13 @@ const TrackOrderModal = ({ isOpen, onClose, order }: Props) => {
     </div>
   );
 
-  if (order.status === OrderStatus.DELIVERED) {
+  if (
+    order.status === OrderStatus.DELIVERED ||
+    order.status === OrderStatus.RETURNED ||
+    order.status === OrderStatus.RETURNREQUESTED ||
+    order.status === OrderStatus.RETURNING ||
+    order.status === OrderStatus.REFUNDED
+  ) {
     content = (
       <div className="flex flex-col gap-5">
         <p className="text-green-500 font-medium">
@@ -167,14 +173,6 @@ const TrackOrderModal = ({ isOpen, onClose, order }: Props) => {
             ))}
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (order.status === OrderStatus.RETURNED) {
-    content = (
-      <div>
-        <p>Item(s) has been returned!</p>
       </div>
     );
   }

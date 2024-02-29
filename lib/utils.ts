@@ -346,6 +346,12 @@ export const getOrderStatusText = (status: OrderStatus) => {
     case OrderStatus.RETURNED:
       text = "Returned";
       break;
+    case OrderStatus.RETURNREQUESTED:
+      text = "Return requested";
+      break;
+    case OrderStatus.RETURNING:
+      text = "Returning";
+      break;
     case OrderStatus.REFUNDED:
       text = "Refunded";
       break;
@@ -380,3 +386,16 @@ export const adminCanUpdate = (status: OrderStatus) => {
 
   return canUpdate;
 };
+
+export const reasonsForReturn = [
+  "Wrong Size/Fit",
+  "Item Not as Described",
+  "Changed Mind",
+  "Defective/Damaged",
+  "Received Wrong Item",
+  "Better Price Found",
+  "Gift Return",
+  "Quality Not as Expected",
+  "Delivery Issues",
+  "Ordered the wrong item by mistake",
+];
