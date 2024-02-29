@@ -97,8 +97,8 @@ const ReturnOrder = ({ open, onOpenChange, order }: Props) => {
 
           <DialogDescription>
             Submit your return request. We understand that sometimes things
-            don’t work out, and we’re here to help make the process as smooth as
-            possible.
+            don&apos;t work out, and we&apos;re here to help make the process as
+            smooth as possible.
           </DialogDescription>
         </DialogHeader>
 
