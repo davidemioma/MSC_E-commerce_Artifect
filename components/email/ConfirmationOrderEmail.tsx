@@ -60,8 +60,9 @@ export const EmailTemplate = ({
           <Text style={paragraph}>Dear {username},</Text>
 
           <Text style={paragraph}>
-            Thank you for shopping with us! We're excited to let you know that
-            we've received your order, and it's now being processed.
+            Thank you for shopping with us! We&apos;re excited to let you know
+            that we&apos;ve received your order, and it&apos;s now being
+            processed.
           </Text>
 
           <Section style={btnContainer}>
@@ -71,9 +72,9 @@ export const EmailTemplate = ({
           </Section>
 
           <Text style={paragraph}>
-            Your order will be shipped to the address above in 3 days. You'll
-            receive another email with a tracking number once your order is on
-            its way.
+            Your order will be shipped to the address above in 3 days.
+            You&apos;ll receive another email with a tracking number once your
+            order is on its way.
           </Text>
 
           <Text style={paragraph}>

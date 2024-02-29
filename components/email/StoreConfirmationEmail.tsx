@@ -62,8 +62,8 @@ export const EmailTemplate = ({
           <Text style={paragraph}>Dear {storeName},</Text>
 
           <Text style={paragraph}>
-            We're excited to inform you that a customer has placed an order that
-            includes products from your store. Below are the details of the
+            We&apos;re excited to inform you that a customer has placed an order
+            that includes products from your store. Below are the details of the
             items ordered:
           </Text>
 
