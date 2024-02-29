@@ -12,6 +12,8 @@ import {
   Order,
   OrderItem,
   OrderStatus,
+  ReturnRequest,
+  ReturnItem,
 } from "@prisma/client";
 
 export type AvailableType = Available & { size: Size };
@@ -110,3 +112,25 @@ export type AdminOrderStatusChange =
   | "SHIPPED"
   | "OUTFORDELIVERY"
   | "DELIVERED";
+
+export type ReturnItemProps = ReturnItem & {
+  orderitem: {
+    quantity: number;
+    product: {
+      name: string;
+      category: {
+        name: string;
+      };
+    };
+    productItem: {
+      images: string[];
+    };
+    availableItem: {
+      currentPrice: number;
+    };
+  };
+};
+
+export type ReturnRequestProps = ReturnRequest & {
+  returnItems: ReturnItemProps[];
+};

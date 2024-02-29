@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import { OrderCol } from "@/types";
 import StatusModal from "./StatusModal";
+import RequestModal from "./RequestModal";
 import { adminCanUpdate } from "@/lib/utils";
+import { OrderStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { AdminOrderStatusChange } from "@/types";
-import { MoreVertical, Eye, Upload } from "lucide-react";
 import TrackOrderModal from "@/components/modal/TrackOrderModal";
+import { MoreVertical, Eye, Upload, GitPullRequest } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,8 @@ const CellActions = ({ data }: Props) => {
 
   const [update, setUpdate] = useState(false);
 
+  const [viewRequest, setViewRequest] = useState(false);
+
   return (
     <>
       <TrackOrderModal
@@ -39,6 +43,14 @@ const CellActions = ({ data }: Props) => {
           open={update}
           onOpenChange={() => setUpdate(false)}
           currentStatus={data.status as AdminOrderStatusChange}
+          orderId={data.id}
+        />
+      )}
+
+      {data.status === OrderStatus.RETURNREQUESTED && (
+        <RequestModal
+          open={viewRequest}
+          onOpenChange={() => setViewRequest(false)}
           orderId={data.id}
         />
       )}
@@ -66,6 +78,13 @@ const CellActions = ({ data }: Props) => {
             <DropdownMenuItem onClick={() => setUpdate(true)}>
               <Upload className="w-4 h-4 mr-2" />
               Update Order
+            </DropdownMenuItem>
+          )}
+
+          {data.status === OrderStatus.RETURNREQUESTED && (
+            <DropdownMenuItem onClick={() => setViewRequest(true)}>
+              <GitPullRequest className="w-4 h-4 mr-2" />
+              Refund Request
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

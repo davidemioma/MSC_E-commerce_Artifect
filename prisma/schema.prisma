@@ -399,7 +399,7 @@ model OrderItem{
 
 model ReturnRequest{
   id String @id @default(cuid())
-  orderId String
+  orderId String @unique
   reason String
   status RequestStatus @default(REVIEWING)
   createdAt DateTime @default(now())
@@ -415,12 +415,15 @@ model ReturnRequest{
 model ReturnItem{
   id String @id @default(cuid())
   orderItemId String
-  returnRequestId String
+  returnRequestId String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   orderitem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   returnRequest ReturnRequest @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
+
+  @@index([returnRequestId])
+  @@index([orderItemId])
 }
 
 
