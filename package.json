@@ -53,6 +53,7 @@
     "react-quill": "^2.0.0",
     "react-responsive-carousel": "^3.2.23",
     "react-spinners": "^0.13.8",
+    "recharts": "^2.12.1",
     "sonner": "^1.4.0",
     "stripe": "^14.11.0",
     "tailwind-merge": "^2.2.1",
