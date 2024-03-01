@@ -107,7 +107,8 @@ export default async function StoreDashboardPage({
                   salesCount > 0 && "text-green-500"
                 )}
               >
-                +{salesCount}
+                {salesCount > 0 && "+"}
+                {salesCount}
               </div>
             </CardContent>
           </Card>
@@ -126,7 +127,8 @@ export default async function StoreDashboardPage({
                   productInStock > 0 && "text-green-500"
                 )}
               >
-                +{productInStock}
+                {productInStock > 0 && "+"}
+                {productInStock}
               </div>
             </CardContent>
           </Card>
