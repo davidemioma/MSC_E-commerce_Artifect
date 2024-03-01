@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 const DataChart = ({ data }: Props) => {
   return (
     <div className="w-full overflow-hidden">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Pie
             data={data}

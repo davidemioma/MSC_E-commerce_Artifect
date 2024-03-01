@@ -31,6 +31,10 @@ const Recommendation = ({ products }: Props) => {
     }
   };
 
+  if (products.length === 0) {
+    return null;
+  }
+
   return (
     <Container>
       <div className="py-10 space-y-5">

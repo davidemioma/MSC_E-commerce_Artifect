@@ -101,7 +101,7 @@ export default async function AdminPage() {
               </Link>
             </div>
 
-            <DataChart data={storesChartData} />
+            {storesChartData && <DataChart data={storesChartData} />}
           </div>
 
           <div className="space-y-4">
@@ -113,7 +113,7 @@ export default async function AdminPage() {
               </Link>
             </div>
 
-            <DataChart data={productChartData} />
+            {productChartData && <DataChart data={productChartData} />}
           </div>
         </div>
       </Container>
