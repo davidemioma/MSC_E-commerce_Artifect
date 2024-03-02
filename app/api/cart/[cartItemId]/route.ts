@@ -135,7 +135,7 @@ export async function DELETE(
     //Check if user role is USER
     const { role } = await currentRole();
 
-    if (role === UserRole.USER) {
+    if (role !== UserRole.USER) {
       return new NextResponse("Unauthorized, Only users can delete cartItem", {
         status: 401,
       });

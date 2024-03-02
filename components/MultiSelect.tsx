@@ -11,11 +11,12 @@ type OptionType = {
 
 type Props = {
   value: string[];
+  placeholder?: string;
   onChange: (value: string[]) => void;
   options: OptionType[];
 };
 
-const MultiSelect = ({ value, onChange, options }: Props) => {
+const MultiSelect = ({ value, onChange, options, placeholder }: Props) => {
   const ref = useRef(null);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +48,7 @@ const MultiSelect = ({ value, onChange, options }: Props) => {
               .join(", ")}
           </div>
         ) : (
-          <div>Choose Sizes</div>
+          <div>{placeholder || "Choose..."}</div>
         )}
 
         <div>

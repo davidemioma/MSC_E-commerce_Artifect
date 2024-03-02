@@ -9,9 +9,9 @@ import AuthError from "../auth/AuthError";
 import { useForm } from "react-hook-form";
 import AuthSuccess from "../auth/AuthSuccess";
 import useCountries from "@/hooks/use-countries";
+import { createStore } from "@/actions/createStore";
 import useStoreModal from "@/hooks/use-store-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createStore } from "@/actions/createStore";
 import { StoreValidator, StoreSchema } from "@/lib/validators/store";
 import {
   Select,
@@ -227,6 +227,7 @@ const StoreModal = () => {
 
           <div className="w-full flex items-center justify-end gap-2">
             <Button
+              type="button"
               variant="outline"
               onClick={() => storeModal.onClose()}
               disabled={isPending}

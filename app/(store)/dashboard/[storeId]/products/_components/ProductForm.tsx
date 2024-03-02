@@ -408,6 +408,7 @@ const ProductForm = ({ data }: Props) => {
                                 }))}
                                 value={field.value}
                                 onChange={field.onChange}
+                                placeholder="Choose Colors..."
                               />
                             )}
                         </FormControl>
