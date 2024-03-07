@@ -25,6 +25,8 @@ const RegisterForm = () => {
 
   const [success, setSuccess] = useState("");
 
+  const [honeyPot, setHoneyPot] = useState("");
+
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<RegisterValidator>({
@@ -37,6 +39,8 @@ const RegisterForm = () => {
   });
 
   const onSubmit = (values: RegisterValidator) => {
+    if (honeyPot) return;
+
     setError("");
 
     setSuccess("");
@@ -92,6 +96,14 @@ const RegisterForm = () => {
                 </FormItem>
               )}
             />
+
+            <div className="hidden">
+              <input
+                type="text"
+                value={honeyPot}
+                onChange={(e) => setHoneyPot(e.target.value)}
+              />
+            </div>
 
             <FormField
               name="email"

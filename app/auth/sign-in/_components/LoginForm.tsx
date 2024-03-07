@@ -29,6 +29,8 @@ const LoginForm = () => {
 
   const [success, setSuccess] = useState("");
 
+  const [honeyPot, setHoneyPot] = useState("");
+
   const callbackUrl = searchParams.get("callbackUrl");
 
   const [isPending, startTransition] = useTransition();
@@ -49,6 +51,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = (values: LoginValidator) => {
+    if (honeyPot) return;
+
     setError("");
 
     setSuccess("");
@@ -87,6 +91,14 @@ const LoginForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="hidden">
+            <input
+              type="text"
+              value={honeyPot}
+              onChange={(e) => setHoneyPot(e.target.value)}
+            />
+          </div>
+
           <div className="space-y-4">
             {showTwoFactor ? (
               <FormField

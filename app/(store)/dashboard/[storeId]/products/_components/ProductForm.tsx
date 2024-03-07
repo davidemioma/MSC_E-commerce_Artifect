@@ -61,6 +61,8 @@ const ProductForm = ({ data }: Props) => {
 
   const [open, setOpen] = useState(false);
 
+  const [honeyPot, setHoneyPot] = useState("");
+
   const formattedProductItems = data?.productItems.map((item) => ({
     id: item.id,
     colorIds: item.colorIds || [],
@@ -200,6 +202,8 @@ const ProductForm = ({ data }: Props) => {
   });
 
   const onSubmit = (values: ProductValidator) => {
+    if (honeyPot) return;
+
     mutate(values);
   };
 
@@ -216,6 +220,14 @@ const ProductForm = ({ data }: Props) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
+            <div className="hidden">
+              <input
+                type="text"
+                value={honeyPot}
+                onChange={(e) => setHoneyPot(e.target.value)}
+              />
+            </div>
+
             <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
