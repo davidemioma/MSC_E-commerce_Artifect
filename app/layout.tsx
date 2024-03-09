@@ -11,6 +11,7 @@ import QueryProvider from "@/providers/query-provider";
 
 const font = Nunito_Sans({ subsets: ["latin"] });
 
+//Customised metadata.
 export const metadata: Metadata = constructMetadata();
 
 export default async function RootLayout({
