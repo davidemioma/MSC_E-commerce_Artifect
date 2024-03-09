@@ -67,7 +67,7 @@ const CategoryModal = ({ children }: Props) => {
   if (!mounted) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} data-testid="category-form">
       <DialogTrigger>{children}</DialogTrigger>
 
       <DialogContent>

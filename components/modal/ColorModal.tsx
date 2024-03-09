@@ -70,7 +70,7 @@ const ColorModal = ({ children }: Props) => {
   if (!mounted) return null;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen} data-testid="color-form">
       <DialogTrigger>{children}</DialogTrigger>
 
       <DialogContent>

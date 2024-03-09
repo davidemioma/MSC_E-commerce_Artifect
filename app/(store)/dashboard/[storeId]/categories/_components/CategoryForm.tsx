@@ -98,7 +98,7 @@ const CategoryForm = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div data-testid="category-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -150,7 +150,7 @@ const CategoryForm = ({ data }: Props) => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

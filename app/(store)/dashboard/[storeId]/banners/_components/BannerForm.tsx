@@ -95,7 +95,7 @@ const BannerForm = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div data-testid="banner-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -170,7 +170,7 @@ const BannerForm = ({ data }: Props) => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

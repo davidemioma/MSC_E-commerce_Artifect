@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import AvailableForm from "./AvailableForm";
 import { Input } from "@/components/ui/input";
@@ -208,7 +209,7 @@ const ProductForm = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div data-testid="product-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -259,7 +260,10 @@ const ProductForm = ({ data }: Props) => {
 
                       <CategoryModal>
                         <TooltipContainer message="Add new category">
-                          <AddBtn disabled={isPending || deletingItem} />
+                          <AddBtn
+                            testId="add-new-category"
+                            disabled={isPending || deletingItem}
+                          />
                         </TooltipContainer>
                       </CategoryModal>
                     </FormLabel>
@@ -341,7 +345,9 @@ const ProductForm = ({ data }: Props) => {
             <h4 className="text-xl font-bold">Add Product Details</h4>
 
             <TooltipContainer message="Customise your product">
-              <AddBtn
+              <button
+                type="button"
+                className="bg-blue-400 w-5 h-5 flex items-center justify-center rounded-full overflow-hidden disabled:cursor-not-allowed"
                 onClick={() =>
                   prepend({
                     id: "",
@@ -351,14 +357,21 @@ const ProductForm = ({ data }: Props) => {
                     availableItems: [],
                   })
                 }
+                data-testid="add-product-item"
                 disabled={isPending || deletingItem}
-              />
+              >
+                <Plus className="w-3 h-3 text-white" />
+              </button>
             </TooltipContainer>
           </div>
 
           <div className="space-y-6">
             {fields.map((item, index) => (
-              <div key={item.id} className="space-y-4">
+              <div
+                key={item.id}
+                className="space-y-4"
+                data-testid="product-item-form"
+              >
                 <Controller
                   name={`productItems.${index}.images`}
                   control={form.control}
@@ -403,7 +416,10 @@ const ProductForm = ({ data }: Props) => {
 
                           <ColorModal>
                             <TooltipContainer message="Add new color">
-                              <AddBtn disabled={isPending || deletingItem} />
+                              <AddBtn
+                                testId="add-color-btn"
+                                disabled={isPending || deletingItem}
+                              />
                             </TooltipContainer>
                           </ColorModal>
                         </FormLabel>
@@ -467,6 +483,7 @@ const ProductForm = ({ data }: Props) => {
                   ) : (
                     <Button
                       type="button"
+                      data-testid="remove-product-item"
                       variant="secondary"
                       onClick={() => remove(index)}
                       disabled={isPending || deletingItem}
@@ -501,7 +518,7 @@ const ProductForm = ({ data }: Props) => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

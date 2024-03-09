@@ -72,6 +72,7 @@ const BannerUpload = ({ value, disabled, storeId, onChange }: Props) => {
   return (
     <div
       {...getRootProps()}
+      data-testid="banner-upload"
       className="w-full max-w-[300px] mx-auto p-4 text-center rounded-md cursor-pointer border-2 border-dotted border-gray-200"
     >
       <input {...getInputProps()} />

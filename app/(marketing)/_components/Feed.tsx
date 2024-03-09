@@ -37,7 +37,10 @@ const Feed = ({ initialData }: Props) => {
 
   return (
     <>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+      <div
+        className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
+        data-testid="product-feed"
+      >
         {products.map((product, i) => {
           if (i === products.length - 1) {
             return (

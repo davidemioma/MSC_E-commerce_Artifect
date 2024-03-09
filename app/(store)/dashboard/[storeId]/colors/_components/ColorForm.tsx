@@ -95,7 +95,7 @@ const ColorForm = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div data-testid="color-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -168,7 +168,7 @@ const ColorForm = ({ data }: Props) => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

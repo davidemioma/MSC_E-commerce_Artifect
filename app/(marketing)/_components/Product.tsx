@@ -20,6 +20,8 @@ const Product = ({ product }: Props) => {
   return (
     <div
       onClick={onClick}
+      role="article"
+      data-testid="product-item"
       className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
     >
       <ProductImg
@@ -31,10 +33,12 @@ const Product = ({ product }: Props) => {
 
         <p className="text-sm text-gray-500">{product.category?.name}</p>
 
-        <AverageRating
-          className="my-2"
-          ratings={product.reviews.map((review) => review.value)}
-        />
+        {product?.reviews?.length > 0 && (
+          <AverageRating
+            className="my-2"
+            ratings={product.reviews.map((review) => review.value)}
+          />
+        )}
 
         <div className="text-sm my-2">
           {product.productItems?.[0]?.discount ? (

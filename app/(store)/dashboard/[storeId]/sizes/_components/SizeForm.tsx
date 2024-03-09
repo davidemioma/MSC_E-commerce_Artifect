@@ -94,7 +94,7 @@ const SizeForm = ({ data }: Props) => {
   };
 
   return (
-    <>
+    <div data-testid="size-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -164,7 +164,7 @@ const SizeForm = ({ data }: Props) => {
           </div>
         </form>
       </Form>
-    </>
+    </div>
   );
 };
 

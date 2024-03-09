@@ -89,6 +89,7 @@ const AvailableForm = ({
                 numInStocks: 0,
               })
             }
+            testId="add-new-size"
             disabled={disabled || isPending}
           />
         </TooltipContainer>

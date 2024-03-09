@@ -84,7 +84,7 @@ const ProductContent = ({ product }: Props) => {
   });
 
   return (
-    <div className="w-full grid md:grid-cols-2">
+    <div className="w-full grid md:grid-cols-2" data-testId="product-content">
       <ProductSlider images={curProductItem?.images || []} />
 
       <div className="py-5 md:py-0 md:pl-10">
@@ -93,9 +93,11 @@ const ProductContent = ({ product }: Props) => {
 
           <p className="text-gray-500">{product.category.name}</p>
 
-          <AverageRating
-            ratings={product?.reviews?.map((review) => review?.value)}
-          />
+          {product?.reviews?.length > 0 && (
+            <AverageRating
+              ratings={product?.reviews?.map((review) => review?.value)}
+            />
+          )}
         </div>
 
         <div
@@ -217,11 +219,13 @@ const ProductContent = ({ product }: Props) => {
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
                     <AvatarImage
-                      src={product.store.logo || "/no-profile.jpeg"}
+                      src={product?.store?.logo || "/no-profile.jpeg"}
                     />
                   </Avatar>
 
-                  <p className="text-sm font-semibold">{product.store.name}</p>
+                  <p className="text-sm font-semibold">
+                    {product?.store?.name}
+                  </p>
                 </div>
               </Link>
             </TooltipContainer>

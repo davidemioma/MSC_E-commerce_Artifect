@@ -65,7 +65,7 @@ const StoreSwitcher = ({ className, stores = [] }: Props) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild data-testid="store-popover-btn">
         <Button
           className={cn("w-[200px] justify-between", className)}
           variant="outline"
@@ -120,6 +120,7 @@ const StoreSwitcher = ({ className, stores = [] }: Props) => {
           <CommandList>
             <CommandGroup>
               <CommandItem
+                data-testid="create-store-btn"
                 onSelect={() => {
                   setOpen(false);
 
