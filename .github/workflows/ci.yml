@@ -1,17 +1,36 @@
-name: CI
+name: CI/CD Pipeline for Next.js
 
-on: [push]
+on:
+  push:
+    branches: [main] # Adjust this as needed
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.7.0" 
+          node-version: "20" # Next.js 14 recommends Node.js 16 or later
+
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Cache Next.js build
+        uses: actions/cache@v2
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
 
       - name: Install Dependencies
         run: npm install
@@ -19,20 +38,20 @@ jobs:
       - name: Run Jest Tests
         run: npm test
 
-    deploy:
-      name: Deploy to Vercel
-      needs: test 
-      runs-on: ubuntu-latest
-      if: github.ref == 'refs/heads/main'
-      steps:
-       - uses: actions/checkout@v2
-      
-       - name: Vercel Action
-         uses: amondnet/vercel-action@v20
-         with:
-          vercel_token: ${{ secrets.VERCEL_TOKEN }} 
-          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }} 
+      - name: Build Next.js Project
+        run: npm run build
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }} # Adjust based on your previous discussions about Account/Org ID
           vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
-
-
-
+          # Include other options as needed
