@@ -34,6 +34,7 @@ type Props = {
   disabled: boolean;
   availableItems: Available[];
   productId: string | undefined;
+  testId?: string;
 };
 
 const AvailableForm = ({
@@ -41,6 +42,7 @@ const AvailableForm = ({
   index,
   sizes,
   disabled,
+  testId,
   productId,
   availableItems,
 }: Props) => {
@@ -90,6 +92,7 @@ const AvailableForm = ({
               })
             }
             testId="add-new-size"
+            cypressTestId={`${testId}-add`}
             disabled={disabled || isPending}
           />
         </TooltipContainer>
@@ -97,7 +100,11 @@ const AvailableForm = ({
 
       <div className="space-y-6">
         {fields.map((item, i) => (
-          <div key={item.id} className="w-full max-w-2xl space-y-4">
+          <div
+            key={item.id}
+            className="w-full max-w-2xl space-y-4"
+            data-cy={`${testId}-${i}`}
+          >
             <div className="w-full grid md:grid-cols-2 gap-4">
               <Controller
                 name={`productItems.${index}.availableItems.${i}.sizeId`}
@@ -121,27 +128,23 @@ const AvailableForm = ({
                         disabled={disabled || isPending}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger
+                            data-cy={`availableItems.${i}.size-select`}
+                          >
                             <SelectValue placeholder="Choose Size" />
                           </SelectTrigger>
                         </FormControl>
 
                         <SelectContent>
-                          {sizes?.length === 0 && (
-                            <div className="flex items-center justify-center py-4 text-sm">
-                              No size found! Create a new size.
-                            </div>
-                          )}
-
-                          {sizes && (
-                            <>
-                              {sizes?.map((size: Size) => (
-                                <SelectItem key={size.id} value={size.id}>
-                                  {size.name}
-                                </SelectItem>
-                              ))}
-                            </>
-                          )}
+                          {sizes.map((size: Size, idx: number) => (
+                            <SelectItem
+                              key={size.id}
+                              value={size.id}
+                              data-cy={`select-size-${idx}`}
+                            >
+                              {size.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -198,7 +201,7 @@ const AvailableForm = ({
             </div>
 
             <div className="flex items-center justify-end">
-              {availableItems[i] ? (
+              {availableItems[i]?.id ? (
                 <Button
                   type="button"
                   variant="secondary"

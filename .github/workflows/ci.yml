@@ -41,6 +41,16 @@ jobs:
       - name: Build Next.js Project
         run: npm run build
 
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          headless: true
+          command: npm run cypress:run
+        env:
+          # Pass the GitHub token to allow Cypress to record the test results on the Cypress dashboard
+          # You need to set up Cypress dashboard and add CYPRESS_RECORD_KEY in your repository secrets if you want to record the tests
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest

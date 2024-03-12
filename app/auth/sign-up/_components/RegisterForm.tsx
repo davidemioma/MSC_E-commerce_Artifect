@@ -92,7 +92,7 @@ const RegisterForm = () => {
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="error-name" />
                 </FormItem>
               )}
             />
@@ -121,7 +121,7 @@ const RegisterForm = () => {
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="error-email" />
                 </FormItem>
               )}
             />
@@ -142,17 +142,22 @@ const RegisterForm = () => {
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="error-password" />
                 </FormItem>
               )}
             />
           </div>
 
-          <AuthError message={error} />
+          <AuthError message={error} data-cy="register-auth-err" />
 
-          <AuthSuccess message={success} />
+          <AuthSuccess message={success} data-cy="register-auth-success" />
 
-          <Button className="w-full" type="submit" disabled={isPending}>
+          <Button
+            className="w-full"
+            data-cy="create-acc-btn"
+            type="submit"
+            disabled={isPending}
+          >
             {isPending ? (
               <BtnSpinner className="border-white" />
             ) : (

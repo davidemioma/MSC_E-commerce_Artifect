@@ -242,6 +242,7 @@ const ProductForm = ({ data }: Props) => {
                         {...field}
                         disabled={isPending || deletingItem}
                         placeholder="Name..."
+                        data-cy="product-name"
                       />
                     </FormControl>
 
@@ -275,7 +276,7 @@ const ProductForm = ({ data }: Props) => {
                         disabled={isPending || deletingItem}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger data-cy="product-select">
                             <SelectValue placeholder="Choose Category" />
                           </SelectTrigger>
                         </FormControl>
@@ -295,8 +296,12 @@ const ProductForm = ({ data }: Props) => {
 
                           {!isLoading && !error && categories && (
                             <>
-                              {categories?.map((cat: Category) => (
-                                <SelectItem key={cat.id} value={cat.id}>
+                              {categories?.map((cat: Category, i: number) => (
+                                <SelectItem
+                                  key={cat.id}
+                                  value={cat.id}
+                                  data-cy={`product-${i}`}
+                                >
                                   {cat.name}
                                 </SelectItem>
                               ))}
@@ -324,6 +329,7 @@ const ProductForm = ({ data }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       disabled={isPending || deletingItem}
+                      data-cy="product-description"
                     />
                   </FormControl>
 
@@ -358,6 +364,7 @@ const ProductForm = ({ data }: Props) => {
                   })
                 }
                 data-testid="add-product-item"
+                data-cy="add-product-item"
                 disabled={isPending || deletingItem}
               >
                 <Plus className="w-3 h-3 text-white" />
@@ -371,6 +378,7 @@ const ProductForm = ({ data }: Props) => {
                 key={item.id}
                 className="space-y-4"
                 data-testid="product-item-form"
+                data-cy={`product-item-form-${index}`}
               >
                 <Controller
                   name={`productItems.${index}.images`}
@@ -386,6 +394,7 @@ const ProductForm = ({ data }: Props) => {
                           onChange={field.onChange}
                           disabled={isPending || deletingItem}
                           storeId={params.storeId as string}
+                          testId={`product-item-form-${index}-upload`}
                         />
                       </FormControl>
 
@@ -403,6 +412,7 @@ const ProductForm = ({ data }: Props) => {
                   availableItems={
                     data?.productItems?.[index]?.availableItems || []
                   }
+                  testId={`product-item-form-${index}-available`}
                 />
 
                 <div className="w-full grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -437,6 +447,7 @@ const ProductForm = ({ data }: Props) => {
                                 value={field.value}
                                 onChange={field.onChange}
                                 placeholder="Choose Colors..."
+                                testId={`product-item-form-${index}-color`}
                               />
                             )}
                         </FormControl>
@@ -501,6 +512,7 @@ const ProductForm = ({ data }: Props) => {
               className="disabled:cursor-not-allowed disabled:opacity-75"
               type="submit"
               disabled={isPending || deletingItem}
+              data-cy="submit-btn"
             >
               {data ? "Save" : "Create"}
             </Button>

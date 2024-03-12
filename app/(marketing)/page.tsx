@@ -39,7 +39,7 @@ export default async function Home() {
               )}
 
               {user?.role === UserRole.SELLER && (
-                <Link href="/store">
+                <Link href="/store" data-cy="go-to-store">
                   <Button variant="default">
                     Go to Store <ArrowRight className="w-4 h-4 ml-1.5" />
                   </Button>

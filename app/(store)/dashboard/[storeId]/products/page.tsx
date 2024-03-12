@@ -79,6 +79,7 @@ export default async function ProductsPage({
           <Link
             href={`/dashboard/${storeId}/products/new`}
             className={buttonVariants()}
+            data-cy="new-product-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add new

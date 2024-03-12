@@ -11,12 +11,19 @@ type OptionType = {
 
 type Props = {
   value: string[];
+  testId?: string;
   placeholder?: string;
   onChange: (value: string[]) => void;
   options: OptionType[];
 };
 
-const MultiSelect = ({ value, onChange, options, placeholder }: Props) => {
+const MultiSelect = ({
+  value,
+  testId,
+  onChange,
+  options,
+  placeholder,
+}: Props) => {
   const ref = useRef(null);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +44,7 @@ const MultiSelect = ({ value, onChange, options, placeholder }: Props) => {
         type="button"
         className="bg-background w-full h-10 flex items-center justify-between py-2 px-3 border border-input rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
         onClick={() => setIsOpen((prev) => !prev)}
+        data-cy={`${testId}-select`}
       >
         {value.length > 0 ? (
           <div>
@@ -67,6 +75,7 @@ const MultiSelect = ({ value, onChange, options, placeholder }: Props) => {
                 onClick={() => {
                   toggleOption(option.value);
                 }}
+                data-cy={`${testId}-select-${i}`}
               >
                 {option.label}
               </button>

@@ -17,6 +17,7 @@ type Props = {
   disabled?: boolean;
   forProduct?: boolean;
   storeId?: string;
+  testId?: string;
   onChange: (base64: string | string[]) => void;
 };
 
@@ -25,6 +26,7 @@ const ImageUpload = ({
   disabled,
   forProduct,
   storeId,
+  testId,
   onChange,
 }: Props) => {
   const { user } = useCurrentUser();
@@ -114,9 +116,10 @@ const ImageUpload = ({
         <div>
           <div
             {...getRootProps()}
+            data-cy={`${testId}-parent`}
             className="w-full max-w-[300px] p-3 text-center rounded-md cursor-pointer border-2 border-dotted border-gray-200"
           >
-            <input {...getInputProps()} />
+            <input {...getInputProps()} data-cy={testId} />
 
             {Array.isArray(base64) && base64?.length === 0 && (
               <div className="flex flex-col">

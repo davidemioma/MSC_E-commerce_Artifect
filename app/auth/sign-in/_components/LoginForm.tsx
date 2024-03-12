@@ -138,7 +138,7 @@ const LoginForm = () => {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage data-cy="error-email" />
                     </FormItem>
                   )}
                 />
@@ -159,13 +159,14 @@ const LoginForm = () => {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage data-cy="error-password" />
 
                       <Button
                         className="px-0 font-normal"
                         asChild
                         size="sm"
                         variant="link"
+                        data-cy="forgot-password-btn"
                         disabled={isPending}
                       >
                         <Link href="/auth/reset-password">
@@ -183,7 +184,12 @@ const LoginForm = () => {
 
           <AuthError message={error || urlError} />
 
-          <Button className="w-full" type="submit" disabled={isPending}>
+          <Button
+            className="w-full"
+            data-cy="sign-in-btn"
+            type="submit"
+            disabled={isPending}
+          >
             {isPending ? <BtnSpinner /> : showTwoFactor ? "Confirm" : "Sign In"}
           </Button>
         </form>

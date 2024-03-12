@@ -23,17 +23,18 @@ const Routes = ({ routes, className, closeModal }: Props) => {
   return (
     <div className={cn("flex items-center gap-4 lg:gap-6", className)}>
       {routes.map((route) => (
-        <div
+        <button
           className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
             route.active
               ? "text-black dark:text-white"
               : "text-muted-foreground"
           }`}
           key={route.href}
+          data-cy={`${route.label.toLowerCase()}-link`}
           onClick={() => onClickHandler(route.href)}
         >
           {route.label}
-        </div>
+        </button>
       ))}
     </div>
   );

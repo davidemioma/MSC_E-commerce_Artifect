@@ -18,7 +18,7 @@ export const Header = ({ label }: Props) => {
         🛍 LocalMart
       </h1>
 
-      <p className=" text-sm text-muted-foreground">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   );
 };

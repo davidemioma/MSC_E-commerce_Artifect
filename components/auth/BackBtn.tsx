@@ -10,7 +10,13 @@ type Props = {
 
 export const BackBtn = ({ label, href }: Props) => {
   return (
-    <Button className="w-full" variant="link" size="sm" asChild>
+    <Button
+      className="w-full"
+      variant="link"
+      size="sm"
+      asChild
+      data-cy="back-btn"
+    >
       <Link href={href}>{label}</Link>
     </Button>
   );
