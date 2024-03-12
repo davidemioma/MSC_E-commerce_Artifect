@@ -9,7 +9,9 @@ describe("Product Form", () => {
 
   it("Creating a new product", () => {
     //New product route
-    cy.visit(`http://localhost:3000/dashboard/${Cypress.env("auth_storeId")}`);
+    cy.visit(
+      `${Cypress.env("public_url")}/dashboard/${Cypress.env("auth_storeId")}`
+    );
 
     //Checking if url contains /dashboard
     cy.url().should("include", "/dashboard");

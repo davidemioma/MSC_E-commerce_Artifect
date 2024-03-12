@@ -11,6 +11,7 @@ export default defineConfig({
       auth_storeId: process.env.TEST_STORE_ID,
       auth_email: process.env.TEST_EMAIL,
       auth_password: process.env.TEST_PASSWORD,
+      public_url: process.env.NEXT_PUBLIC_APP_URL,
     },
   },
 });

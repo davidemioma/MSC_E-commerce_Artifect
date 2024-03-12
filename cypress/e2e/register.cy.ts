@@ -1,6 +1,6 @@
 describe("Register Form", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000/auth/sign-up");
+    cy.visit(`${Cypress.env("public_url")}/auth/sign-up`);
   });
 
   it("Should display the registration form", () => {

@@ -1,6 +1,6 @@
 describe("Login Form", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000/auth/sign-in");
+    cy.visit(`${Cypress.env("public_url")}/auth/sign-in`);
   });
 
   it("Should display the login form", () => {
@@ -46,6 +46,6 @@ describe("Login Form", () => {
 
     cy.get('[data-cy="sign-in-btn"]').click();
 
-    cy.url().should("include", "/");
+    cy.url({ timeout: 10000 }).should("include", "/");
   });
 });
