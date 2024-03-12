@@ -50,6 +50,10 @@ jobs:
           # Pass the GitHub token to allow Cypress to record the test results on the Cypress dashboard
           # You need to set up Cypress dashboard and add CYPRESS_RECORD_KEY in your repository secrets if you want to record the tests
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
 
   deploy:
     needs: build-and-test

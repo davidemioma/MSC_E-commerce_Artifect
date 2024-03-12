@@ -11,10 +11,7 @@ export default defineConfig({
       auth_storeId: process.env.TEST_STORE_ID,
       auth_email: process.env.TEST_EMAIL,
       auth_password: process.env.TEST_PASSWORD,
-      public_url:
-        process.env.NODE_ENV === "production"
-          ? "https://localmart-eight.vercel.app"
-          : "http://localhost:3000",
+      public_url: process.env.NEXT_PUBLIC_APP_URL as string,
     },
   },
 });
