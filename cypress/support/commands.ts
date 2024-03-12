@@ -16,7 +16,7 @@ declare global {
 }
 
 Cypress.Commands.add("login", (email: string, password: string) => {
-  cy.visit("http://localhost:3000/auth/sign-in");
+  cy.visit(`${Cypress.env("public_url")}/auth/sign-in`);
 
   cy.get('input[placeholder="email@example.com"]').type(email);
 
