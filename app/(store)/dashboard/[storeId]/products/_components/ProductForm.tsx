@@ -88,7 +88,7 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const { fields, prepend, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "productItems",
   });
@@ -355,7 +355,7 @@ const ProductForm = ({ data }: Props) => {
                 type="button"
                 className="bg-blue-400 w-5 h-5 flex items-center justify-center rounded-full overflow-hidden disabled:cursor-not-allowed"
                 onClick={() =>
-                  prepend({
+                  append({
                     id: "",
                     images: [],
                     colorIds: [],
@@ -482,7 +482,7 @@ const ProductForm = ({ data }: Props) => {
                 </div>
 
                 <div className="flex items-center justify-end">
-                  {data?.productItems[index] ? (
+                  {data?.productItems?.[index]?.id ? (
                     <Button
                       type="button"
                       variant="secondary"
@@ -495,6 +495,7 @@ const ProductForm = ({ data }: Props) => {
                     <Button
                       type="button"
                       data-testid="remove-product-item"
+                      data-cy={`product-item-form-${index}-remove`}
                       variant="secondary"
                       onClick={() => remove(index)}
                       disabled={isPending || deletingItem}

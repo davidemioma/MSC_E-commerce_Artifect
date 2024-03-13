@@ -33,7 +33,7 @@ export const createStore = async (values: StoreValidator) => {
 
   const { name, email, country, postcode, code } = validatedFields.data;
 
-  //Check if postcode is valid
+  // Check if postcode is valid
   const locationIsValid = postcodeValidator(postcode, country);
 
   if (!locationIsValid) {
@@ -43,7 +43,10 @@ export const createStore = async (values: StoreValidator) => {
   //Check if a store has used the email
   const storeExists = await prismadb.store.findUnique({
     where: {
-      email,
+      email_name: {
+        email,
+        name,
+      },
     },
   });
 
@@ -137,6 +140,8 @@ export const createStore = async (values: StoreValidator) => {
         success: "Email verified, your store has been created!",
         storeId: storeExists.id,
       };
+    } else {
+      return { error: "Store Already Exists!" };
     }
   }
 };

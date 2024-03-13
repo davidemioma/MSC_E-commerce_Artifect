@@ -148,9 +148,9 @@ const RegisterForm = () => {
             />
           </div>
 
-          <AuthError message={error} data-cy="register-auth-err" />
+          <AuthError message={error} data-cy="register-auth-msg" />
 
-          <AuthSuccess message={success} data-cy="register-auth-success" />
+          <AuthSuccess message={success} data-cy="register-auth-msg" />
 
           <Button
             className="w-full"

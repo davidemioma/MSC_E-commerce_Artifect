@@ -113,6 +113,7 @@ const StoreModal = () => {
                         {...field}
                         disabled={isPending}
                         placeholder="123456"
+                        data-cy="veriification-input"
                       />
                     </FormControl>
 
@@ -137,7 +138,7 @@ const StoreModal = () => {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage data-cy="store-name-err" />
                     </FormItem>
                   )}
                 />
@@ -158,7 +159,7 @@ const StoreModal = () => {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage data-cy="store-email-err" />
                     </FormItem>
                   )}
                 />
@@ -176,7 +177,7 @@ const StoreModal = () => {
                         disabled={isPending}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger data-cy="country-select">
                             <SelectValue placeholder="Anywhere" />
                           </SelectTrigger>
                         </FormControl>
@@ -186,6 +187,7 @@ const StoreModal = () => {
                             <SelectItem
                               key={country.value}
                               value={country.value}
+                              data-cy={`country-select-${country.value}`}
                             >
                               {country.flag} {country.label}
                             </SelectItem>
@@ -193,7 +195,7 @@ const StoreModal = () => {
                         </SelectContent>
                       </Select>
 
-                      <FormMessage />
+                      <FormMessage data-cy="store-country-err" />
                     </FormItem>
                   )}
                 />
@@ -213,7 +215,7 @@ const StoreModal = () => {
                         />
                       </FormControl>
 
-                      <FormMessage />
+                      <FormMessage data-cy="store-postcode-err" />
                     </FormItem>
                   )}
                 />
@@ -223,7 +225,7 @@ const StoreModal = () => {
 
           <AuthSuccess message={success} />
 
-          <AuthError message={error} />
+          <AuthError message={error} data-cy="create-store-err" />
 
           <div className="w-full flex items-center justify-end gap-2">
             <Button
@@ -231,11 +233,16 @@ const StoreModal = () => {
               variant="outline"
               onClick={() => storeModal.onClose()}
               disabled={isPending}
+              data-cy="store-close-btn"
             >
               Cancel
             </Button>
 
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              data-cy="store-submit-btn"
+            >
               {isPending ? (
                 <BtnSpinner />
               ) : showVerifyEmail ? (

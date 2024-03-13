@@ -48,7 +48,7 @@ const AvailableForm = ({
 }: Props) => {
   const params = useParams();
 
-  const { fields, prepend, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: `productItems.${index}.availableItems`,
   });
@@ -84,7 +84,7 @@ const AvailableForm = ({
         <TooltipContainer message="Add sizes for product items with unique prices">
           <AddBtn
             onClick={() =>
-              prepend({
+              append({
                 id: "",
                 sizeId: "",
                 price: 0,
@@ -128,9 +128,7 @@ const AvailableForm = ({
                         disabled={disabled || isPending}
                       >
                         <FormControl>
-                          <SelectTrigger
-                            data-cy={`availableItems.${i}.size-select`}
-                          >
+                          <SelectTrigger data-cy={`${testId}-${i}-size-select`}>
                             <SelectValue placeholder="Choose Size" />
                           </SelectTrigger>
                         </FormControl>
@@ -140,7 +138,7 @@ const AvailableForm = ({
                             <SelectItem
                               key={size.id}
                               value={size.id}
-                              data-cy={`select-size-${idx}`}
+                              data-cy={`${testId}-select-size-${idx}`}
                             >
                               {size.name}
                             </SelectItem>

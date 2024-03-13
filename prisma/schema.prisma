@@ -137,7 +137,7 @@ model Store{
   id String @id @default(cuid())
   userId String
   name String
-  email String @unique
+  email String 
   emailVerified DateTime? 
   country String
   postcode String
@@ -157,6 +157,8 @@ model Store{
   reviews Review[]
   orderItems OrderItem[]
   Banners Banner[]
+
+  @@unique([email, name], name: "email_name")
 
   @@index([userId])
 }

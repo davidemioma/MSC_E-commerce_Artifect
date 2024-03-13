@@ -1,50 +1,63 @@
 import "cypress-file-upload";
 
-describe("Product Form", () => {
+const formNum = 2;
+
+describe("Update Product Form", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
     cy.get('[data-cy="go-to-store"]', { timeout: 10000 }).should("be.visible");
-  });
 
-  it("Creating a new product", () => {
-    //New product route
+    //Go to store page
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env("auth_storeId")}`
     );
 
     //Checking if url contains /dashboard
     cy.url().should("include", "/dashboard");
+  });
 
+  it("Updating an existing product", () => {
     //Redirect to product page in store.
     cy.get('[data-cy="products-link"]').should("contain", "Products").click();
 
-    //Check if new button exists and click it.
-    cy.get('[data-cy="new-product-btn"]').should("be.visible").click();
-
-    //Product Name
-    cy.get('[data-cy="product-name"]', { timeout: 10000 }).should("be.visible");
-
-    cy.get('[data-cy="product-name"]').type("Nike Air Max");
-
-    //Product Description
-    cy.get(".ql-editor").should("be.visible");
-
-    cy.get(".ql-editor").type("Nike Air Max for men.");
-
-    //Add product item button
-    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
-
-    //Remove product Item
-    cy.get('[data-cy="product-item-form-0-remove"]')
+    //Check if product has a manage button
+    cy.get(`[data-cy="${Cypress.env("test_productId")}-trigger"]`)
       .should("be.visible")
       .click();
 
-    //Add product item button
+    //Check if product has a update button
+    cy.get(`[data-cy="${Cypress.env("test_productId")}-update"]`)
+      .should("be.visible")
+      .click();
+
+    //Check if it has an existing text
+    cy.get('[data-cy="product-name"]', { timeout: 10000 }).should(
+      "not.be.empty"
+    );
+
+    //Change the name
+    cy.get('[data-cy="product-name"]').clear().type("Nike Air Jordan One Low");
+
+    //change description
+    cy.get(".ql-editor")
+      .should("not.be.empty")
+      .clear()
+      .type("Nike Air Max for all men.");
+
+    //Add product item
     cy.get('[data-cy="add-product-item"]').should("be.visible").click();
 
-    //Product Item Form
-    cy.get('[data-cy="product-item-form-0"]')
+    //Remove product Item
+    cy.get(`[data-cy="product-item-form-${formNum}-remove"]`)
+      .should("be.visible")
+      .click();
+
+    //Add product item again
+    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+
+    //New product Item Form
+    cy.get(`[data-cy="product-item-form-${formNum}"]`)
       .should("be.visible")
       .within(() => {
         //Image Upload
@@ -61,12 +74,12 @@ describe("Product Form", () => {
         // });
 
         //Add Size button
-        cy.get('[data-cy="product-item-form-0-available-add"]')
+        cy.get(`[data-cy="product-item-form-${formNum}-available-add"]`)
           .should("be.visible")
           .click();
 
         //Size Form
-        cy.get('[data-cy="product-item-form-0-available-0"]')
+        cy.get(`[data-cy="product-item-form-${formNum}-available-0"]`)
           .should("be.visible")
           .within(() => {
             //Price
@@ -89,12 +102,12 @@ describe("Product Form", () => {
           .type("10");
 
         //Color
-        cy.get('[data-cy="product-item-form-0-color-select"]')
+        cy.get(`[data-cy="product-item-form-${formNum}-color-select"]`)
           .should("be.visible")
           .click()
           .then(($select) => {
             cy.contains(
-              '[data-cy^="product-item-form-0-color-select-"]',
+              `[data-cy^="product-item-form-${formNum}-color-select-"]`,
               "Black",
               {
                 timeout: 10000,
@@ -103,34 +116,26 @@ describe("Product Form", () => {
               .should("be.visible")
               .click();
 
-            cy.get('[data-cy="product-item-form-0-color-select"]').click();
+            cy.get(
+              `[data-cy="product-item-form-${formNum}-color-select"]`
+            ).click();
           });
       });
 
-    //Category
-    cy.get('[data-cy="product-select"]')
-      .should("be.visible")
-      .click()
-      .then(($select) => {
-        cy.contains('[data-cy^="product-"]', "Men's Shoes", {
-          timeout: 10000,
-        })
-          .should("be.visible")
-          .click();
-      });
-
     //Choosing size
-    cy.get('[data-cy="product-item-form-0-available-0"]').should("be.visible");
+    cy.get(`[data-cy="product-item-form-${formNum}-available-0"]`).should(
+      "be.visible"
+    );
 
-    cy.get('[data-cy="product-item-form-0-available-0-size-select"]')
+    cy.get(`[data-cy="product-item-form-${formNum}-available-0-size-select"]`)
       .should("be.visible")
       .click();
 
-    cy.get('[data-cy^="product-item-form-0-available-select-size-"]')
+    cy.get(`[data-cy^="product-item-form-${formNum}-available-select-size-"]`)
       .first()
       .click();
 
-    //Create Product
+    //Save Product
     cy.get('[data-cy="submit-btn"]').should("be.visible");
 
     // cy.url({ timeout: 10000 }).should(

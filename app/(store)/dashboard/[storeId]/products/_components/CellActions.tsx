@@ -78,7 +78,7 @@ const CellActions = ({ data }: Props) => {
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild data-cy={`${data.id}-trigger`}>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
 
@@ -112,6 +112,7 @@ const CellActions = ({ data }: Props) => {
               router.push(`/dashboard/${data.storeId}/products/${data.id}`)
             }
             disabled={isPending}
+            data-cy={`${data.id}-update`}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update
