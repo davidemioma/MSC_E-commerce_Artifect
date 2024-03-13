@@ -59,18 +59,27 @@ const Cart = () => {
 
   return (
     <Sheet>
-      <SheetTrigger className="group flex items-center gap-1 px-2">
+      <SheetTrigger
+        className="group flex items-center gap-1 px-2"
+        data-cy="cart-trigger"
+      >
         <ShoppingCartIcon
           className="w-5 h-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
           aria-hidden="true"
         />
 
-        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
+        <span
+          className="text-sm font-medium text-gray-700 group-hover:text-gray-800"
+          data-cy="cart-number"
+        >
           {cart?.cartItems?.length || 0}
         </span>
       </SheetTrigger>
 
-      <SheetContent className="w-full sm:max-w-lg flex flex-col">
+      <SheetContent
+        className="w-full sm:max-w-lg flex flex-col"
+        data-cy="cart-content"
+      >
         <SheetHeader>
           <SheetTitle className="py-2.5">
             Cart ({cart?.cartItems?.length || 0})
@@ -86,7 +95,9 @@ const Cart = () => {
         {isError && <Empty message="Could not get item! Try again later" />}
 
         {emptyCart && (
-          <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
+          <div data-cy="empty-cart">
+            <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
+          </div>
         )}
 
         {!isLoading && !isError && cart?.cartItems && (
@@ -94,8 +105,8 @@ const Cart = () => {
             {cart?.cartItems?.length > 0 && (
               <ScrollArea>
                 <div className="space-y-5">
-                  {cart?.cartItems?.map((item) => (
-                    <CartItem key={item.id} cartItem={item} />
+                  {cart?.cartItems?.map((item, i) => (
+                    <CartItem key={item.id} cartItem={item} index={i} />
                   ))}
                 </div>
               </ScrollArea>
@@ -145,6 +156,7 @@ const Cart = () => {
                   className={buttonVariants({
                     className: "w-full bg-violet-500",
                   })}
+                  data-cy="checkout-btn"
                 >
                   Continue to Checkout
                 </Link>

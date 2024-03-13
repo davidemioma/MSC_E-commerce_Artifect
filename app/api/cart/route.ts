@@ -137,6 +137,36 @@ export async function POST(request: Request) {
       },
     });
 
+    const cartItemExists = await prismadb.cartItem.findUnique({
+      where: {
+        cartId_productId_productItemId_availableItemId: {
+          cartId: cart.id,
+          productId,
+          productItemId,
+          availableItemId,
+        },
+      },
+      select: {
+        quantity: true,
+        availableItem: {
+          select: {
+            numInStocks: true,
+          },
+        },
+      },
+    });
+
+    //Check if item is available in stock
+    if (
+      cartItemExists &&
+      cartItemExists.quantity >= cartItemExists.availableItem.numInStocks
+    ) {
+      return new NextResponse(
+        `Only ${cartItemExists.availableItem.numInStocks} of this item is in stocks!`,
+        { status: 400 }
+      );
+    }
+
     await prismadb.cartItem.upsert({
       where: {
         cartId_productId_productItemId_availableItemId: {

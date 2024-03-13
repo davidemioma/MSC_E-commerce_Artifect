@@ -19,10 +19,11 @@ const Product = ({ product }: Props) => {
 
   return (
     <div
+      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
       onClick={onClick}
       role="article"
       data-testid="product-item"
-      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
+      data-cy={`feed-product-${product.id}`}
     >
       <ProductImg
         images={product?.productItems?.map((item) => item.images[0]) || []}

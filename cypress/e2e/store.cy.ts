@@ -1,6 +1,6 @@
 import "cypress-file-upload";
 
-describe("Product Form", () => {
+describe("Store Form", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 

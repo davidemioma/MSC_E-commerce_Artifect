@@ -95,7 +95,10 @@ const Reviews = ({
 
           <div className="grid md:grid-cols-2 gap-8">
             {showForm && (
-              <div className="w-full space-y-4">
+              <div
+                className="w-full space-y-4"
+                data-cy={`review-form-${productId}`}
+              >
                 <div className="space-y-0.5">
                   <h2 className="font-semibold">Write a Review</h2>
 
@@ -139,7 +142,7 @@ const Reviews = ({
                               </div>
                             </FormControl>
 
-                            <FormMessage />
+                            <FormMessage data-cy={`star-err-${productId}`} />
                           </FormItem>
                         )}
                       />
@@ -159,7 +162,7 @@ const Reviews = ({
                               />
                             </FormControl>
 
-                            <FormMessage />
+                            <FormMessage data-cy={`reason-err-${productId}`} />
                           </FormItem>
                         )}
                       />
@@ -180,13 +183,17 @@ const Reviews = ({
                               />
                             </FormControl>
 
-                            <FormMessage />
+                            <FormMessage data-cy={`comment-err-${productId}`} />
                           </FormItem>
                         )}
                       />
                     </div>
 
-                    <Button type="submit" disabled={isPending}>
+                    <Button
+                      type="submit"
+                      disabled={isPending}
+                      data-cy={`submit-review-${productId}`}
+                    >
                       Submit
                     </Button>
                   </form>

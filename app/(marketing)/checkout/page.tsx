@@ -56,8 +56,8 @@ export default async function CheckoutPage() {
         <div className="md:col-span-2">
           {cart?.cartItems && cart?.cartItems?.length > 0 ? (
             <div className="space-y-5">
-              {cart.cartItems.map((item) => (
-                <CartItem key={item.id} cartItem={item} isCheckout />
+              {cart.cartItems.map((item, i) => (
+                <CartItem key={item.id} cartItem={item} isCheckout index={i} />
               ))}
             </div>
           ) : (

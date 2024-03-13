@@ -65,7 +65,7 @@ export async function PATCH(
       //Check if there is an item in stocks.
       if (cartItem.quantity >= cartItem.availableItem.numInStocks) {
         return new NextResponse(
-          `Only ${cartItem.availableItem.numInStocks} are in stocks!`,
+          `Only ${cartItem.availableItem.numInStocks} of this item is in stocks!`,
           { status: 400 }
         );
       }

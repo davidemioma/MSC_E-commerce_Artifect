@@ -104,6 +104,7 @@ const OrderSummary = ({ cartId, cartItems }: Props) => {
         type="button"
         disabled={cartItems?.length === 0 || isPending}
         onClick={() => createStripeSession({ cartId })}
+        data-cy="stripe-checkout-btn"
       >
         {isPending ? <BtnSpinner /> : "Checkout"}
       </Button>

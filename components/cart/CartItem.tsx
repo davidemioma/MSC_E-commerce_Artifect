@@ -13,9 +13,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 type Props = {
   cartItem: CartItemType;
   isCheckout?: boolean;
+  index?: number;
 };
 
-const CartItem = ({ cartItem, isCheckout }: Props) => {
+const CartItem = ({ cartItem, isCheckout, index }: Props) => {
   const router = useRouter();
 
   const queryClient = useQueryClient();
@@ -80,6 +81,7 @@ const CartItem = ({ cartItem, isCheckout }: Props) => {
         "space-y-5 pb-8 border-b",
         isCheckout && "bg-white p-5 rounded-lg border-none shadow-sm"
       )}
+      data-cy={`cart-item-${index}`}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-2">
@@ -119,6 +121,7 @@ const CartItem = ({ cartItem, isCheckout }: Props) => {
             variant="outline"
             disabled={isPending || isLoading}
             onClick={() => onQuantityChange({ task: "minus" })}
+            data-cy={`cart-item-${index}-minus`}
           >
             -
           </Button>
@@ -130,6 +133,7 @@ const CartItem = ({ cartItem, isCheckout }: Props) => {
             variant="outline"
             disabled={isPending || isLoading}
             onClick={() => onQuantityChange({ task: "add" })}
+            data-cy={`cart-item-${index}-add`}
           >
             +
           </Button>
@@ -139,6 +143,7 @@ const CartItem = ({ cartItem, isCheckout }: Props) => {
           variant="destructive"
           onClick={() => removeItem()}
           disabled={isPending || isLoading}
+          data-cy={`cart-item-${index}-remove`}
         >
           Remove
         </Button>

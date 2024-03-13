@@ -194,6 +194,7 @@ const ProductContent = ({ product }: Props) => {
                       ? "opacity-100"
                       : "opacity-70 cursor-not-allowed"
                   )}
+                  data-cy={`product-size-${product.id}-${i}`}
                   onClick={() => {
                     if (!item.inStock) return;
 
@@ -243,6 +244,7 @@ const ProductContent = ({ product }: Props) => {
                 availableItemId: curAvailableId,
               })
             }
+            data-cy={`product-${product.id}-add-to-cart-btn`}
             disabled={isPending || !curProductItem || !curAvailableId}
           >
             Add To Cart
