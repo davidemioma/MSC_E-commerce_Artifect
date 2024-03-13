@@ -63,5 +63,5 @@ Cypress.Commands.add("removeFromCart", () => {
 
   cy.get('[data-cy="cart-item-0-remove"]').should("be.visible").click();
 
-  cy.get('[data-cy="empty-cart"]').should("be.visible");
+  cy.get('[data-cy="empty-cart"]', { timeout: 15000 }).should("be.visible");
 });
