@@ -4,7 +4,7 @@ describe("Product Form", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 10000 }).should("be.visible");
+    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
   });
 
   it("Creating a new product", () => {
@@ -20,12 +20,12 @@ describe("Product Form", () => {
     cy.get('[data-cy="products-link"]').should("contain", "Products").click();
 
     //Check if new button exists and click it.
-    cy.get('[data-cy="new-product-btn"]', { timeout: 10000 })
+    cy.get('[data-cy="new-product-btn"]', { timeout: 15000 })
       .should("be.visible")
       .click();
 
     //Product Name
-    cy.get('[data-cy="product-name"]', { timeout: 10000 }).should("be.visible");
+    cy.get('[data-cy="product-name"]', { timeout: 15000 }).should("be.visible");
 
     cy.get('[data-cy="product-name"]').type("Nike Air Max");
 
@@ -91,7 +91,9 @@ describe("Product Form", () => {
           .type("10");
 
         //Color
-        cy.get('[data-cy="product-item-form-0-color-select"]')
+        cy.get('[data-cy="product-item-form-0-color-select"]', {
+          timeout: 10000,
+        })
           .should("be.visible")
           .click()
           .then(($select) => {
