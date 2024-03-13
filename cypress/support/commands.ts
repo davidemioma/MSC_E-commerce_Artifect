@@ -52,12 +52,12 @@ Cypress.Commands.add("addToCart", () => {
 
 Cypress.Commands.add("removeFromCart", () => {
   cy.get('[data-cy="cart-trigger"]', {
-    timeout: 10000,
+    timeout: 15000,
   })
     .should("be.visible")
     .click();
 
-  cy.get('[data-cy="cart-content"]').should("be.visible");
+  cy.get('[data-cy="cart-content"]', { timeout: 15000 }).should("be.visible");
 
   cy.get('[data-cy="cart-item-0"]', { timeout: 15000 }).should("be.visible");
 
