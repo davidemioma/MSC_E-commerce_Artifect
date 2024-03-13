@@ -20,7 +20,9 @@ describe("Product Form", () => {
     cy.get('[data-cy="products-link"]').should("contain", "Products").click();
 
     //Check if new button exists and click it.
-    cy.get('[data-cy="new-product-btn"]').should("be.visible").click();
+    cy.get('[data-cy="new-product-btn"]', { timeout: 10000 })
+      .should("be.visible")
+      .click();
 
     //Product Name
     cy.get('[data-cy="product-name"]', { timeout: 10000 }).should("be.visible");
