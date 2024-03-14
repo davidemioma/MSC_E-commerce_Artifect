@@ -300,7 +300,13 @@ const ProductForm = ({ data }: Props) => {
                         disabled={creating || updating || deletingItem}
                       >
                         <FormControl>
-                          <SelectTrigger data-cy="product-select">
+                          <SelectTrigger
+                            data-cy={
+                              data
+                                ? `product-select-${data.id}`
+                                : "product-select"
+                            }
+                          >
                             <SelectValue placeholder="Choose Category" />
                           </SelectTrigger>
                         </FormControl>
@@ -324,7 +330,9 @@ const ProductForm = ({ data }: Props) => {
                                 <SelectItem
                                   key={cat.id}
                                   value={cat.id}
-                                  data-cy={`product-${i}`}
+                                  data-cy={
+                                    data ? `product-${data.id}-${i}` : `product-${i}`
+                                  }
                                 >
                                   {cat.name}
                                 </SelectItem>

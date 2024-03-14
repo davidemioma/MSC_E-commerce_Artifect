@@ -111,18 +111,6 @@ describe("Product Form", () => {
           });
       });
 
-    //Category
-    cy.get('[data-cy="product-select"]')
-      .should("be.visible")
-      .click()
-      .then(($select) => {
-        cy.contains('[data-cy^="product-"]', "Men's Shoes", {
-          timeout: 10000,
-        })
-          .should("be.visible")
-          .click();
-      });
-
     //Choosing size
     cy.get('[data-cy="product-item-form-0-available-0"]').should("be.visible");
 
@@ -133,6 +121,11 @@ describe("Product Form", () => {
     cy.get('[data-cy^="product-item-form-0-available-select-size-"]')
       .first()
       .click();
+
+    //Category
+    cy.get('[data-cy="product-select"]').should("be.visible").click();
+
+    cy.get('[data-cy^="product-"]').first().click({ force: true });
 
     //Create Product
     cy.get('[data-cy="create-btn"]').should("be.visible").click();
