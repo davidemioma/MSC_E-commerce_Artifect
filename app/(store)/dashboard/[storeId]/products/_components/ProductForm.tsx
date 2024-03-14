@@ -228,7 +228,10 @@ const ProductForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="product-form">
+    <div
+      data-testid="product-form"
+      data-cy={data ? `product-form-${data.id}` : "product-form"}
+    >
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -261,7 +264,9 @@ const ProductForm = ({ data }: Props) => {
                         {...field}
                         disabled={creating || updating || deletingItem}
                         placeholder="Name..."
-                        data-cy="product-name"
+                        data-cy={
+                          data ? `product-name-${data.id}` : "product-name"
+                        }
                       />
                     </FormControl>
 

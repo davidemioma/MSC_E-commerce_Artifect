@@ -31,13 +31,17 @@ describe("Update a product", () => {
       .should("be.visible")
       .click();
 
-    //Check if it has an existing text
-    cy.get('[data-cy="product-name"]', { timeout: 20000 }).should(
-      "not.be.empty"
-    );
+    cy.get(`[data-cy="product-form-${Cypress.env("test_productId")}"]`, {
+      timeout: 80000,
+    }).should("be.visible");
 
-    //Change the name
-    cy.get('[data-cy="product-name"]').clear().type("Nike Air Jordan One Low");
+    //Check if it has an existing text and change the name
+    cy.get(`[data-cy="product-name-${Cypress.env("test_productId")}"]`, {
+      timeout: 10000,
+    })
+      .should("be.visible")
+      .clear()
+      .type("Nike Air Jordan One Low");
 
     //change description
     cy.get(".ql-editor")
