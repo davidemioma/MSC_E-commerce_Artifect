@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20" # Next.js 14 recommends Node.js 16 or later
+          node-version: "18" # Next.js 14 recommends Node.js 16 or later
 
       - name: Cache Node modules
         uses: actions/cache@v2
@@ -41,25 +41,34 @@ jobs:
       - name: Build Next.js Project
         run: npm run build
 
+      - name: Start Next.js Application
+        run: npm run start &
+        env:
+          PORT: 3001
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.TEST_DIRECT_URL }}
+
+      - name: Wait for Next.js Server
+        run: npx wait-on http://localhost:3001 --timeout 60000
+
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           headless: true
           command: npm run cypress:run
+          wait-on: "http://localhost:3001"
+          wait-on-timeout: 60
         env:
-          # Pass the GitHub token to allow Cypress to record the test results on the Cypress dashboard
-          # You need to set up Cypress dashboard and add CYPRESS_RECORD_KEY in your repository secrets if you want to record the tests
+          CYPRESS_BASE_URL: http://localhost:3001
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
           TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_TEST_APP_URL: ${{ secrets.NEXT_PUBLIC_TEST_APP_URL }}
           TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           TEST_USER_PRODUCT_ID: ${{ secrets.TEST_USER_PRODUCT_ID }}
-          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          TEST_DIRECT_URL: ${{ secrets.TEST_DIRECT_URL }}
 
   deploy:
     needs: build-and-test
