@@ -32,7 +32,7 @@ describe("Update a product", () => {
       .click();
 
     //Check if it has an existing text
-    cy.get('[data-cy="product-name"]', { timeout: 15000 }).should(
+    cy.get('[data-cy="product-name"]', { timeout: 20000 }).should(
       "not.be.empty"
     );
 

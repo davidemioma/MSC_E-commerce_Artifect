@@ -11,7 +11,7 @@ describe("Cart and payment", () => {
 
   it("Add to cart", () => {
     //Ensure there is a product
-    cy.get(`[data-cy="feed-product-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     })
       .should("be.visible")
@@ -20,7 +20,7 @@ describe("Cart and payment", () => {
     //Redirect to product details page.
     cy.url({ timeout: 16000 }).should(
       "include",
-      `/products/${Cypress.env("test_productId")}`
+      `/products/${Cypress.env("test_user_productId")}`
     );
 
     //Add to cart

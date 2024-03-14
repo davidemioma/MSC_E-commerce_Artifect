@@ -29,7 +29,7 @@ Cypress.Commands.add("login", (email: string, password: string) => {
 
 Cypress.Commands.add("addToCart", () => {
   //Select size
-  cy.get(`[data-cy="product-size-${Cypress.env("test_productId")}-0"]`, {
+  cy.get(`[data-cy="product-size-${Cypress.env("test_user_productId")}-0"]`, {
     timeout: 10000,
   })
     .should("be.visible")
@@ -37,7 +37,7 @@ Cypress.Commands.add("addToCart", () => {
 
   //Add to cart btn should not be disabled
   cy.get(
-    `[data-cy="product-${Cypress.env("test_productId")}-add-to-cart-btn"]`,
+    `[data-cy="product-${Cypress.env("test_user_productId")}-add-to-cart-btn"]`,
     {
       timeout: 10000,
     }

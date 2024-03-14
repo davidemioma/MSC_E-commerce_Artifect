@@ -9,7 +9,7 @@ describe("Users Interactions", () => {
     );
 
     //Ensure there is a product
-    cy.get(`[data-cy="feed-product-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     })
       .should("be.visible")
@@ -18,7 +18,7 @@ describe("Users Interactions", () => {
     //Redirect to product details page.
     cy.url({ timeout: 16000 }).should(
       "include",
-      `/products/${Cypress.env("test_productId")}`
+      `/products/${Cypress.env("test_user_productId")}`
     );
   });
 
@@ -61,27 +61,27 @@ describe("Users Interactions", () => {
 
   it("Should show error message when submitting review invalid form", () => {
     //There should be a review form
-    cy.get(`[data-cy="review-form-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="review-form-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     }).should("exist");
 
     //Get submit review button
-    cy.get(`[data-cy="submit-review-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="submit-review-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     })
       .should("exist")
       .click();
 
     //Error messages
-    cy.get(`[data-cy="star-err-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="star-err-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     }).should("exist");
 
-    cy.get(`[data-cy="reason-err-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="reason-err-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     }).should("exist");
 
-    cy.get(`[data-cy="comment-err-${Cypress.env("test_productId")}"]`, {
+    cy.get(`[data-cy="comment-err-${Cypress.env("test_user_productId")}"]`, {
       timeout: 10000,
     }).should("exist");
   });

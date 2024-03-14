@@ -57,6 +57,7 @@ jobs:
           TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_USER_PRODUCT_ID: ${{ secrets.TEST_USER_PRODUCT_ID }}
 
   deploy:
     needs: build-and-test
