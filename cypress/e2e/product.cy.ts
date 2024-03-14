@@ -125,10 +125,14 @@ describe("Product Form", () => {
     //Category
     cy.get('[data-cy="product-select"]').should("be.visible").click();
 
-    cy.get('[data-cy^="product-"]').first().click({ force: true });
+    cy.get('[data-cy^="product-0"]')
+      .should("be.visible")
+      .click({ force: true });
 
     //Create Product
-    cy.get('[data-cy="create-btn"]').should("be.visible").click();
+    cy.get('[data-cy="create-btn"]')
+      .should("be.visible")
+      .click({ force: true });
 
     cy.url({ timeout: 80000 }).should(
       "eq",
