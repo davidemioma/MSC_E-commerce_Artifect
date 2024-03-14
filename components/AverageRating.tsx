@@ -12,7 +12,9 @@ const AverageRating = ({ className, ratings }: Props) => {
 
   const averageRating = Math.round(totalRatings / ratings.length);
 
-  if (ratings.length === 0) return null;
+  if (ratings.length === 0) {
+    return null;
+  }
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
