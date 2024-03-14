@@ -50,17 +50,17 @@ describe("Product Form", () => {
       .should("be.visible")
       .within(() => {
         //Image Upload
-        // cy.get('[data-cy="product-item-form-0-upload-parent"]').should(
-        //   "be.visible"
-        // );
+        cy.get('[data-cy="product-item-form-0-upload-parent"]').should(
+          "be.visible"
+        );
 
-        // cy.fixture("images/test1.png").then((fileContent) => {
-        //   cy.get('[data-cy="product-item-form-0-upload"]').attachFile({
-        //     fileContent: fileContent.toString(),
-        //     fileName: "test1.png",
-        //     mimeType: "image/png",
-        //   });
-        // });
+        cy.fixture("images/test1.png").then((fileContent) => {
+          cy.get('[data-cy="product-item-form-0-upload"]').attachFile({
+            fileContent: fileContent.toString(),
+            fileName: "test1.png",
+            mimeType: "image/png",
+          });
+        });
 
         //Add Size button
         cy.get('[data-cy="product-item-form-0-available-add"]')
@@ -135,11 +135,13 @@ describe("Product Form", () => {
       .click();
 
     //Create Product
-    cy.get('[data-cy="submit-btn"]').should("be.visible");
+    cy.get('[data-cy="create-btn"]').should("be.visible").click();
 
-    // cy.url({ timeout: 10000 }).should(
-    //   "include",
-    //   `/dashboard/${Cypress.env("auth_storeId")}/products`
-    // );
+    cy.url({ timeout: 80000 }).should(
+      "eq",
+      `${Cypress.env("public_url")}/dashboard/${Cypress.env(
+        "auth_storeId"
+      )}/products`
+    );
   });
 });

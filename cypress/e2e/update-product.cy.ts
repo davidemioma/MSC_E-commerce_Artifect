@@ -1,12 +1,12 @@
 import "cypress-file-upload";
 
-const formNum = 2;
+const formNum = 1;
 
-describe("Update Product Form", () => {
+describe("Update a product", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 10000 }).should("be.visible");
+    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
 
     //Go to store page
     cy.visit(
@@ -32,7 +32,7 @@ describe("Update Product Form", () => {
       .click();
 
     //Check if it has an existing text
-    cy.get('[data-cy="product-name"]', { timeout: 10000 }).should(
+    cy.get('[data-cy="product-name"]', { timeout: 15000 }).should(
       "not.be.empty"
     );
 
@@ -44,6 +44,15 @@ describe("Update Product Form", () => {
       .should("not.be.empty")
       .clear()
       .type("Nike Air Max for all men.");
+
+    //delete product item
+    cy.get(`[data-cy="product-item-form-${formNum}-delete"]`)
+      .should("be.visible")
+      .click();
+
+    cy.get(`[data-cy="product-item-form-${formNum}"]`, {
+      timeout: 20000,
+    }).should("not.exist");
 
     //Add product item
     cy.get('[data-cy="add-product-item"]').should("be.visible").click();
@@ -61,17 +70,17 @@ describe("Update Product Form", () => {
       .should("be.visible")
       .within(() => {
         //Image Upload
-        // cy.get('[data-cy="product-item-form-0-upload-parent"]').should(
-        //   "be.visible"
-        // );
+        cy.get(`[data-cy="product-item-form-${formNum}-upload-parent"]`).should(
+          "be.visible"
+        );
 
-        // cy.fixture("images/test1.png").then((fileContent) => {
-        //   cy.get('[data-cy="product-item-form-0-upload"]').attachFile({
-        //     fileContent: fileContent.toString(),
-        //     fileName: "test1.png",
-        //     mimeType: "image/png",
-        //   });
-        // });
+        cy.fixture("images/test1.png").then((fileContent) => {
+          cy.get(`[data-cy="product-item-form-${formNum}-upload"]`).attachFile({
+            fileContent: fileContent.toString(),
+            fileName: "test1.png",
+            mimeType: "image/png",
+          });
+        });
 
         //Add Size button
         cy.get(`[data-cy="product-item-form-${formNum}-available-add"]`)
@@ -135,12 +144,19 @@ describe("Update Product Form", () => {
       .first()
       .click();
 
-    //Save Product
-    cy.get('[data-cy="submit-btn"]').should("be.visible");
+    // Save Product
+    cy.get(`[data-cy="save-btn-${Cypress.env("test_productId")}"]`)
+      .should("be.visible")
+      .click();
 
-    // cy.url({ timeout: 10000 }).should(
-    //   "include",
-    //   `/dashboard/${Cypress.env("auth_storeId")}/products`
-    // );
+    //Expect a new product item
+    cy.get(`[data-cy="product-item-form-${formNum}-delete"]`, {
+      timeout: 80000,
+    }).should("exist");
+
+    //Back to products
+    cy.get('[data-cy="back-btn"]')
+      .should("contain", "Back to products")
+      .click();
   });
 });

@@ -131,7 +131,7 @@ const ProductForm = ({ data }: Props) => {
   const { mutate: deleteItem, isPending: deletingItem } = useMutation({
     mutationKey: ["delete-product-item"],
     mutationFn: async (id: string) => {
-      if (!id || data?.id) return;
+      if (!id || !data?.id) return;
 
       await axios.delete(
         `/api/stores/${params.storeId}/products/${data?.id}/items/${id}`
@@ -172,17 +172,10 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: data ? ["update-product"] : ["create-product"],
+  const { mutate: createProduct, isPending: creating } = useMutation({
+    mutationKey: ["create-product"],
     mutationFn: async (values: ProductValidator) => {
-      if (data) {
-        await axios.patch(
-          `/api/stores/${params.storeId}/products/${data.id}`,
-          values
-        );
-      } else {
-        await axios.post(`/api/stores/${params.storeId}/products/new`, values);
-      }
+      await axios.post(`/api/stores/${params.storeId}/products/new`, values);
     },
     onSuccess: () => {
       toast.success(data ? "Product Updated!" : "Product Created!");
@@ -197,15 +190,41 @@ const ProductForm = ({ data }: Props) => {
       } else {
         toast.error("Something went wrong");
       }
+    },
+  });
 
-      console.log(err);
+  const { mutate: updateProduct, isPending: updating } = useMutation({
+    mutationKey: ["update-product", data?.id],
+    mutationFn: async (values: ProductValidator) => {
+      if (!data?.id) return;
+
+      await axios.patch(
+        `/api/stores/${params.storeId}/products/${data?.id}`,
+        values
+      );
+    },
+    onSuccess: () => {
+      toast.success(data ? "Product Updated!" : "Product Created!");
+
+      router.refresh();
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
   const onSubmit = (values: ProductValidator) => {
     if (honeyPot) return;
 
-    mutate(values);
+    if (data) {
+      updateProduct(values);
+    } else {
+      createProduct(values);
+    }
   };
 
   return (
@@ -240,7 +259,7 @@ const ProductForm = ({ data }: Props) => {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled={isPending || deletingItem}
+                        disabled={creating || updating || deletingItem}
                         placeholder="Name..."
                         data-cy="product-name"
                       />
@@ -263,7 +282,7 @@ const ProductForm = ({ data }: Props) => {
                         <TooltipContainer message="Add new category">
                           <AddBtn
                             testId="add-new-category"
-                            disabled={isPending || deletingItem}
+                            disabled={creating || updating || deletingItem}
                           />
                         </TooltipContainer>
                       </CategoryModal>
@@ -273,7 +292,7 @@ const ProductForm = ({ data }: Props) => {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        disabled={isPending || deletingItem}
+                        disabled={creating || updating || deletingItem}
                       >
                         <FormControl>
                           <SelectTrigger data-cy="product-select">
@@ -328,7 +347,7 @@ const ProductForm = ({ data }: Props) => {
                     <TextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      disabled={isPending || deletingItem}
+                      disabled={creating || updating || deletingItem}
                       data-cy="product-description"
                     />
                   </FormControl>
@@ -365,7 +384,7 @@ const ProductForm = ({ data }: Props) => {
                 }
                 data-testid="add-product-item"
                 data-cy="add-product-item"
-                disabled={isPending || deletingItem}
+                disabled={creating || updating || deletingItem}
               >
                 <Plus className="w-3 h-3 text-white" />
               </button>
@@ -392,7 +411,7 @@ const ProductForm = ({ data }: Props) => {
                           forProduct
                           value={field.value}
                           onChange={field.onChange}
-                          disabled={isPending || deletingItem}
+                          disabled={creating || updating || deletingItem}
                           storeId={params.storeId as string}
                           testId={`product-item-form-${index}-upload`}
                         />
@@ -408,7 +427,7 @@ const ProductForm = ({ data }: Props) => {
                   index={index}
                   sizes={sizes || []}
                   productId={data?.id || undefined}
-                  disabled={isPending || deletingItem}
+                  disabled={creating || updating || deletingItem}
                   availableItems={
                     data?.productItems?.[index]?.availableItems || []
                   }
@@ -428,7 +447,7 @@ const ProductForm = ({ data }: Props) => {
                             <TooltipContainer message="Add new color">
                               <AddBtn
                                 testId="add-color-btn"
-                                disabled={isPending || deletingItem}
+                                disabled={creating || updating || deletingItem}
                               />
                             </TooltipContainer>
                           </ColorModal>
@@ -470,7 +489,7 @@ const ProductForm = ({ data }: Props) => {
                             type="number"
                             step="0.01"
                             min={0}
-                            disabled={isPending || deletingItem}
+                            disabled={creating || updating || deletingItem}
                             placeholder="Discount"
                           />
                         </FormControl>
@@ -487,7 +506,8 @@ const ProductForm = ({ data }: Props) => {
                       type="button"
                       variant="secondary"
                       onClick={() => deleteItem(data.productItems[index].id)}
-                      disabled={isPending || deletingItem}
+                      disabled={creating || updating || deletingItem}
+                      data-cy={`product-item-form-${index}-delete`}
                     >
                       Delete Item
                     </Button>
@@ -498,7 +518,7 @@ const ProductForm = ({ data }: Props) => {
                       data-cy={`product-item-form-${index}-remove`}
                       variant="secondary"
                       onClick={() => remove(index)}
-                      disabled={isPending || deletingItem}
+                      disabled={creating || updating || deletingItem}
                     >
                       Remove Item
                     </Button>
@@ -508,26 +528,42 @@ const ProductForm = ({ data }: Props) => {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button
-              className="disabled:cursor-not-allowed disabled:opacity-75"
-              type="submit"
-              disabled={isPending || deletingItem}
-              data-cy="submit-btn"
-            >
-              {data ? "Save" : "Create"}
-            </Button>
-
+          <div className="pt-10 flex items-center justify-between gap-3">
             {data && (
               <Button
                 type="button"
-                variant="destructive"
-                onClick={() => setOpen(true)}
-                disabled={isPending || deletingItem}
+                variant="outline"
+                onClick={() =>
+                  router.push(`/dashboard/${params.storeId}/products`)
+                }
+                disabled={creating || updating || deletingItem}
+                data-cy="back-btn"
               >
-                Delete
+                Back to products
               </Button>
             )}
+
+            <div className="flex items-center gap-3">
+              <Button
+                className="disabled:cursor-not-allowed disabled:opacity-75"
+                type="submit"
+                disabled={creating || updating || deletingItem}
+                data-cy={data ? `save-btn-${data.id}` : "create-btn"}
+              >
+                {data ? "Save" : "Create"}
+              </Button>
+
+              {data && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => setOpen(true)}
+                  disabled={creating || updating || deletingItem}
+                >
+                  Delete
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </Form>

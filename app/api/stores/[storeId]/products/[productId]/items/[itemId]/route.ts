@@ -72,7 +72,7 @@ export async function DELETE(
     //Delete Product Item
     await prismadb.productItem.delete({
       where: {
-        id: itemId,
+        id: productItem.id,
         productId,
       },
     });

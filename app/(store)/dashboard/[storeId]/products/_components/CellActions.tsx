@@ -118,7 +118,11 @@ const CellActions = ({ data }: Props) => {
             Update
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setOpen(true)} disabled={isPending}>
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            disabled={isPending}
+            data-cy={`${data.id}-delete`}
+          >
             <Trash className="w-4 h-4 mr-2" />
             Delete
           </DropdownMenuItem>
