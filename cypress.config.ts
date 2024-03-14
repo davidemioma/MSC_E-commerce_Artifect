@@ -16,6 +16,8 @@ export default defineConfig({
       test_user_productId: process.env.TEST_USER_PRODUCT_ID,
       user_email: process.env.TEST_USER_EMAIL as string,
       user_password: process.env.TEST_USER_PASSWORD as string,
+      database_url: process.env.DATABASE_URL,
+      direct_url: process.env.DIRECT_URL,
     },
   },
 });
