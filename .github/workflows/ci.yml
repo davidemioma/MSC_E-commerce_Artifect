@@ -11,21 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Node modules
-        uses: actions/cache@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
+        node-version: "20"
 
-      - name: Cache Next.js build
-        uses: actions/cache@v2
-        with:
-          path: .next/cache
-          key: ${{ runner.OS }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
-          restore-keys: |
-            ${{ runner.OS }}-nextjs-
+      # - name: Cache Node modules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.OS }}-node-
+
+      # - name: Cache Next.js build
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: .next/cache
+      #     key: ${{ runner.OS }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
+      #     restore-keys: |
+      #       ${{ runner.OS }}-nextjs-
 
       - name: Cache Next.js build
         uses: actions/cache@v2
