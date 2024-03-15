@@ -60,7 +60,6 @@ jobs:
           browser: chrome
           headless: true
           command: npm run cypress:run
-          env: NEXT_PUBLIC_BASE_URL=${{ needs.preview-deployment.outputs.preview-url }}
         env:
           CYPRESS_BASE_URL: ${{ needs.preview-deployment.outputs.preview-url }}
           NEXT_PUBLIC_APP_URL: ${{ needs.preview-deployment.outputs.preview-url }}
