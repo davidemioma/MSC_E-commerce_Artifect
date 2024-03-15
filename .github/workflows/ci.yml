@@ -52,7 +52,7 @@ jobs:
       - name: Run Jest Tests
         run: npm test
         env:
-          NEXT_PUBLIC_BASE_URL: ${{ needs.preview-deployment.outputs.preview-url }}
+          NEXT_PUBLIC_APP_URL: ${{ needs.preview-deployment.outputs.preview-url }}
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v2

@@ -7,6 +7,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    baseUrl: process.env.NEXT_PUBLIC_APP_URL,
     env: {
       auth_storeId: process.env.TEST_STORE_ID,
       auth_email: process.env.TEST_EMAIL,
