@@ -32,14 +32,6 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.OS }}-nextjs-
 
-      - name: Cache Next.js build
-        uses: actions/cache@v2
-        with:
-          path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-
-
       - name: Install Dependencies
         run: npm ci
 
