@@ -17,11 +17,6 @@ export default defineConfig({
       user_email: process.env.TEST_USER_EMAIL,
       user_password: process.env.TEST_USER_PASSWORD,
       public_url: process.env.CYPRESS_BASE_URL,
-
-      vercel_session_id: process.env.VERCEL_PREVIEW_SESSION_ID,
-      vercel_vc_session_id: process.env.VERCEL_PREVIEW_VC_SESSION_ID,
-      vercel_authorisaion_id: process.env.VERCEL_PREVIEW_AUTHORISATION_ID,
-      vercel_jwt: process.env.VERCEL_PREVIEW_JWT,
     },
   },
 });

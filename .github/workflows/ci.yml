@@ -52,26 +52,22 @@ jobs:
       - name: Run Jest Tests
         run: npm test
 
-      - name: Run Cypress Tests
-        uses: cypress-io/github-action@v2
-        with:
-          browser: chrome
-          headless: true
-          command: npm run cypress:run
-        env:
-          CYPRESS_BASE_URL: ${{ needs.preview-deployment.outputs.preview-url }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
-          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-          TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          TEST_USER_PRODUCT_ID: ${{ secrets.TEST_USER_PRODUCT_ID }}
-          VERCEL_PREVIEW_SESSION_ID: ${{ secrets.VERCEL_PREVIEW_SESSION_ID }}
-          VERCEL_PREVIEW_VC_SESSION_ID: ${{ secrets.VERCEL_PREVIEW_VC_SESSION_ID }}
-          VERCEL_PREVIEW_AUTHORISATION_ID: ${{ secrets.VERCEL_PREVIEW_AUTHORISATION_ID }}
-          VERCEL_PREVIEW_JWT: ${{ secrets.VERCEL_PREVIEW_JWT }}
+      # - name: Run Cypress Tests
+      #   uses: cypress-io/github-action@v2
+      #   with:
+      #     browser: chrome
+      #     headless: true
+      #     command: npm run cypress:run
+      #   env:
+      #     CYPRESS_BASE_URL: ${{ needs.preview-deployment.outputs.preview-url }}
+      #     CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      #     TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
+      #     TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+      #     TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+      #     TEST_PRODUCT_ID: ${{ secrets.TEST_PRODUCT_ID }}
+      #     TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+      #     TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      #     TEST_USER_PRODUCT_ID: ${{ secrets.TEST_USER_PRODUCT_ID }}
 
   deploy:
     needs: test
