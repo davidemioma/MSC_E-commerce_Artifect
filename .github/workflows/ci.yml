@@ -41,21 +41,10 @@ jobs:
       - name: Build Next.js Project
         run: npm run build
 
-      - name: Start Next.js Application
-        run: npm run start &
-        env:
-          PORT: 3001
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.TEST_DIRECT_URL }}
-
-      - name: Wait for Next.js Server
-        run: npx wait-on http://localhost:3001 --timeout 60000
-
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v3
         with:
-          headless: true
-          command: npm run cypress:run
+          start: npm run start
           wait-on: "http://localhost:3001"
           wait-on-timeout: 60
         env:
@@ -75,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
