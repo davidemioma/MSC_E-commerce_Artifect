@@ -20,17 +20,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.OS }}-node-
+            ${{ runner.os }}-node-
 
       - name: Cache Next.js build
         uses: actions/cache@v2
         with:
           path: .next/cache
-          key: ${{ runner.OS }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
           restore-keys: |
-            ${{ runner.OS }}-nextjs-
+            ${{ runner.os }}-nextjs-
 
       - name: Install Dependencies
         run: npm ci
@@ -42,15 +42,12 @@ jobs:
         run: npm run build
 
       - name: Cypress run
-        uses: cypress-io/github-action@v3
+        uses: cypress-io/github-action@v2
         with:
           browser: chrome
           headless: true
-          start: npm run start
-          wait-on: "http://localhost:3000"
-          wait-on-timeout: 60
+          command: npm run cypress:run
         env:
-          CYPRESS_BASE_URL: http://localhost:3000
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
           TEST_EMAIL: ${{ secrets.TEST_EMAIL }}

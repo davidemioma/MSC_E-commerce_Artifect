@@ -114,5 +114,4 @@ export const {
       return token;
     },
   },
-  trustHost: true,
 });
