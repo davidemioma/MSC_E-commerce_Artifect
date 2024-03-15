@@ -45,10 +45,10 @@ jobs:
         uses: cypress-io/github-action@v3
         with:
           start: npm run start
-          wait-on: "http://localhost:3001"
+          wait-on: "http://localhost:3000"
           wait-on-timeout: 60
         env:
-          CYPRESS_BASE_URL: http://localhost:3001
+          CYPRESS_BASE_URL: http://localhost:3000
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           TEST_STORE_ID: ${{ secrets.TEST_STORE_ID }}
           TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
