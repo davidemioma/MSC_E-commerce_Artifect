@@ -68,6 +68,10 @@ jobs:
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           TEST_USER_PRODUCT_ID: ${{ secrets.TEST_USER_PRODUCT_ID }}
+          VERCEL_PREVIEW_SESSION_ID: ${{ secrets.VERCEL_PREVIEW_SESSION_ID }}
+          VERCEL_PREVIEW_VC_SESSION_ID: ${{ secrets.VERCEL_PREVIEW_VC_SESSION_ID }}
+          VERCEL_PREVIEW_AUTHORISATION_ID: ${{ secrets.VERCEL_PREVIEW_AUTHORISATION_ID }}
+          VERCEL_PREVIEW_JWT: ${{ secrets.VERCEL_PREVIEW_JWT }}
 
   deploy:
     needs: test

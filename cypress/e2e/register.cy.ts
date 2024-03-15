@@ -1,5 +1,7 @@
 describe("Register Form", () => {
   beforeEach(() => {
+    cy.bypassVercelAuth();
+
     cy.visit(`${Cypress.env("public_url")}/auth/sign-up`);
   });
 
