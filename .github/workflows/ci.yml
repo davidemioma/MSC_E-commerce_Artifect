@@ -16,21 +16,21 @@ jobs:
         with:
         node-version: "20"
 
-      # - name: Cache Node modules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.OS }}-node-
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
 
-      # - name: Cache Next.js build
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: .next/cache
-      #     key: ${{ runner.OS }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
-      #     restore-keys: |
-      #       ${{ runner.OS }}-nextjs-
+      - name: Cache Next.js build
+        uses: actions/cache@v2
+        with:
+          path: .next/cache
+          key: ${{ runner.OS }}-nextjs-${{ hashFiles('**/*.js', '**/*.css') }}
+          restore-keys: |
+            ${{ runner.OS }}-nextjs-
 
       - name: Install Dependencies
         run: npm ci
@@ -45,8 +45,8 @@ jobs:
         run: npm run start &
         env:
           PORT: 3001
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.TEST_DIRECT_URL }}
+          # DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          # DIRECT_URL: ${{ secrets.TEST_DIRECT_URL }}
 
       - name: Wait for Next.js Server
         run: npx wait-on http://localhost:3001 --timeout 60000
