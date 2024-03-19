@@ -138,7 +138,12 @@ const ImageUpload = ({
                 {base64.map((url, i) => (
                   <div className="flex gap-2" key={i}>
                     <div className="relative w-full h-full rounded-lg border">
-                      <Image className="object-cover" src={url} fill alt="" />
+                      <Image
+                        className="object-cover"
+                        src={url}
+                        fill
+                        alt={`upload-images-${i}`}
+                      />
                     </div>
 
                     <Trash2
@@ -176,7 +181,7 @@ const ImageUpload = ({
                 className="object-cover rounded-full"
                 src={base64}
                 fill
-                alt=""
+                alt="user-upload-image"
               />
 
               <Trash2

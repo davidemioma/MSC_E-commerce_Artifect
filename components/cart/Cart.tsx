@@ -7,10 +7,13 @@ import Empty from "../Empty";
 import Spinner from "../Spinner";
 import CartItem from "./CartItem";
 import { CartType } from "@/types";
+import { UserRole } from "@prisma/client";
+import { usePathname } from "next/navigation";
 import { buttonVariants } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { ShoppingCartIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import useCurrentUser from "@/hooks/use-current-user";
 import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
 import {
   Sheet,
@@ -22,6 +25,10 @@ import {
 } from "@/components/ui/sheet";
 
 const Cart = () => {
+  const pathname = usePathname();
+
+  const { user } = useCurrentUser();
+
   const [isMounted, setIsMounted] = useState(false);
 
   const {
@@ -51,17 +58,20 @@ const Cart = () => {
     TRANSACTION_FEE +
     SHIPPING_FEE;
 
+  const showCart = user?.role === UserRole.USER && pathname !== "/checkout";
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return null;
+  if (!isMounted || !showCart) return null;
 
   return (
     <Sheet>
       <SheetTrigger
         className="group flex items-center gap-1 px-2"
         data-cy="cart-trigger"
+        data-testid="cart-trigger"
       >
         <ShoppingCartIcon
           className="w-5 h-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -79,6 +89,7 @@ const Cart = () => {
       <SheetContent
         className="w-full sm:max-w-lg flex flex-col"
         data-cy="cart-content"
+        data-testid="cart-content"
       >
         <SheetHeader>
           <SheetTitle className="py-2.5">

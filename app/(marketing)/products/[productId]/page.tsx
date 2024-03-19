@@ -11,6 +11,7 @@ import {
   getReviewCount,
   checkIfReviewed,
 } from "@/data/review";
+import { ProductStatus } from "@prisma/client";
 
 export default async function ProductPage({
   params: { productId },
@@ -34,11 +35,12 @@ export default async function ProductPage({
     productId,
   });
 
-  const recommendedProduct = await prismadb.product.findMany({
+  const recommendedProducts = await prismadb.product.findMany({
     where: {
       id: {
         not: product.id,
       },
+      status: ProductStatus.APPROVED,
       OR: [
         {
           category: {
@@ -113,7 +115,7 @@ export default async function ProductPage({
         <ProductContent product={product} />
       </Container>
 
-      <Recommendation products={recommendedProduct} />
+      <Recommendation products={recommendedProducts} />
 
       <Reviews
         productId={productId}

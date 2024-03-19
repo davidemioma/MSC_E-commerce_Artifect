@@ -1,10 +1,9 @@
 import React from "react";
 import { useParams } from "next/navigation";
-import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import { useMutation } from "@tanstack/react-query";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SizeForm from "@/app/(store)/dashboard/[storeId]/sizes/_components/SizeForm";
+import ColorForm from "@/app/(store)/dashboard/[storeId]/colors/_components/ColorForm";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -17,7 +16,7 @@ jest.mock("@tanstack/react-query", () => ({
   useQueryClient: jest.fn(),
 }));
 
-describe("Add and update size form for sellers", () => {
+describe("Add and update color form for sellers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -34,51 +33,33 @@ describe("Add and update size form for sellers", () => {
   });
 
   it("renders without crashing", () => {
-    render(<SizeForm />);
+    render(<ColorForm />);
 
-    const formElement = screen.getByTestId("size-form");
+    const formElement = screen.getByTestId("color-form");
 
     expect(formElement).toBeInTheDocument();
   });
 
   it("initial size name state is correct", () => {
-    render(<SizeForm />);
+    render(<ColorForm />);
 
-    const inputElement = screen.getByPlaceholderText("Large");
+    const inputElement = screen.getByPlaceholderText("Black");
 
     expect(inputElement).toHaveValue("");
   });
 
   it("Name state should change", async () => {
-    render(<SizeForm />);
+    render(<ColorForm />);
 
-    const inputElement = screen.getByPlaceholderText("Large");
+    const inputElement = screen.getByPlaceholderText("Black");
 
-    await userEvent.type(inputElement, "My test size");
+    await userEvent.type(inputElement, "My test color");
 
-    expect(inputElement).toHaveValue("My test size");
-  });
-
-  it("initial size value state is correct", () => {
-    render(<SizeForm />);
-
-    const inputElement = screen.getByPlaceholderText("lg");
-
-    expect(inputElement).toHaveValue("");
-  });
-
-  it("Value state should change", async () => {
-    render(<SizeForm />);
-
-    const inputElement = screen.getByPlaceholderText("lg");
-
-    await userEvent.type(inputElement, "My test size value");
-
-    expect(inputElement).toHaveValue("My test size value");
+    expect(inputElement).toHaveValue("My test color");
   });
 
   it("Create or Save button should exists", () => {
-    render(<SizeForm />);
+    render(<ColorForm />);
 
     const btnElement = screen.getByText("Create") || screen.getByText("Save");
 
@@ -86,7 +67,7 @@ describe("Add and update size form for sellers", () => {
   });
 
   it("Validates required fields before submission", async () => {
-    render(<SizeForm />);
+    render(<ColorForm />);
 
     // Simulate form submission without filling out the fields
     fireEvent.click(screen.getByText("Create"));
@@ -98,38 +79,34 @@ describe("Add and update size form for sellers", () => {
     });
   });
 
-  it("Renders correctly for editing a size", () => {
-    const categoryData = {
+  it("Renders correctly for editing a color", () => {
+    const colorData = {
       id: "123",
       storeId: "storeId",
-      name: "Large",
-      value: "lg",
+      name: "Black",
+      value: "#000000",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    render(<SizeForm data={categoryData} />);
+    render(<ColorForm data={colorData} />);
 
-    const nameInputElement = screen.getByPlaceholderText("Large");
+    const nameInputElement = screen.getByPlaceholderText("Black");
 
-    const valueInputElement = screen.getByPlaceholderText("lg");
-
-    expect(nameInputElement).toHaveValue("Large");
-
-    expect(valueInputElement).toHaveValue("lg");
+    expect(nameInputElement).toHaveValue("Black");
   });
 
   it("Delete button should exist if updating", () => {
-    const categoryData = {
+    const colorData = {
       id: "123",
       storeId: "storeId",
-      name: "Large",
-      value: "lg",
+      name: "Black",
+      value: "#000000",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    render(<SizeForm data={categoryData} />);
+    render(<ColorForm data={colorData} />);
 
     const btnElement = screen.getByText("Delete");
 

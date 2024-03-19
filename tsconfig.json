@@ -27,7 +27,17 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "jest.config.js",
-    "jest.setup.js"
+    "jest.setup.js",
+    "__tests__/BannerForm.test.jsx",
+    "__tests__/HomeFeed.test.jsx",
+    "__tests__/CreateStore.test.jsx",
+    "__tests__/ColorForm.test.jsx",
+    "__tests__/CategoryForm.test.jsx",
+    "__tests__/SizeForm.test.jsx",
+    "__tests__/ReviewAndCart.test.jsx",
+    "__tests__/ProductForm.test.jsx",
+    "__tests__/Product.test.jsx",
+    "__tests__/StoreTables.test.jsx"
   ],
   "exclude": ["node_modules"]
 }

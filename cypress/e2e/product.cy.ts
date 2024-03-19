@@ -2,8 +2,6 @@ import "cypress-file-upload";
 
 describe("Product Form", () => {
   beforeEach(() => {
-    cy.bypassVercelAuth();
-
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
     cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");

@@ -1,7 +1,5 @@
 import React from "react";
-import { Store } from "@prisma/client";
 import { useParams } from "next/navigation";
-import "@testing-library/jest-dom/extend-expect";
 import { useMutation } from "@tanstack/react-query";
 import * as StoreModalHook from "../hooks/use-store-modal";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -55,7 +53,7 @@ describe("Create store form for sellers", () => {
   });
 
   it("Check if store popover button exists", () => {
-    render(<StoreSwitcher stores={customStores as Store[]} />);
+    render(<StoreSwitcher stores={customStores} />);
 
     const btnElement = screen.getByTestId("store-popover-btn");
 
@@ -63,7 +61,7 @@ describe("Create store form for sellers", () => {
   });
 
   it("Check if create store button exists", () => {
-    render(<StoreSwitcher stores={customStores as Store[]} />);
+    render(<StoreSwitcher stores={customStores} />);
 
     const btnElement = screen.getByTestId("store-popover-btn");
 
@@ -77,7 +75,7 @@ describe("Create store form for sellers", () => {
   });
 
   it("StoreModal should open on create store button clicked", async () => {
-    render(<StoreSwitcher stores={customStores as Store[]} />);
+    render(<StoreSwitcher stores={customStores} />);
 
     const mockOnOpen = jest.fn();
 

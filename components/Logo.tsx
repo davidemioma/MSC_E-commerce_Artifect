@@ -10,7 +10,7 @@ const font = Nunito_Sans({
 
 const Logo = () => {
   return (
-    <Link href="/">
+    <Link href="/" data-testid="logo">
       <div className="flex items-center gap-2">
         <span className={cn("text-4xl font-semibold", font.className)}>🛍</span>
 

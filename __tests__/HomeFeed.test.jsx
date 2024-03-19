@@ -1,6 +1,4 @@
 import React from "react";
-import { HomeProductType } from "@/types";
-import "@testing-library/jest-dom/extend-expect";
 import Feed from "@/app/(marketing)/_components/Feed";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import useUnlimitedScrolling from "../hooks/use-unlimited-scrolling";
@@ -16,7 +14,7 @@ jest.mock("../hooks/use-unlimited-scrolling", () => jest.fn());
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props) => {
     // You can add more logic here if you want to simulate more of the Image component's behavior
     return <img {...props} fill="true" />;
   },
@@ -90,7 +88,7 @@ describe("Home feed page", () => {
   });
 
   it("Renders initial data without crashing", () => {
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     const feedElement = screen.getByTestId("product-feed");
 
@@ -98,17 +96,19 @@ describe("Home feed page", () => {
   });
 
   it("Renders initial data", () => {
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     const feedElement = screen.getByTestId("product-feed");
 
     expect(feedElement).toBeInTheDocument();
 
-    expect(screen.getAllByRole("article").length).toBe(initialData.length);
+    expect(screen.getAllByTestId("product-item").length).toBe(
+      initialData.length
+    );
   });
 
   it("Expect Test Product to be on screen", () => {
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     const element = screen.getByText("Test Product");
 
@@ -126,7 +126,7 @@ describe("Home feed page", () => {
       fetchNextPage,
     }));
 
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     await waitFor(() => {
       expect(fetchNextPage).toHaveBeenCalledTimes(1);
@@ -141,7 +141,7 @@ describe("Home feed page", () => {
       error: "Error fetching data",
     }));
 
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     expect(
       screen.getByText("Could not get products! Try refreshing the page.")
@@ -149,7 +149,7 @@ describe("Home feed page", () => {
   });
 
   it("Change route when product is clicked", async () => {
-    render(<Feed initialData={initialData as HomeProductType[]} />);
+    render(<Feed initialData={initialData} />);
 
     const feedElement = screen.getByTestId("product-item");
 

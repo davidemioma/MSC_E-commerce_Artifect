@@ -13,20 +13,9 @@ declare global {
       login(email: string, password: string): Chainable<void>;
       addToCart(): Chainable<void>;
       removeFromCart(): Chainable<void>;
-      bypassVercelAuth(): Chainable<void>;
     }
   }
 }
-
-Cypress.Commands.add("bypassVercelAuth", () => {
-  cy.setCookie("vercel_session_id", `${Cypress.env("vercel_session_id")}`);
-
-  cy.setCookie("authorization", `${Cypress.env("vercel_authorisaion_id")}`);
-
-  cy.setCookie("vc-session-id", `${Cypress.env("vercel_authorisaion_id")}`);
-
-  cy.setCookie("_vercel_jwt", `${Cypress.env("vercel_jwt")}`);
-});
 
 Cypress.Commands.add("login", (email: string, password: string) => {
   cy.visit(`${Cypress.env("public_url")}/auth/sign-in`);

@@ -3,12 +3,13 @@ import Status from "./Status";
 import { toast } from "sonner";
 import { ProductCol } from "./Columns";
 import axios, { AxiosError } from "axios";
+import { ProductStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import AlertModal from "@/components/modal/AlertModal";
 import { useParams, useRouter } from "next/navigation";
 import ViewProductModal from "@/components/modal/ViewProductModal";
-import { MoreVertical, Edit, Trash, Eye, View } from "lucide-react";
+import { MoreVertical, Edit, Trash, Eye, View, Star } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -104,8 +105,24 @@ const CellActions = ({ data }: Props) => {
             disabled={isPending}
           >
             <Eye className="w-4 h-4 mr-2" />
-            Preview
+            {data.status === ProductStatus.APPROVED
+              ? "View Product"
+              : "Preview"}
           </DropdownMenuItem>
+
+          {data.status === ProductStatus.APPROVED && (
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/dashboard/${data.storeId}/products/${data.id}/reviews`
+                )
+              }
+              disabled={isPending}
+            >
+              <Star className="w-4 h-4 mr-2 text-[gold]" fill="gold" />
+              Reviews
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem
             onClick={() =>

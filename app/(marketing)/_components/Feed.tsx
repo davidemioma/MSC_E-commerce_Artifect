@@ -3,8 +3,9 @@
 import React, { useEffect } from "react";
 import Product from "./Product";
 import Empty from "@/components/Empty";
-import Spinner from "@/components/Spinner";
 import { HomeProductType } from "@/types";
+import Spinner from "@/components/Spinner";
+import ProductSkeleton from "@/components/ProductSkeleton";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
 
@@ -13,12 +14,19 @@ type Props = {
 };
 
 const Feed = ({ initialData }: Props) => {
-  const { ref, entry, data, error, fetchNextPage, isFetchingNextPage } =
-    useUnlimitedScrolling({
-      key: "feed-products",
-      query: `/api/products?limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
-      initialData,
-    });
+  const {
+    ref,
+    entry,
+    data,
+    error,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useUnlimitedScrolling({
+    key: "feed-products",
+    query: `/api/products?limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
+    initialData,
+  });
 
   //@ts-ignore
   const products: ProductType[] =
@@ -33,6 +41,16 @@ const Feed = ({ initialData }: Props) => {
 
   if (products.length === 0) {
     return <Empty message="Sorry, no products found! Try again later." />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        {new Array(20).fill("").map((_, i) => (
+          <ProductSkeleton key={i} />
+        ))}
+      </div>
+    );
   }
 
   return (

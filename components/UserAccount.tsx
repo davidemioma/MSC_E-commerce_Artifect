@@ -22,9 +22,12 @@ const UserAccount = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild data-testid="user-account-trigger">
         <Avatar className="cursor-pointer">
-          <AvatarImage src={user?.image || "/no-profile.jpeg"} />
+          <AvatarImage
+            src={user?.image || "/no-profile.jpeg"}
+            alt="user-profile"
+          />
         </Avatar>
       </DropdownMenuTrigger>
 
@@ -34,13 +37,15 @@ const UserAccount = () => {
         <DropdownMenuSeparator />
 
         {role === "ADMIN" && (
-          <DropdownMenuItem>
+          <DropdownMenuItem data-testid="go-to-dashboard">
             <Link href={"/admin"}>Go to admin dashboard</Link>
           </DropdownMenuItem>
         )}
 
         {role !== "ADMIN" && (
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            data-testid={role === "USER" ? "become-a-seller" : "go-to-store"}
+          >
             <Link href={"/store"}>
               {role === "USER" ? "Become a seller" : "Go to store"}
             </Link>

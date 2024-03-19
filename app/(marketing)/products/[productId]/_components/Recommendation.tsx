@@ -67,7 +67,7 @@ const Recommendation = ({ products }: Props) => {
           ref={rowRef}
           className="flex items-center gap-2 overflow-x-scroll scrollbar-hide"
         >
-          {products.map((product) => (
+          {products.map((product, i) => (
             <div key={product.id} className="min-w-[350px]">
               <Product product={product} />
             </div>

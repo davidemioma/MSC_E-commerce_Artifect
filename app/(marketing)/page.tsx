@@ -32,7 +32,10 @@ export default async function Home() {
 
               {user?.role === UserRole.USER && (
                 <Link href="/store" data-cy="become-a-seller">
-                  <Button variant="default">
+                  <Button
+                    variant="default"
+                    aria-label="Click to become a seller"
+                  >
                     Become a Seller <ArrowRight className="w-4 h-4 ml-1.5" />
                   </Button>
                 </Link>
@@ -40,7 +43,7 @@ export default async function Home() {
 
               {user?.role === UserRole.SELLER && (
                 <Link href="/store" data-cy="go-to-store">
-                  <Button variant="default">
+                  <Button variant="default" aria-label="Click to go to store">
                     Go to Store <ArrowRight className="w-4 h-4 ml-1.5" />
                   </Button>
                 </Link>
@@ -48,7 +51,10 @@ export default async function Home() {
 
               {user?.role === UserRole.ADMIN && (
                 <Link href="/admin">
-                  <Button variant="default">
+                  <Button
+                    variant="default"
+                    aria-label="Click to go to dashboard"
+                  >
                     Go to Dashboard <ArrowRight className="w-4 h-4 ml-1.5" />
                   </Button>
                 </Link>
@@ -57,11 +63,21 @@ export default async function Home() {
               {!user && (
                 <div className="flex items-center gap-3">
                   <Link href="/auth/sign-in">
-                    <Button variant="default">Sign In</Button>
+                    <Button
+                      variant="default"
+                      aria-label="Click to go to sign in"
+                    >
+                      Sign In
+                    </Button>
                   </Link>
 
                   <Link href="/auth/sign-up">
-                    <Button variant="outline">Register</Button>
+                    <Button
+                      variant="outline"
+                      aria-label="Click to go to register"
+                    >
+                      Register
+                    </Button>
                   </Link>
                 </div>
               )}

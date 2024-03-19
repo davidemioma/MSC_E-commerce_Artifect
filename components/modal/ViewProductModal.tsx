@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
 import Image from "next/image";
 import BtnSpinner from "../BtnSpinner";
 import ImageSlider from "../ImageSlider";
@@ -9,8 +10,8 @@ import { ProductItemType } from "@/types";
 import { useParams } from "next/navigation";
 import { cn, formatPrice } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Product, Size, Color } from ".prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Product, Size, Color, ProductStatus } from ".prisma/client";
 import {
   Dialog,
   DialogContent,
@@ -88,7 +89,10 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Preview Product</DialogTitle>
+          <DialogTitle>
+            {product?.status === ProductStatus.APPROVED ? "View" : "Preview"}{" "}
+            Product
+          </DialogTitle>
 
           <DialogDescription>
             This is a preview of how your product will be displayed to potential
@@ -248,6 +252,14 @@ const ViewProductModal = ({ isOpen, onClose, productId }: Props) => {
                   ))}
                 </div>
               </div>
+
+              {product.status === ProductStatus.APPROVED && (
+                <div className="text-violet-500 font-semibold">
+                  <Link className="underline" href={`/products/${productId}`}>
+                    User&apos;s View
+                  </Link>
+                </div>
+              )}
             </div>
           </ScrollArea>
         )}

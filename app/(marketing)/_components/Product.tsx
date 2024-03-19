@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductImg from "./ProductImg";
 import { HomeProductType } from "@/types";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import AverageRating from "@/components/AverageRating";
 type Props = {
   product: HomeProductType;
 };
+
 const Product = ({ product }: Props) => {
   const router = useRouter();
 
@@ -19,9 +20,8 @@ const Product = ({ product }: Props) => {
 
   return (
     <div
-      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
+      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm hover:scale-105 transition-transform duration-300"
       onClick={onClick}
-      role="article"
       data-testid="product-item"
       data-cy={`feed-product-${product.id}`}
     >
@@ -30,7 +30,12 @@ const Product = ({ product }: Props) => {
       />
 
       <div className="px-2 py-3">
-        <h2 className="w-full text-lg font-bold truncate">{product.name}</h2>
+        <h2
+          className="w-full text-lg font-bold truncate"
+          aria-label={product.name}
+        >
+          {product.name}
+        </h2>
 
         <p className="text-sm text-gray-500">{product.category?.name}</p>
 
@@ -67,7 +72,7 @@ const Product = ({ product }: Props) => {
               <span
                 className={cn(
                   product.productItems?.[0]?.discount > 1
-                    ? "text-green-500"
+                    ? "text-green-600"
                     : "text-red-500"
                 )}
               >

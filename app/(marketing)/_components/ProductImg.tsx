@@ -25,6 +25,7 @@ const ProductImg = ({ images }: Props) => {
               "bg-black/75 absolute z-20 top-1/2 -translate-y-0 right-4 hidden md:flex items-center justify-center p-2 text-white rounded-full",
               !hasNext && "opacity-0"
             )}
+            aria-label="Next"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -42,6 +43,7 @@ const ProductImg = ({ images }: Props) => {
               "bg-black/75 absolute z-20 top-1/2 -translate-y-0 left-4 hidden md:flex items-center justify-center p-2 text-white rounded-full",
               !hasPrev && "opacity-0"
             )}
+            aria-label="Previous"
             onClick={(e) => {
               e.stopPropagation();
 
@@ -60,6 +62,7 @@ const ProductImg = ({ images }: Props) => {
         >
           <Image
             className="object-cover"
+            loading="lazy"
             fill
             src={img}
             alt={`product-item-${i}`}

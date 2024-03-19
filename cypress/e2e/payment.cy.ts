@@ -1,7 +1,5 @@
 describe("Cart and payment", () => {
   beforeEach(() => {
-    cy.bypassVercelAuth();
-
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
     cy.url({ timeout: 10000 }).should("include", "/");

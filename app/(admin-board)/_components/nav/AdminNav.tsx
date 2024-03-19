@@ -39,7 +39,10 @@ const AdminNav = () => {
     },
   ];
   return (
-    <nav className="h-14 bg-white flex items-center border-b border-gray-200 shadow-sm">
+    <nav
+      className="h-14 bg-white flex items-center border-b border-gray-200 shadow-sm"
+      data-testid="admin-nav"
+    >
       <Container>
         <div className="flex items-center justify-between gap-6">
           <div className="flex items-center gap-3">

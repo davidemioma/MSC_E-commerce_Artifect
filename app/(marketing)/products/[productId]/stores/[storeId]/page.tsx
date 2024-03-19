@@ -81,6 +81,7 @@ export default async function StorePage({
   const productCount = await prismadb.product.count({
     where: {
       storeId,
+      status: "APPROVED",
     },
   });
 

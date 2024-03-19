@@ -1,7 +1,6 @@
 import React from "react";
 import { useParams } from "next/navigation";
 import { ProductStatus } from "@prisma/client";
-import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -20,7 +19,7 @@ jest.mock("@tanstack/react-query", () => ({
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props) => {
     // You can add more logic here if you want to simulate more of the Image component's behavior
     return <img {...props} fill="true" />;
   },

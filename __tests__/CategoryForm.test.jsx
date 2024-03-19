@@ -1,6 +1,5 @@
 import React from "react";
 import { useParams } from "next/navigation";
-import "@testing-library/jest-dom/extend-expect";
 import userEvent from "@testing-library/user-event";
 import { useMutation } from "@tanstack/react-query";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";

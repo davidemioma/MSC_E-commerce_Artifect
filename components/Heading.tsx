@@ -8,9 +8,14 @@ interface Props {
 const Heading = ({ title, description }: Props) => {
   return (
     <div>
-      <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h2>
+      <h2
+        className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight"
+        aria-label={title}
+      >
+        {title}
+      </h2>
 
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <p className="text-sm text-black font-light">{description}</p>
     </div>
   );
 };

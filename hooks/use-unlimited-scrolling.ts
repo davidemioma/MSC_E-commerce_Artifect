@@ -17,25 +17,27 @@ const useUnlimitedScrolling = ({ key, query, initialData }: Props) => {
     threshold: 1,
   });
 
-  const { data, error, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: [key],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await axios.get(`${query}&page=${pageParam}`);
+  const { data, error, isLoading, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [key],
+      queryFn: async ({ pageParam = 1 }) => {
+        const { data } = await axios.get(`${query}&page=${pageParam}`);
 
-      return data;
-    },
-    initialPageParam: 0,
-    getNextPageParam: (_, pages) => {
-      return pages.length + 1;
-    },
-    initialData: { pages: [initialData], pageParams: [1] },
-  });
+        return data;
+      },
+      initialPageParam: 0,
+      getNextPageParam: (_, pages) => {
+        return pages.length + 1;
+      },
+      initialData: { pages: [initialData], pageParams: [1] },
+    });
 
   return {
     ref,
     entry,
     data,
     error,
+    isLoading,
     fetchNextPage,
     isFetchingNextPage,
   };

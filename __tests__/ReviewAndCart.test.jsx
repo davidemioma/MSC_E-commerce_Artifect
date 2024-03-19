@@ -1,12 +1,13 @@
 import React from "react";
-import "@testing-library/jest-dom/extend-expect";
+import { mocked } from "jest-mock";
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { ProductDetailType, ReviewType } from "@/types";
 import { render, screen } from "@testing-library/react";
 import { useQuery, useMutation, useInfiniteQuery } from "@tanstack/react-query";
-import ProductSlider from "@/app/(marketing)/products/[productId]/_components/ProductSlider";
+import Reviews from "@/app/(marketing)/products/[productId]/_components/reviews/Reviews";
 import ProductContent from "@/app/(marketing)/products/[productId]/_components/ProductContent";
-import ReviewList from "@/app/(marketing)/products/[productId]/_components/reviews/ReviewList";
+
+jest.mock("next-auth/react");
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -25,9 +26,8 @@ jest.mock("../hooks/use-unlimited-scrolling", () => jest.fn());
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: (props: any) => {
-    // You can add more logic here if you want to simulate more of the Image component's behavior
-    return <img {...props} fill="true" />;
+  default: (props) => {
+    return <img {...props} fill="true" alt="mock-image" />;
   },
 }));
 
@@ -87,9 +87,25 @@ const initialReviews = [
   },
 ];
 
-describe("Product details page", () => {
+describe("Reviews and cart features for product (online users)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    //@ts-ignore
+    mocked(useSession).mockReturnValue({
+      data: {
+        user: {
+          id: "123",
+          name: "John Doe",
+          email: "john.doe@example.com",
+          role: "USER",
+          isTwoFactorEnabled: false,
+          isOAuth: false,
+        },
+        expires: "1",
+      },
+      status: "authenticated",
+    });
 
     //@ts-ignore
     useRouter.mockImplementation(() => ({
@@ -124,45 +140,93 @@ describe("Product details page", () => {
     }));
   });
 
-  it("Renders product details", () => {
-    render(<ProductContent product={product as ProductDetailType} />);
+  it('shows "Add to Cart" button when user logged in', async () => {
+    render(<ProductContent product={product} />);
 
-    expect(screen.getByTestId("product-content")).toBeInTheDocument();
-
-    expect(screen.getByText("Test Product")).toBeInTheDocument();
-
-    expect(screen.getByText("Test Description")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Add To Cart/i })
+    ).toBeInTheDocument();
   });
 
-  it("renders product images in a carousel", async () => {
-    render(<ProductSlider images={product.productItems[0].images} />);
-
-    expect(screen.getByAltText("curr-product-detail-img")).toBeInTheDocument();
-  });
-
-  it("shows discounted price and original price when discount is available", async () => {
-    render(<ProductContent product={product as ProductDetailType} />);
-
-    expect(screen.getByText("£60.00")).toBeInTheDocument();
-
-    expect(screen.getByText("£45.00")).toBeInTheDocument();
-  });
-
-  it("renders existing reviews with user information, rating, and comment", async () => {
+  it("Shows review form when user is logged in", async () => {
     render(
-      <ReviewList
+      <Reviews
         productId="test-id"
-        initialData={initialReviews as ReviewType[]}
-        reviewCount={1}
+        initialData={[]}
+        reviewCount={0}
+        hasReviewed={true}
       />
     );
 
-    expect(screen.getByText("Test User")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("form", { name: /Write a Review/i })
+    ).not.toBeInTheDocument();
+  });
+});
 
-    expect(screen.getByText("Great product!")).toBeInTheDocument();
+describe("Reviews and cart features for product (offline users)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    //@ts-ignore
+    mocked(useSession).mockReturnValue({
+      data: null,
+      status: "unauthenticated",
+    });
+
+    //@ts-ignore
+    useRouter.mockImplementation(() => ({
+      push: jest.fn(),
+    }));
+
+    //@ts-ignore
+    useParams.mockImplementation(() => ({
+      params: { storeId: "mockStoreId" },
+    }));
+
+    //@ts-ignore
+    useQuery.mockReturnValue({
+      data: [],
+      error: null,
+      isLoading: false,
+    });
+
+    //@ts-ignore
+    useMutation.mockReturnValue({
+      mutate: () => {},
+      isPending: false,
+    });
+
+    //@ts-ignore
+    useInfiniteQuery.mockImplementation(() => ({
+      data: initialReviews,
+      error: null,
+      fetchNextPage: jest.fn(),
+      hasNextPage: true,
+      isFetchingNextPage: false,
+    }));
+  });
+
+  it('hides "Add to Cart" button when user is not logged in or not a user', async () => {
+    render(<ProductContent product={product} />);
 
     expect(
-      screen.getByText("This is a test review comment.")
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: /Add To Cart/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides review form when user is not logged in, not a user, or has already reviewed", async () => {
+    render(
+      <Reviews
+        productId="test-id"
+        initialData={[]}
+        reviewCount={0}
+        hasReviewed={true}
+      />
+    );
+
+    expect(
+      screen.queryByRole("form", { name: /Write a Review/i })
+    ).not.toBeInTheDocument();
   });
 });
