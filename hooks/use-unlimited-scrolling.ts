@@ -4,7 +4,7 @@ import { useIntersection } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface Props {
-  key: string;
+  key: string | string[];
   query: string;
   initialData: any;
 }
@@ -19,7 +19,7 @@ const useUnlimitedScrolling = ({ key, query, initialData }: Props) => {
 
   const { data, error, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [key],
+      queryKey: typeof key === "string" ? [key] : [...key],
       queryFn: async ({ pageParam = 1 }) => {
         const { data } = await axios.get(`${query}&page=${pageParam}`);
 

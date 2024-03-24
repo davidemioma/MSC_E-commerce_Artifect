@@ -9,6 +9,12 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 jest.mock("next-auth/react");
 
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(),
+  useParams: jest.fn(),
+  usePathname: jest.fn(),
+}));
+
 jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
 }));
@@ -194,7 +200,7 @@ describe("Checking user roles (No User)", () => {
     render(<NavBar />);
 
     waitFor(() => {
-      expect(screen.getByTestId("nav-sign-in-btn")).not.toBeVisible();
+      expect(screen.getByTestId("nav-sign-in-btn")).toBeVisible();
     });
   });
 

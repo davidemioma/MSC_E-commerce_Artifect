@@ -331,7 +331,9 @@ const ProductForm = ({ data }: Props) => {
                                   key={cat.id}
                                   value={cat.id}
                                   data-cy={
-                                    data ? `product-${data.id}-${i}` : `product-${i}`
+                                    data
+                                      ? `product-${data.id}-${i}`
+                                      : `product-${i}`
                                   }
                                 >
                                   {cat.name}
@@ -417,7 +419,7 @@ const ProductForm = ({ data }: Props) => {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Image</FormLabel>
+                      <FormLabel>Images (Max 6)</FormLabel>
 
                       <FormControl>
                         <ImageUpload

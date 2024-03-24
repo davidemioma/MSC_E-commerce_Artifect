@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProductImg from "./ProductImg";
 import { HomeProductType } from "@/types";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ const Product = ({ product }: Props) => {
 
   return (
     <div
-      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm hover:scale-105 transition-transform duration-300"
+      className="bg-white border border-gray-300 rounded-b-lg cursor-pointer shadow-sm transition"
       onClick={onClick}
       data-testid="product-item"
       data-cy={`feed-product-${product.id}`}
@@ -39,11 +39,13 @@ const Product = ({ product }: Props) => {
 
         <p className="text-sm text-gray-500">{product.category?.name}</p>
 
-        {product?.reviews?.length > 0 && (
+        {product?.reviews?.length > 0 ? (
           <AverageRating
             className="my-2"
             ratings={product.reviews.map((review) => review.value)}
           />
+        ) : (
+          <div className="py-3" />
         )}
 
         <div className="text-sm my-2">

@@ -2,13 +2,16 @@ import Image from "next/image";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
+import { storeStatus } from "@prisma/client";
 import { cn, formatPrice } from "@/lib/utils";
 import Container from "@/components/Container";
 import { Separator } from "@/components/ui/separator";
 import RevenueGraph from "../_components/RevenueGraph";
+import ShareStoreLink from "../_components/ShareStoreLink";
 import { PoundSterling, CreditCard, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  getFirstProduct,
   getGraphData,
   getNumOfProductsInStock,
   getSalesCountByStoreId,
@@ -32,6 +35,8 @@ export default async function StoreDashboardPage({
 
   const store = await getStore({ userId: user?.id, storeId });
 
+  const firstProduct = await getFirstProduct({ userId: user?.id, storeId });
+
   if (!store) {
     return redirect("/store");
   }
@@ -49,10 +54,16 @@ export default async function StoreDashboardPage({
   return (
     <div className="w-full">
       <Container>
-        <Heading
-          title={store.name}
-          description={store.description || "Overview of your store"}
-        />
+        <div className="flex items-center justify-between gap-3">
+          <Heading
+            title={store.name}
+            description={store.description || "Overview of your store"}
+          />
+
+          {store.status === storeStatus.APPROVED && firstProduct && (
+            <ShareStoreLink storeId={storeId} productId={firstProduct?.id} />
+          )}
+        </div>
 
         {banner?.image && <div className="my-4" />}
 

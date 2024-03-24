@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getFirstStoreByUserId } from "@/data/store";
 import { currentRole, currentUser } from "@/lib/auth";
+import NavBar from "./_components/NavBar";
 
 const CreateStoreLayout = async ({
   children,
@@ -26,7 +27,11 @@ const CreateStoreLayout = async ({
   }
 
   return (
-    <div className="relative min-h-full w-full bg-gray-100">{children}</div>
+    <div className="relative min-h-full w-full bg-gray-100">
+      <NavBar />
+
+      <main className="pt-20 pb-10">{children}</main>
+    </div>
   );
 };
 

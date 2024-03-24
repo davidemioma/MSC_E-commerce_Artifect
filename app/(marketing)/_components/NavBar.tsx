@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import SearchBar from "./SearchBar";
 import Logo from "@/components/Logo";
 import Cart from "@/components/cart/Cart";
 import Container from "@/components/Container";
@@ -15,8 +16,12 @@ const NavBar = () => {
   return (
     <nav className="fixed top-0 inset-x-0 z-40 bg-white h-16 flex items-center border-b border-gray-200 shadow-sm">
       <Container>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-5">
           <Logo />
+
+          <div className="hidden md:flex md:flex-1 max-w-lg">
+            <SearchBar />
+          </div>
 
           {user ? (
             <div className="flex items-center gap-2 sm:gap-4">

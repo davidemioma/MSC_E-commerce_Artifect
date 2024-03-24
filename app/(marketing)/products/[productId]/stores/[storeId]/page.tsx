@@ -1,89 +1,35 @@
 import Image from "next/image";
-import prismadb from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { MdVerified } from "react-icons/md";
 import Container from "@/components/Container";
 import StoreFeed from "./_components/StoreFeed";
 import { Separator } from "@/components/ui/separator";
+import ProductFilters from "./_components/ProductFilters";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
+import {
+  getProductStore,
+  getStoreProducts,
+  getStoreProductsCount,
+} from "@/data/store-products";
 
 export default async function StorePage({
   params: { storeId, productId },
+  searchParams: { search },
 }: {
   params: { productId: string; storeId: string };
+  searchParams: {
+    search: string;
+  };
 }) {
-  const store = await prismadb.store.findUnique({
-    where: {
-      id: storeId,
-    },
-    include: {
-      Banners: {
-        where: {
-          active: true,
-        },
-      },
-    },
-  });
+  const store = await getProductStore(storeId);
 
   if (!store) {
     return redirect("/");
   }
 
-  const products = await prismadb.product.findMany({
-    where: {
-      storeId,
-      status: "APPROVED",
-      productItems: {
-        some: {
-          availableItems: {
-            some: {
-              numInStocks: {
-                gt: 0,
-              },
-            },
-          },
-        },
-      },
-    },
-    include: {
-      category: true,
-      productItems: {
-        where: {
-          availableItems: {
-            some: {
-              numInStocks: {
-                gt: 0,
-              },
-            },
-          },
-        },
-        include: {
-          availableItems: {
-            include: {
-              size: true,
-            },
-          },
-        },
-      },
-      reviews: {
-        select: {
-          value: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: INFINITE_SCROLL_PAGINATION_RESULTS,
-  });
+  const productCount = await getStoreProductsCount(storeId);
 
-  const productCount = await prismadb.product.count({
-    where: {
-      storeId,
-      status: "APPROVED",
-    },
-  });
+  const products = await getStoreProducts({ storeId, search });
 
   return (
     <div className="w-full space-y-10">
@@ -141,12 +87,17 @@ export default async function StorePage({
         )}
 
         <main className="mt-10 space-y-5">
-          <h1 className="text-2xl font-bold">Products ({productCount})</h1>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <h1 className="text-2xl font-bold">Products ({productCount})</h1>
+
+            <ProductFilters storeId={storeId} productId={productId} />
+          </div>
 
           <StoreFeed
             storeId={storeId}
             productId={productId}
             initialData={products}
+            searchValue={search}
           />
         </main>
       </Container>

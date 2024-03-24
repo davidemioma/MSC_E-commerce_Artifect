@@ -9,14 +9,16 @@ export async function GET(
   try {
     const url = new URL(request.url);
 
-    const { limit, page } = z
+    const { limit, page, q } = z
       .object({
         limit: z.string(),
         page: z.string(),
+        q: z.string(),
       })
       .parse({
         limit: url.searchParams.get("limit"),
         page: url.searchParams.get("page"),
+        q: url.searchParams.get("q"),
       });
 
     const { productId, storeId } = params;
@@ -51,7 +53,90 @@ export async function GET(
       return new NextResponse("Product not found!", { status: 404 });
     }
 
-    const products = await prismadb.product.findMany({
+    let products = [];
+
+    if (q !== "") {
+      products = await prismadb.product.findMany({
+        where: {
+          storeId,
+          status: "APPROVED",
+          OR: [
+            {
+              name: {
+                contains: q,
+                mode: "insensitive",
+              },
+            },
+            {
+              name: {
+                equals: q,
+                mode: "insensitive",
+              },
+            },
+            {
+              category: {
+                name: {
+                  contains: q,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              category: {
+                name: {
+                  equals: q,
+                  mode: "insensitive",
+                },
+              },
+            },
+          ],
+          productItems: {
+            some: {
+              availableItems: {
+                some: {
+                  numInStocks: {
+                    gt: 0,
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          category: true,
+          productItems: {
+            where: {
+              availableItems: {
+                some: {
+                  numInStocks: {
+                    gt: 0,
+                  },
+                },
+              },
+            },
+            include: {
+              availableItems: {
+                include: {
+                  size: true,
+                },
+              },
+            },
+          },
+          reviews: {
+            select: {
+              value: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: parseInt(limit),
+        skip: (parseInt(page) - 1) * parseInt(limit),
+      });
+    }
+
+    products = await prismadb.product.findMany({
       where: {
         storeId,
         status: "APPROVED",

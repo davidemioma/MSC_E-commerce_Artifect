@@ -1,24 +1,20 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import Empty from "@/components/Empty";
 import { HomeProductType } from "@/types";
 import Spinner from "@/components/Spinner";
+import Product from "../../../_components/Product";
 import ProductSkeleton from "@/components/ProductSkeleton";
-import Product from "@/app/(marketing)/_components/Product";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
 
 type Props = {
-  storeId: string;
-  productId: string;
-  searchValue: string;
+  query: string;
   initialData: HomeProductType[];
 };
 
-const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
-  const productRef = useRef<HTMLDivElement>(null);
-
+const SearchFeed = ({ query, initialData }: Props) => {
   const {
     ref,
     entry,
@@ -28,9 +24,9 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
     fetchNextPage,
     isFetchingNextPage,
   } = useUnlimitedScrolling({
-    key: ["search-store-products", searchValue],
-    query: `/api/products/${productId}/stores/${storeId}?q=${
-      searchValue || ""
+    key: ["search-products-feed", query],
+    query: `/api/products/search?q=${
+      query || ""
     }}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
     initialData,
   });
@@ -45,10 +41,6 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
       fetchNextPage();
     }
   }, [entry, fetchNextPage]);
-
-  useEffect(() => {
-    productRef?.current?.scrollIntoView({ behavior: "smooth" });
-  }, [searchValue]);
 
   if (isLoading) {
     return (
@@ -67,8 +59,8 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
   return (
     <>
       <div
-        ref={productRef}
         className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
+        data-testid="search-product-feed"
       >
         {products?.map((product, i) => {
           if (i === products.length - 1) {
@@ -94,4 +86,4 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
   );
 };
 
-export default StoreFeed;
+export default SearchFeed;

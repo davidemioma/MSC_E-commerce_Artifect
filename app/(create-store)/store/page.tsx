@@ -1,16 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
-import useStoreModal from "@/hooks/use-store-modal";
+import Container from "@/components/Container";
+import StoreForm from "@/components/StoreForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function CreateStorePage() {
-  const storeModal = useStoreModal();
+  return (
+    <Container>
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle>Become a seller</CardTitle>
 
-  useEffect(() => {
-    if (!storeModal.isOpen) {
-      storeModal.onOpen();
-    }
-  }, [storeModal.isOpen, storeModal.onOpen]);
+          <CardDescription>Create your store.</CardDescription>
+        </CardHeader>
 
-  return null;
+        <CardContent>
+          <StoreForm />
+        </CardContent>
+      </Card>
+    </Container>
+  );
 }

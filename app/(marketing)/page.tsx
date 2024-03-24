@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
+import SearchBar from "./_components/SearchBar";
 import { getHomePageProducts } from "@/data/product";
 
 export default async function Home() {
@@ -84,6 +85,10 @@ export default async function Home() {
             </div>
           </Container>
         </div>
+      </div>
+
+      <div className="w-full max-w-lg px-4 md:hidden">
+        <SearchBar />
       </div>
 
       <Container>

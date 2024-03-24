@@ -5,8 +5,6 @@ type Props = {
   className?: string;
 };
 
-//Comment
-
 const BtnSpinner = ({ className }: Props) => {
   return (
     <div className="w-full flex items-center justify-center">

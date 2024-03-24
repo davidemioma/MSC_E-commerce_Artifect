@@ -33,6 +33,11 @@ const ImageUpload = ({
 
   const [base64, setBase64] = useState(value);
 
+  const maxFiles = forProduct ? 6 : 1;
+
+  const isDisabled =
+    disabled || (Array.isArray(base64) && base64.length >= maxFiles);
+
   const clearImage = () => {
     setBase64("");
 
@@ -85,14 +90,20 @@ const ImageUpload = ({
       return urls;
     });
 
-    setBase64(imgUrls || []);
+    const updatedBase64 = Array.isArray(base64)
+      ? imgUrls
+        ? [...base64, ...imgUrls]
+        : [...base64]
+      : imgUrls;
 
-    onChange(imgUrls || []);
+    setBase64(updatedBase64);
+
+    onChange(updatedBase64 || []);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     multiple: forProduct,
-    maxFiles: forProduct ? 6 : 1,
+    maxFiles,
     maxSize: 2 * 1024 * 1024,
     onDrop: forProduct ? handleProductDrop : handleDrop,
     onDropRejected: () => {
@@ -100,7 +111,7 @@ const ImageUpload = ({
 
       return;
     },
-    disabled,
+    disabled: forProduct ? isDisabled : disabled,
     accept: {
       "image/*": [],
     },
@@ -113,7 +124,7 @@ const ImageUpload = ({
   return (
     <>
       {forProduct ? (
-        <div>
+        <div className="space-y-4">
           <div
             {...getRootProps()}
             data-cy={`${testId}-parent`}
@@ -121,23 +132,23 @@ const ImageUpload = ({
           >
             <input {...getInputProps()} data-cy={testId} />
 
-            {Array.isArray(base64) && base64?.length === 0 && (
-              <div className="flex flex-col">
-                <ImagePlus className="w-7 h-7 mb-4 mx-auto text-violet-400" />
+            <div className="flex flex-col">
+              <ImagePlus className="w-7 h-7 mb-4 mx-auto text-violet-400" />
 
-                <span className="text-violet-400 text-sm font-medium">
-                  Choose files or drag and drop
-                </span>
+              <span className="text-violet-400 text-sm font-medium">
+                Choose files or drag and drop
+              </span>
 
-                <span className="text-xs">Product Items Images (2MB Each)</span>
-              </div>
-            )}
+              <span className="text-xs">Product Items Images (2MB Each)</span>
+            </div>
+          </div>
 
-            {Array.isArray(base64) && base64?.length > 0 && (
-              <div className="w-[200px] h-[200px] grid grid-col-2 gap-2">
+          {Array.isArray(base64) && base64?.length > 0 && (
+            <div className="border p-2 rounded-lg w-[300px]">
+              <div className="w-full grid gap-2">
                 {base64.map((url, i) => (
                   <div className="flex gap-2" key={i}>
-                    <div className="relative w-full h-full rounded-lg border">
+                    <div className="relative w-full h-20 rounded-lg border">
                       <Image
                         className="object-cover"
                         src={url}
@@ -147,14 +158,14 @@ const ImageUpload = ({
                     </div>
 
                     <Trash2
-                      className="w-6 h-6 cursor-ponter text-red-500"
+                      className="w-6 h-6 cursor-pointer text-red-500"
                       onClick={() => removeImage(i)}
                     />
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       ) : (
         <div

@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prisma";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, ProductStatus } from "@prisma/client";
 
 export const getStore = async ({
   userId,
@@ -20,10 +20,35 @@ export const getStore = async ({
       select: {
         name: true,
         description: true,
+        status: true,
       },
     });
 
     return store;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getFirstProduct = async ({
+  userId,
+  storeId,
+}: {
+  userId: string;
+  storeId: string;
+}) => {
+  try {
+    const product = await prismadb.product.findFirst({
+      where: {
+        storeId,
+        userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return product;
   } catch (err) {
     return null;
   }
@@ -140,6 +165,7 @@ export const getNumOfProductsInStock = async ({
     const productCount = await prismadb.product.count({
       where: {
         storeId,
+        status: ProductStatus.APPROVED,
         productItems: {
           some: {
             availableItems: {
