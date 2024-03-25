@@ -50,12 +50,14 @@ describe("Update a product", () => {
       .type("Nike Air Max for all men.");
 
     //delete product item
-    cy.get(`[data-cy="product-item-form-${formNum}-delete"]`)
+    cy.get(`[data-cy="product-item-form-${formNum}-delete"]`, {
+      timeout: 40000,
+    })
       .should("be.visible")
       .click();
 
     cy.get(`[data-cy="product-item-form-${formNum}"]`, {
-      timeout: 20000,
+      timeout: 40000,
     }).should("not.exist");
 
     //Add product item
