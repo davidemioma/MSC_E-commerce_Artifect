@@ -29,7 +29,10 @@ export default async function StorePage({
 
   const productCount = await getStoreProductsCount(storeId);
 
-  const products = await getStoreProducts({ storeId, search });
+  const products = await getStoreProducts({
+    storeId,
+    search,
+  });
 
   return (
     <div className="w-full space-y-10">

@@ -37,6 +37,16 @@ describe("Login Form", () => {
     cy.get('[data-cy="error-password"]').should("be.visible");
   });
 
+  it("Should show error message for invalid credential", () => {
+    cy.get('input[placeholder="email@example.com"]').type("test@mail.com");
+
+    cy.get('input[placeholder="******"]').type(Cypress.env("auth_password"));
+
+    cy.get('[data-cy="sign-in-btn"]').click();
+
+    cy.get('[data-cy="auth-login-error"]', { timeout: 6000 }).should("exist");
+  });
+
   it("should redirect to the appropriate page after successful login", () => {
     cy.get('input[placeholder="email@example.com"]').type(
       Cypress.env("auth_email")

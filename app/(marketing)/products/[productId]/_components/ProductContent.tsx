@@ -216,7 +216,10 @@ const ProductContent = ({ product }: Props) => {
         {user && user.role === UserRole.USER && (
           <div className="mt-4 mb-10">
             <TooltipContainer message="View Store">
-              <Link href={`/products/${product.id}/stores/${product.storeId}`}>
+              <Link
+                href={`/products/${product.id}/stores/${product.storeId}`}
+                data-cy="view-store-link"
+              >
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
                     <AvatarImage

@@ -20,6 +20,7 @@ const SearchBar = () => {
   return (
     <form
       onSubmit={onSubmit}
+      data-cy="product-search-bar"
       className="w-full h-10 bg-background flex gap-3 border border-input px-3 py-2 rounded-md text-sm ring-offset-background "
     >
       <input
@@ -27,6 +28,7 @@ const SearchBar = () => {
         placeholder="Search..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        data-cy="product-search-bar-input"
       />
 
       {value.trim() && (
@@ -34,12 +36,17 @@ const SearchBar = () => {
           type="button"
           className="flex items-center justify-center"
           onClick={() => setValue("")}
+          data-cy="product-search-bar-input-clear"
         >
           <XIcon className="w-4 h-4" />
         </button>
       )}
 
-      <button type="submit" className="flex items-center justify-center">
+      <button
+        type="submit"
+        className="flex items-center justify-center"
+        data-cy="product-search-bar-input-search"
+      >
         <SearchIcon className="w-4 h-4" />
       </button>
     </form>

@@ -25,9 +25,7 @@ const SearchFeed = ({ query, initialData }: Props) => {
     isFetchingNextPage,
   } = useUnlimitedScrolling({
     key: ["search-products-feed", query],
-    query: `/api/products/search?q=${
-      query || ""
-    }}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
+    query: `/api/products/search?q=${query}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
     initialData,
   });
 
@@ -53,11 +51,20 @@ const SearchFeed = ({ query, initialData }: Props) => {
   }
 
   if (products?.length === 0) {
-    return <Empty message="Sorry, no products found! Try again later." />;
+    return (
+      <Empty
+        message="Sorry, no products found! Try again later."
+        testId="product-search-empty"
+      />
+    );
   }
 
   return (
-    <>
+    <div className="space-y-5">
+      <h1 className="text-2xl font-bold" data-cy="product-search-result-text">
+        Results ({products?.length || 0})
+      </h1>
+
       <div
         className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
         data-testid="search-product-feed"
@@ -82,7 +89,7 @@ const SearchFeed = ({ query, initialData }: Props) => {
           Could not get products! Try refreshing the page.
         </div>
       )}
-    </>
+    </div>
   );
 };
 

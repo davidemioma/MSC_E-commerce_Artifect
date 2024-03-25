@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import qs from "query-string";
-import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { SearchIcon, XIcon } from "lucide-react";
 
 type Props = {
   storeId: string;
@@ -16,50 +14,51 @@ const ProductFilters = ({ storeId, productId }: Props) => {
 
   const [value, setValue] = useState("");
 
-  const [debounceValue, setDebounceValue] = useState("");
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    router.push(`/products/${productId}/stores/${storeId}?search=${value}`);
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      setDebounceValue(value);
-    }, 1000);
+    if (value === "") {
+      router.push(`/products/${productId}/stores/${storeId}?search=""`);
+    }
   }, [value]);
 
-  useEffect(() => {
-    const pushToUrl = () => {
-      const url = qs.stringifyUrl(
-        {
-          url: `/products/${productId}/stores/${storeId}`,
-          query: {
-            search: debounceValue,
-          },
-        },
-        { skipNull: true }
-      );
-
-      router.push(url);
-    };
-
-    pushToUrl();
-  }, [debounceValue, productId, storeId]);
-
   return (
-    <div className="relative w-full max-w-96">
-      <Input
-        className="w-full rounded-lg pr-6"
-        placeholder="Search Product"
+    <form
+      onSubmit={onSubmit}
+      data-cy="store-product-search-bar"
+      className="w-full max-w-96 h-10 bg-background flex gap-3 border border-input px-3 py-2 rounded-md text-sm ring-offset-background"
+    >
+      <input
+        className="w-full flex-1 outline-none"
+        placeholder="Search..."
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        data-cy="store-product-search-bar-input"
       />
 
       {value.trim() && (
         <button
-          className="absolute right-3 top-1/2 -translate-y-1/2"
+          type="button"
+          className="flex items-center justify-center"
           onClick={() => setValue("")}
+          data-cy="store-product-search-bar-input-clear"
         >
           <XIcon className="w-4 h-4" />
         </button>
       )}
-    </div>
+
+      <button
+        type="submit"
+        className="flex items-center justify-center"
+        data-cy="store-product-search-bar-input-search"
+      >
+        <SearchIcon className="w-4 h-4" />
+      </button>
+    </form>
   );
 };
 

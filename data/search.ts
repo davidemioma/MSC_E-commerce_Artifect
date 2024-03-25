@@ -1,42 +1,26 @@
-import { z } from "zod";
 import prismadb from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 
-export async function GET(request: Request) {
+export const getProductBySearchQuery = async (query: string) => {
+  if (query === "") {
+    return [];
+  }
+
   try {
-    const url = new URL(request.url);
-
-    const { limit, page, q } = z
-      .object({
-        limit: z.string(),
-        page: z.string(),
-        q: z.string(),
-      })
-      .parse({
-        limit: url.searchParams.get("limit"),
-        page: url.searchParams.get("page"),
-        q: url.searchParams.get("q"),
-      });
-
-    if (q === "") {
-      return NextResponse.json([]);
-    }
-
     const products = await prismadb.product.findMany({
       where: {
         status: "APPROVED",
         OR: [
           {
             name: {
-              contains: q,
+              contains: query,
               mode: "insensitive",
             },
           },
           {
             category: {
               name: {
-                contains: q,
+                contains: query,
                 mode: "insensitive",
               },
             },
@@ -83,14 +67,11 @@ export async function GET(request: Request) {
       orderBy: {
         createdAt: "desc",
       },
-      take: parseInt(limit),
-      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: INFINITE_SCROLL_PAGINATION_RESULTS,
     });
 
-    return NextResponse.json(products);
+    return products;
   } catch (err) {
-    console.log("GET_SEARCHED_PRODUCTS", err);
-
-    return new NextResponse("Internal Error", { status: 500 });
+    return [];
   }
-}
+};

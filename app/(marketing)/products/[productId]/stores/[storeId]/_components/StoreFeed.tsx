@@ -29,9 +29,7 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
     isFetchingNextPage,
   } = useUnlimitedScrolling({
     key: ["search-store-products", searchValue],
-    query: `/api/products/${productId}/stores/${storeId}?q=${
-      searchValue || ""
-    }}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
+    query: `/api/products/${productId}/stores/${storeId}?q=${searchValue}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
     initialData,
   });
 
@@ -61,7 +59,12 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
   }
 
   if (products?.length === 0) {
-    return <Empty message="Sorry, no products found! Try again later." />;
+    return (
+      <Empty
+        message="Sorry, no products found! Try again later."
+        testId="store-product-search-empty"
+      />
+    );
   }
 
   return (

@@ -2,11 +2,15 @@ import React from "react";
 
 type Props = {
   message: string;
+  testId?: string;
 };
 
-const Empty = ({ message }: Props) => {
+const Empty = ({ message, testId }: Props) => {
   return (
-    <div className="w-full h-[calc(100vh-250px)] flex items-center justify-center">
+    <div
+      className="w-full h-[calc(100vh-250px)] flex items-center justify-center"
+      data-cy={testId}
+    >
       <div className="flex flex-col items-center text-center gap-2">
         <div className="flex items-center gap-2">
           <div className="text-7xl">🛍</div>

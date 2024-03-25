@@ -182,7 +182,7 @@ const LoginForm = () => {
 
           <AuthSuccess message={success} />
 
-          <AuthError message={error || urlError} />
+          <AuthError testId="auth-login-error" message={error || urlError} />
 
           <Button
             className="w-full"

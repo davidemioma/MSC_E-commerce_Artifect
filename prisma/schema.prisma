@@ -227,6 +227,7 @@ model Category{
 
   products Product[]
 
+  @@index([name])
   @@index([storeId])
 }
 
