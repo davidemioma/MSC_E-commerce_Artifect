@@ -21,9 +21,10 @@ import {
 
 type Props = {
   data: Banner;
+  index: number;
 };
 
-const CellActions = ({ data }: Props) => {
+const CellActions = ({ data, index }: Props) => {
   const params = useParams();
 
   const router = useRouter();
@@ -84,6 +85,7 @@ const CellActions = ({ data }: Props) => {
         onConfirm={onDelete}
         loading={isPending || loading}
         featureToDelete="banner"
+        testId={`banner-${index}-delete`}
       />
 
       <ConfirmModal
@@ -91,11 +93,12 @@ const CellActions = ({ data }: Props) => {
         onClose={() => setOpenActive(false)}
         onConfirm={onActive}
         loading={isPending || loading}
+        testId={`banner-${index}-active`}
         description="You're about to set a new banner for your store. This will replace your current active banner. Don't worry, you can revert to any of your previous banners at any time if you change your mind."
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild data-cy={`banner-${index}-trigger`}>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
 
@@ -111,6 +114,7 @@ const CellActions = ({ data }: Props) => {
           <DropdownMenuItem
             onClick={() => setOpenActive(true)}
             disabled={isPending || loading}
+            data-cy={`banner-${index}-active-btn`}
           >
             <Eye className="w-4 h-4 mr-2" />
             Set to active
@@ -121,6 +125,7 @@ const CellActions = ({ data }: Props) => {
               router.push(`/dashboard/${data.storeId}/banners/${data.id}`)
             }
             disabled={isPending || loading}
+            data-cy={`banner-${index}-update-btn`}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update
@@ -129,6 +134,7 @@ const CellActions = ({ data }: Props) => {
           <DropdownMenuItem
             onClick={() => setOpen(true)}
             disabled={isPending || loading}
+            data-cy={`banner-${index}-delete-btn`}
           >
             <Trash className="w-4 h-4 mr-2" />
             Delete

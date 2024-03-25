@@ -14,6 +14,7 @@ import {
 
 type Props = {
   isOpen: boolean;
+  testId?: string;
   onClose: () => void;
   onConfirm: () => void;
   loading: boolean;
@@ -23,6 +24,7 @@ type Props = {
 const AlertModal = ({
   isOpen,
   onClose,
+  testId,
   onConfirm,
   loading,
   featureToDelete,
@@ -48,11 +50,19 @@ const AlertModal = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose} disabled={loading}>
+          <AlertDialogCancel
+            onClick={onClose}
+            disabled={loading}
+            data-cy={`${testId}-cancel`}
+          >
             Cancel
           </AlertDialogCancel>
 
-          <AlertDialogAction onClick={onConfirm} disabled={loading}>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={loading}
+            data-cy={`${testId}-continue`}
+          >
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>

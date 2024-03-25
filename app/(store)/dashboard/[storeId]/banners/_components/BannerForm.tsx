@@ -95,7 +95,7 @@ const BannerForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="banner-form">
+    <div data-testid="banner-form" data-cy="banner-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -123,10 +123,11 @@ const BannerForm = ({ data }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       disabled={isPending}
+                      testId="banner-upload"
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="banner-img-input-err" />
                 </FormItem>
               )}
             />
@@ -143,17 +144,22 @@ const BannerForm = ({ data }: Props) => {
                       {...field}
                       disabled={isPending}
                       placeholder="Name..."
+                      data-cy="banner-name-input"
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="banner-name-input-err" />
                 </FormItem>
               )}
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              data-cy={data ? "banner-save-btn" : "banner-create-btn"}
+            >
               {data ? "Save" : "Create"}
             </Button>
 

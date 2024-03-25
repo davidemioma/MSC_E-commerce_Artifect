@@ -13,13 +13,22 @@ type Props = {
   value?: string;
   disabled?: boolean;
   storeId?: string;
+  testId?: string;
   onChange: (base64: string) => void;
 };
 
-const BannerUpload = ({ value, disabled, storeId, onChange }: Props) => {
+const BannerUpload = ({
+  value,
+  disabled,
+  storeId,
+  onChange,
+  testId,
+}: Props) => {
   const { user } = useCurrentUser();
 
   const [base64, setBase64] = useState(value);
+
+  const isDisabled = disabled || (base64 !== undefined && base64?.length > 0);
 
   const clearImage = () => {
     setBase64("");
@@ -59,7 +68,7 @@ const BannerUpload = ({ value, disabled, storeId, onChange }: Props) => {
 
       return;
     },
-    disabled,
+    disabled: isDisabled,
     accept: {
       "image/*": [],
     },
@@ -75,7 +84,7 @@ const BannerUpload = ({ value, disabled, storeId, onChange }: Props) => {
       data-testid="banner-upload"
       className="w-full max-w-[300px] mx-auto p-4 text-center rounded-md cursor-pointer border-2 border-dotted border-gray-200"
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} data-cy={testId} />
 
       {!base64 && (
         <div className="flex flex-col">

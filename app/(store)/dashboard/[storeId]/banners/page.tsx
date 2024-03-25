@@ -34,6 +34,7 @@ export default async function StoreBannersPage({
           <Link
             href={`/dashboard/${storeId}/banners/new`}
             className={buttonVariants()}
+            data-cy="new-banner-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add new

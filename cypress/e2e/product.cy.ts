@@ -59,6 +59,7 @@ describe("Product Form", () => {
             fileContent: fileContent.toString(),
             fileName: "test1.png",
             mimeType: "image/png",
+            encoding: "base64",
           });
         });
 
