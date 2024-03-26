@@ -20,9 +20,10 @@ import {
 
 type Props = {
   data: Color;
+  index: number;
 };
 
-const CellActions = ({ data }: Props) => {
+const CellActions = ({ data, index }: Props) => {
   const params = useParams();
 
   const router = useRouter();
@@ -58,10 +59,11 @@ const CellActions = ({ data }: Props) => {
         onConfirm={onDelete}
         loading={isPending}
         featureToDelete="color"
+        testId={`color-${index}-delete`}
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild data-cy={`color-${index}-trigger`}>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
 
@@ -79,12 +81,17 @@ const CellActions = ({ data }: Props) => {
               router.push(`/dashboard/${data.storeId}/colors/${data.id}`)
             }
             disabled={isPending}
+            data-cy={`color-${index}-update-btn`}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => setOpen(true)} disabled={isPending}>
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            disabled={isPending}
+            data-cy={`color-${index}-delete-btn`}
+          >
             <Trash className="w-4 h-4 mr-2" />
             Delete
           </DropdownMenuItem>

@@ -1,46 +1,76 @@
 import "cypress-file-upload";
 
-describe("Product Form", () => {
+const PRODUCT_INDEX = 0;
+
+const PRODUCT_ITEM_DELETE_INDEX = 0;
+
+const PRODUCT_ITEM_ADD_INDEX = 0;
+
+describe("Product for store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
     cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+
+    cy.visit(
+      `${Cypress.env("public_url")}/dashboard/${Cypress.env(
+        "auth_storeId"
+      )}/products`
+    );
   });
 
-  it("Creating a new product", () => {
-    //New product route
-    cy.visit(
-      `${Cypress.env("public_url")}/dashboard/${Cypress.env("auth_storeId")}`
-    );
-
-    //Checking if url contains /dashboard
-    cy.url().should("include", "/dashboard");
-
-    //Redirect to product page in store.
-    cy.get('[data-cy="products-link"]').should("contain", "Products").click();
-
-    //Check if new button exists and click it.
-    cy.get('[data-cy="new-product-btn"]', { timeout: 15000 })
+  it("Create fail for invalid form", () => {
+    cy.get('[data-cy="new-product-btn"]', {
+      timeout: 15000,
+    })
       .should("be.visible")
       .click();
 
-    //Product Name
-    cy.get('[data-cy="product-name"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(5000);
 
-    cy.get('[data-cy="product-name"]').type("Nike Air Max");
+    cy.get('[data-cy="product-form"]').should("exist");
+
+    cy.get('[data-cy="product-create-btn"]').should("be.visible").click();
+
+    cy.get('[data-cy="product-name-input-err"]').should("be.visible");
+
+    cy.get('[data-cy="product-category-input-err"]').should("be.visible");
+
+    cy.get('[data-cy="product-description-input-err"]').should("be.visible");
+  });
+
+  it("Create a new product", () => {
+    cy.get('[data-cy="new-product-btn"]', {
+      timeout: 15000,
+    })
+      .should("be.visible")
+      .click();
+
+    cy.wait(5000);
+
+    cy.get('[data-cy="product-form"]').should("exist");
+
+    cy.get('[data-cy="product-name-input"]')
+      .should("be.visible")
+      .type("Test product");
 
     //Product Description
-    cy.get(".ql-editor").should("be.visible");
+    cy.get(".ql-editor").should("be.visible").type("Test product description");
 
-    cy.get(".ql-editor").type("Nike Air Max for men.");
-
-    //Add product item button
-    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
-
-    //Remove product Item
-    cy.get('[data-cy="product-item-form-0-remove"]')
+    //Category
+    cy.get('[data-cy="product-category-select-trigger"]')
       .should("be.visible")
       .click();
+
+    //Wait for category to be loaded
+    cy.wait(3000);
+
+    cy.get('[data-cy^="product-category-select-0"]')
+      .should("be.visible")
+      .click({ force: true });
+
+    //Wait for category to be selected
+    cy.wait(2000);
 
     //Add product item button
     cy.get('[data-cy="add-product-item"]').should("be.visible").click();
@@ -62,6 +92,9 @@ describe("Product Form", () => {
             encoding: "base64",
           });
         });
+
+        //Wait for image to upload
+        cy.wait(8000);
 
         //Add Size button
         cy.get('[data-cy="product-item-form-0-available-add"]')
@@ -98,6 +131,9 @@ describe("Product Form", () => {
           .should("be.visible")
           .click()
           .then(($select) => {
+            //Wait for colors to load
+            cy.wait(3000);
+
             cy.contains(
               '[data-cy^="product-item-form-0-color-select-"]',
               "Black",
@@ -119,19 +155,15 @@ describe("Product Form", () => {
       .should("be.visible")
       .click();
 
+    //Wait for sizes to load
+    cy.wait(3000);
+
     cy.get('[data-cy^="product-item-form-0-available-select-size-"]')
       .first()
       .click();
 
-    //Category
-    cy.get('[data-cy="product-select"]').should("be.visible").click();
-
-    cy.get('[data-cy^="product-0"]')
-      .should("be.visible")
-      .click({ force: true });
-
     //Create Product
-    cy.get('[data-cy="create-btn"]')
+    cy.get('[data-cy="product-create-btn"]')
       .should("be.visible")
       .click({ force: true });
 
@@ -140,6 +172,240 @@ describe("Product Form", () => {
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
       )}/products`
+    );
+  });
+
+  it("Update an existing product", () => {
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
+      timeout: 15000,
+    })
+      .should("be.visible")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-update-btn"]`)
+      .should("exist")
+      .click();
+
+    cy.wait(5000);
+
+    cy.get('[data-cy="product-form"]').should("exist");
+
+    //delete product item
+    cy.get(
+      `[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}-delete"]`,
+      {
+        timeout: 40000,
+      }
+    )
+      .should("be.visible")
+      .click();
+
+    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}"]`, {
+      timeout: 40000,
+    }).should("not.exist");
+
+    //Product Name
+    cy.get('[data-cy="product-name-input"]')
+      .should("be.visible")
+      .clear()
+      .type("Test product update");
+
+    //Product Description
+    cy.get(".ql-editor")
+      .should("be.visible")
+      .clear()
+      .type("Test product description update");
+
+    //Category
+    cy.get('[data-cy="product-category-select-trigger"]')
+      .should("be.visible")
+      .click();
+
+    //Wait for category to be loaded
+    cy.wait(3000);
+
+    cy.get('[data-cy^="product-category-select-1"]')
+      .should("be.visible")
+      .click({ force: true });
+
+    //Wait for category to be selected
+    cy.wait(2000);
+
+    //Add product item
+    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+
+    //Remove product Item
+    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-remove"]`)
+      .should("be.visible")
+      .click();
+
+    //Add product item again
+    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+
+    //New product Item Form
+    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}"]`)
+      .should("be.visible")
+      .within(() => {
+        //Image Upload
+        cy.get(
+          `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-upload-parent"]`
+        ).should("be.visible");
+
+        cy.fixture("images/test1.png").then((fileContent) => {
+          cy.get(
+            `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-upload"]`
+          ).attachFile({
+            fileContent: fileContent.toString(),
+            fileName: "test1.png",
+            mimeType: "image/png",
+            encoding: "base64",
+          });
+        });
+
+        //Wait for image to upload
+        cy.wait(8000);
+
+        //Add Size button
+        cy.get(
+          `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-add"]`
+        )
+          .should("be.visible")
+          .click();
+
+        //Size Form
+        cy.get(
+          `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0"]`
+        )
+          .should("be.visible")
+          .within(() => {
+            //Price
+            cy.get('input[placeholder="Price"]')
+              .should("be.visible")
+              .clear()
+              .type("50");
+
+            //Num in stocks
+            cy.get('input[placeholder="Number in Stock"]')
+              .should("be.visible")
+              .clear()
+              .type("3");
+          });
+
+        //Discount
+        cy.get('input[placeholder="Discount"]')
+          .should("be.visible")
+          .clear()
+          .type("10");
+
+        //Color
+        cy.get(
+          `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-color-select"]`
+        )
+          .should("be.visible")
+          .click()
+          .then(($select) => {
+            //Wait for colors to load
+            cy.wait(3000);
+
+            cy.contains(
+              `[data-cy^="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-color-select-"]`,
+              "Black",
+              {
+                timeout: 10000,
+              }
+            )
+              .should("be.visible")
+              .click();
+
+            cy.get(
+              `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-color-select"]`
+            ).click();
+
+            //Wait for colors to be selected
+            cy.wait(3000);
+          });
+      });
+
+    //Choosing size
+    cy.get(
+      `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0"]`
+    ).should("be.visible");
+
+    cy.get(
+      `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0-size-select"]`
+    )
+      .should("be.visible")
+      .click();
+
+    //Wait for size to load
+    cy.wait(3000);
+
+    cy.get(
+      `[data-cy^="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-select-size-"]`
+    )
+      .first()
+      .click();
+
+    //Wait for size to be selected
+    cy.wait(3000);
+
+    //Save product
+    cy.get('[data-cy="product-save-btn"]')
+      .should("be.visible")
+      .click({ force: true });
+
+    cy.wait(8000);
+
+    //Expect a new product item
+    cy.get(
+      `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-delete"]`
+    ).should("exist");
+
+    //Back to products
+    cy.get('[data-cy="back-btn"]')
+      .should("contain", "Back to products")
+      .click();
+  });
+
+  it("Cancel delete an existing size", () => {
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
+      timeout: 15000,
+    })
+      .should("be.visible")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-btn"]`)
+      .should("exist")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-cancel"]`)
+      .should("exist")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-continue"]`).should(
+      "not.exist"
+    );
+  });
+
+  it("Continue delete an existing size", () => {
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
+      timeout: 15000,
+    })
+      .should("be.visible")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-btn"]`)
+      .should("exist")
+      .click();
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-continue"]`)
+      .should("exist")
+      .click();
+
+    cy.wait(8000);
+
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-continue"]`).should(
+      "not.exist"
     );
   });
 });

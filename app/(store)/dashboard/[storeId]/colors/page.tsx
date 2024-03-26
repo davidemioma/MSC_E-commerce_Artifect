@@ -34,6 +34,7 @@ export default async function ColorsPage({
           <Link
             href={`/dashboard/${storeId}/colors/new`}
             className={buttonVariants()}
+            data-cy="new-color-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add new

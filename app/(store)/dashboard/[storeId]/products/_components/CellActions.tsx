@@ -21,9 +21,10 @@ import {
 
 type Props = {
   data: ProductCol;
+  index: number;
 };
 
-const CellActions = ({ data }: Props) => {
+const CellActions = ({ data, index }: Props) => {
   const params = useParams();
 
   const router = useRouter();
@@ -63,6 +64,7 @@ const CellActions = ({ data }: Props) => {
         onConfirm={onDelete}
         loading={isPending}
         featureToDelete="product"
+        testId={`product-${index}-delete`}
       />
 
       <ViewProductModal
@@ -79,7 +81,7 @@ const CellActions = ({ data }: Props) => {
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild data-cy={`${data.id}-trigger`}>
+        <DropdownMenuTrigger asChild data-cy={`product-${index}-trigger`}>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
 
@@ -129,7 +131,7 @@ const CellActions = ({ data }: Props) => {
               router.push(`/dashboard/${data.storeId}/products/${data.id}`)
             }
             disabled={isPending}
-            data-cy={`${data.id}-update`}
+            data-cy={`product-${index}-update-btn`}
           >
             <Edit className="w-4 h-4 mr-2" />
             Update
@@ -138,7 +140,7 @@ const CellActions = ({ data }: Props) => {
           <DropdownMenuItem
             onClick={() => setOpen(true)}
             disabled={isPending}
-            data-cy={`${data.id}-delete`}
+            data-cy={`product-${index}-delete-btn`}
           >
             <Trash className="w-4 h-4 mr-2" />
             Delete

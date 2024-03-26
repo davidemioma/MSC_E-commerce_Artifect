@@ -34,6 +34,7 @@ export default async function SizesPage({
           <Link
             href={`/dashboard/${storeId}/sizes/new`}
             className={buttonVariants()}
+            data-cy="new-size-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add new

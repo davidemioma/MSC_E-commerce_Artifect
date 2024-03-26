@@ -98,7 +98,7 @@ const CategoryForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="category-form">
+    <div data-testid="category-form" data-cy="category-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -124,16 +124,21 @@ const CategoryForm = ({ data }: Props) => {
                     {...field}
                     disabled={isPending}
                     placeholder="Shoes..."
+                    data-cy="category-name-input"
                   />
                 </FormControl>
 
-                <FormMessage />
+                <FormMessage data-cy="category-name-input-err" />
               </FormItem>
             )}
           />
 
           <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              data-cy={data ? "category-save-btn" : "category-create-btn"}
+            >
               {data ? "Save" : "Create"}
             </Button>
 

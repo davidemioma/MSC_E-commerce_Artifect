@@ -43,6 +43,7 @@ export default async function StoreCategoriesPage({
           <Link
             href={`/dashboard/${storeId}/categories/new`}
             className={buttonVariants()}
+            data-cy="new-category-btn"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add new

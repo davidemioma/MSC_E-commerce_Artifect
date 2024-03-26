@@ -94,7 +94,7 @@ const SizeForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="size-form">
+    <div data-testid="size-form" data-cy="size-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -121,10 +121,11 @@ const SizeForm = ({ data }: Props) => {
                       {...field}
                       disabled={isPending}
                       placeholder="Large"
+                      data-cy="size-name-input"
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="size-name-input-err" />
                 </FormItem>
               )}
             />
@@ -137,17 +138,26 @@ const SizeForm = ({ data }: Props) => {
                   <FormLabel>Value</FormLabel>
 
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="lg" />
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="lg"
+                      data-cy="size-value-input"
+                    />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="size-value-input-err" />
                 </FormItem>
               )}
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              data-cy={data ? "size-save-btn" : "size-create-btn"}
+            >
               {data ? "Save" : "Create"}
             </Button>
 

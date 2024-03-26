@@ -95,7 +95,7 @@ const ColorForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="color-form">
+    <div data-testid="color-form" data-cy="color-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -122,10 +122,11 @@ const ColorForm = ({ data }: Props) => {
                       {...field}
                       disabled={isPending}
                       placeholder="Black"
+                      data-cy="color-name-input"
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="color-name-input-err" />
                 </FormItem>
               )}
             />
@@ -134,7 +135,7 @@ const ColorForm = ({ data }: Props) => {
               control={form.control}
               name="value"
               render={({ field }) => (
-                <FormItem>
+                <FormItem data-cy="color-value-input">
                   <FormLabel>Value</FormLabel>
 
                   <FormControl>
@@ -144,14 +145,18 @@ const ColorForm = ({ data }: Props) => {
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="color-value-input-err" />
                 </FormItem>
               )}
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              data-cy={data ? "color-save-btn" : "color-create-btn"}
+            >
               {data ? "Save" : "Create"}
             </Button>
 

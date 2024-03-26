@@ -228,10 +228,7 @@ const ProductForm = ({ data }: Props) => {
   };
 
   return (
-    <div
-      data-testid="product-form"
-      data-cy={data ? `product-form-${data.id}` : "product-form"}
-    >
+    <div data-testid="product-form" data-cy="product-form">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -264,13 +261,11 @@ const ProductForm = ({ data }: Props) => {
                         {...field}
                         disabled={creating || updating || deletingItem}
                         placeholder="Name..."
-                        data-cy={
-                          data ? `product-name-${data.id}` : "product-name"
-                        }
+                        data-cy="product-name-input"
                       />
                     </FormControl>
 
-                    <FormMessage />
+                    <FormMessage data-cy="product-name-input-err" />
                   </FormItem>
                 )}
               />
@@ -300,13 +295,7 @@ const ProductForm = ({ data }: Props) => {
                         disabled={creating || updating || deletingItem}
                       >
                         <FormControl>
-                          <SelectTrigger
-                            data-cy={
-                              data
-                                ? `product-select-${data.id}`
-                                : "product-select"
-                            }
-                          >
+                          <SelectTrigger data-cy="product-category-select-trigger">
                             <SelectValue placeholder="Choose Category" />
                           </SelectTrigger>
                         </FormControl>
@@ -330,11 +319,7 @@ const ProductForm = ({ data }: Props) => {
                                 <SelectItem
                                   key={cat.id}
                                   value={cat.id}
-                                  data-cy={
-                                    data
-                                      ? `product-${data.id}-${i}`
-                                      : `product-${i}`
-                                  }
+                                  data-cy={`product-category-select-${i}`}
                                 >
                                   {cat.name}
                                 </SelectItem>
@@ -345,7 +330,7 @@ const ProductForm = ({ data }: Props) => {
                       </Select>
                     </FormControl>
 
-                    <FormMessage />
+                    <FormMessage data-cy="product-category-input-err" />
                   </FormItem>
                 )}
               />
@@ -363,11 +348,10 @@ const ProductForm = ({ data }: Props) => {
                       value={field.value}
                       onChange={field.onChange}
                       disabled={creating || updating || deletingItem}
-                      data-cy="product-description"
                     />
                   </FormControl>
 
-                  <FormMessage />
+                  <FormMessage data-cy="product-description-input-err" />
                 </FormItem>
               )}
             />
@@ -563,7 +547,7 @@ const ProductForm = ({ data }: Props) => {
                 className="disabled:cursor-not-allowed disabled:opacity-75"
                 type="submit"
                 disabled={creating || updating || deletingItem}
-                data-cy={data ? `save-btn-${data.id}` : "create-btn"}
+                data-cy={data ? `product-save-btn` : "product-create-btn"}
               >
                 {data ? "Save" : "Create"}
               </Button>
