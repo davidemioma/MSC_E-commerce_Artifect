@@ -16,7 +16,7 @@ import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "60s"),
+  limiter: Ratelimit.slidingWindow(30, "60s"),
 });
 
 export const login = async (
