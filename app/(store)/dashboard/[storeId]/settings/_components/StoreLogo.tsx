@@ -12,10 +12,11 @@ type Props = {
   value?: string | undefined;
   disabled?: boolean;
   storeId: string;
+  testId?: string;
   onChange: (base64: string | undefined) => void;
 };
 
-const StoreLogo = ({ value, disabled, storeId, onChange }: Props) => {
+const StoreLogo = ({ value, disabled, storeId, testId, onChange }: Props) => {
   const { user } = useCurrentUser();
 
   const [base64, setBase64] = useState(value);
@@ -71,9 +72,11 @@ const StoreLogo = ({ value, disabled, storeId, onChange }: Props) => {
   return (
     <div
       {...getRootProps()}
+      data-cy={`${testId}-parent`}
+      data-testid={`${testId}-parent`}
       className="w-full max-w-sm p-4 text-center rounded-md cursor-pointer border-2 border-dotted border-gray-200"
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} data-cy={testId} data-testid={testId} />
 
       {!base64 && (
         <div className="flex flex-col">

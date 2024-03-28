@@ -18,10 +18,12 @@ type Props = {
   onConfirm: () => void;
   loading: boolean;
   description?: string;
+  testId?: string;
 };
 
 const StoreAlertModal = ({
   open,
+  testId,
   onOpenChange,
   onConfirm,
   loading,
@@ -47,11 +49,19 @@ const StoreAlertModal = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onOpenChange} disabled={loading}>
+          <AlertDialogCancel
+            onClick={onOpenChange}
+            disabled={loading}
+            data-cy={`${testId}-cancel`}
+          >
             Cancel
           </AlertDialogCancel>
 
-          <AlertDialogAction onClick={onConfirm} disabled={loading}>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={loading}
+            data-cy={`${testId}-continue`}
+          >
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>

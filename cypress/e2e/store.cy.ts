@@ -74,10 +74,15 @@ describe("Store Form", () => {
 
     cy.get('[data-cy^="country-select-GB"]').click();
 
-    cy.get('input[placeholder="123456"]').should("be.visible").type("123456");
+    cy.get('input[placeholder="123456"]').should("be.visible").type("123");
 
     //Show create button
     cy.get('[data-cy="store-submit-btn"]').should("contain", "Create").click();
+
+    //wait for API
+    cy.wait(8000);
+
+    cy.get('[data-cy="create-store-err"]').should("exist");
   });
 
   it("Store already exists", () => {
@@ -86,7 +91,7 @@ describe("Store Form", () => {
 
     cy.get('input[placeholder="Store Name"]')
       .should("be.visible")
-      .type("Test Store");
+      .type("David's Sneaker Store");
 
     cy.get('input[placeholder="user@mail.com"]')
       .should("be.visible")
@@ -96,22 +101,13 @@ describe("Store Form", () => {
 
     cy.get('[data-cy^="country-select-GB"]').click();
 
-    cy.get('input[placeholder="123456"]').should("be.visible").type("AL109UX");
+    cy.get('input[placeholder="123456"]').should("be.visible").type("AL109WX");
 
-    // Sending verifictaion code
     cy.get('[data-cy="store-submit-btn"]').should("contain", "Create").click();
 
-    //Error
-    cy.get('input[placeholder="Store Name"]', { timeout: 10000 }).should(
-      "be.empty"
-    );
+    //wait for API
+    cy.wait(8000);
 
-    cy.get('input[placeholder="user@mail.com"]', { timeout: 10000 }).should(
-      "be.empty"
-    );
-
-    cy.get('input[placeholder="123456"]', { timeout: 10000 }).should(
-      "be.empty"
-    );
+    cy.get('[data-cy="create-store-err"]').should("exist");
   });
 });

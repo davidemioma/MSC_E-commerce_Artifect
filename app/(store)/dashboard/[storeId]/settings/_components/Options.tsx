@@ -89,6 +89,7 @@ const Options = ({ storeId, status }: Props) => {
         onOpenChange={() => setOpenClose(false)}
         onConfirm={onClose}
         loading={closing || deleting || opening}
+        testId="store-close-modal"
         description="This action will make your store and all its listings invisible to customers. Note that your store and product will have to go through the reviewing process again if you decide to reopen. You can reopen your store at any time from your settings."
       />
 
@@ -107,6 +108,8 @@ const Options = ({ storeId, status }: Props) => {
             variant="outline"
             onClick={() => setOpenClose(true)}
             disabled={closing || deleting || opening}
+            data-testid="close-store-btn"
+            data-cy="close-store-btn"
           >
             Close Store
           </Button>
@@ -118,6 +121,8 @@ const Options = ({ storeId, status }: Props) => {
             variant="outline"
             onClick={() => onOpen()}
             disabled={closing || deleting || opening}
+            data-testid="open-store-btn"
+            data-cy="open-store-btn"
           >
             Open Store
           </Button>
@@ -128,6 +133,7 @@ const Options = ({ storeId, status }: Props) => {
           variant="destructive"
           onClick={() => setOpenDelete(true)}
           disabled={closing || deleting || opening}
+          data-testid="delete-store-btn"
         >
           Delete Store
         </Button>

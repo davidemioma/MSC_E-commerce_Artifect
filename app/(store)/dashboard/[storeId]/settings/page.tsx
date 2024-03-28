@@ -41,7 +41,7 @@ export default async function StoreDashboardPage({
 
       <Separator className="my-4" />
 
-      <div className="w-full space-y-3">
+      <div className="w-full space-y-3" data-cy="store-status">
         <h1 className="text-2xl font-bold">Status</h1>
 
         <div className="space-y-1">

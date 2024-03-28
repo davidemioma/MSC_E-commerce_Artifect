@@ -218,7 +218,7 @@ const StoreForm = ({ isModal }: { isModal?: boolean }) => {
 
         <AuthSuccess message={success} />
 
-        <AuthError message={error} data-cy="create-store-err" />
+        <AuthError message={error} testId="create-store-err" />
 
         <div className="w-full flex items-center justify-end gap-2">
           {isModal && (

@@ -26,7 +26,11 @@ export default async function RootLayout({
       <body className={cn("h-full antialiased", font.className)}>
         <SessionProvider session={session}>
           <QueryProvider>
-            <Toaster position="top-center" richColors />
+            <Toaster
+              position="top-center"
+              richColors
+              data-cy="toast-notification"
+            />
 
             <ModalProvider />
 

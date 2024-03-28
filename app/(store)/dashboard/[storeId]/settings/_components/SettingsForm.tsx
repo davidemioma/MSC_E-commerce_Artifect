@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import StoreLogo from "./StoreLogo";
 import { Store } from "@prisma/client";
@@ -41,6 +41,8 @@ type Props = {
 const SettingsForm = ({ store }: Props) => {
   const router = useRouter();
 
+  const [invalid, setInvalid] = useState(false);
+
   const form = useForm<StoreSettingsValidator>({
     resolver: zodResolver(StoreSettingsSchema),
     defaultValues: {
@@ -57,8 +59,10 @@ const SettingsForm = ({ store }: Props) => {
   const countries = getAll();
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["update-store", store.id],
+    mutationKey: ["update-store", store?.id],
     mutationFn: async (values: StoreSettingsValidator) => {
+      if (!store?.id) return;
+
       await axios.patch(`/api/stores/${store.id}`, values);
     },
     onSuccess: () => {
@@ -69,6 +73,8 @@ const SettingsForm = ({ store }: Props) => {
     onError: (err) => {
       if (err instanceof AxiosError) {
         toast.error(err.response?.data);
+
+        setInvalid(true);
       } else {
         toast.error("Something went wrong");
       }
@@ -76,12 +82,17 @@ const SettingsForm = ({ store }: Props) => {
   });
 
   const onSubmit = (values: StoreSettingsValidator) => {
+    setInvalid(false);
+
     mutate(values);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        data-cy="store-settings-form"
+      >
         <div className="space-y-4">
           <FormField
             control={form.control}
@@ -95,7 +106,8 @@ const SettingsForm = ({ store }: Props) => {
                     value={field.value}
                     onChange={field.onChange}
                     disabled={isPending}
-                    storeId={store.id}
+                    storeId={store?.id || ""}
+                    testId="store-image-upload"
                   />
                 </FormControl>
 
@@ -117,6 +129,8 @@ const SettingsForm = ({ store }: Props) => {
                       {...field}
                       disabled={isPending}
                       placeholder="Name..."
+                      data-testId="store-name-input"
+                      data-cy="store-name-input"
                     />
                   </FormControl>
 
@@ -140,14 +154,21 @@ const SettingsForm = ({ store }: Props) => {
                     disabled={isPending}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger
+                        data-testId="store-country-select-trigger"
+                        data-cy="store-country-select-trigger"
+                      >
                         <SelectValue placeholder="Anywhere" />
                       </SelectTrigger>
                     </FormControl>
 
                     <SelectContent>
                       {countries.map((country) => (
-                        <SelectItem key={country.value} value={country.value}>
+                        <SelectItem
+                          key={country.value}
+                          value={country.value}
+                          data-cy={`store-country-select-${country.value}`}
+                        >
                           {country.flag} {country.label}
                         </SelectItem>
                       ))}
@@ -171,6 +192,8 @@ const SettingsForm = ({ store }: Props) => {
                       {...field}
                       placeholder="123456"
                       disabled={isPending}
+                      data-testId="store-postcode-input"
+                      data-cy="store-postcode-input"
                     />
                   </FormControl>
 
@@ -192,6 +215,7 @@ const SettingsForm = ({ store }: Props) => {
                     value={field.value}
                     onChange={field.onChange}
                     disabled={isPending}
+                    data-testId="store-description-input"
                   />
                 </FormControl>
 
@@ -205,9 +229,13 @@ const SettingsForm = ({ store }: Props) => {
           className="mt-20 sm:mt-16 disabled:cursor-not-allowed disabled:opacity-75"
           type="submit"
           disabled={isPending}
+          data-testid="save-store-details"
+          data-cy="save-store-details"
         >
           {isPending ? <BtnSpinner /> : "Save"}
         </Button>
+
+        {invalid && <div data-cy="invalid-err" />}
       </form>
     </Form>
   );

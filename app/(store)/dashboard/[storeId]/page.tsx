@@ -55,10 +55,7 @@ export default async function StoreDashboardPage({
     <div className="w-full">
       <Container>
         <div className="flex items-center justify-between gap-3">
-          <Heading
-            title={store.name}
-            description={store.description || "Overview of your store"}
-          />
+          <Heading title={store.name} description="Overview of your store" />
 
           {store.status === storeStatus.APPROVED && firstProduct && (
             <ShareStoreLink storeId={storeId} productId={firstProduct?.id} />

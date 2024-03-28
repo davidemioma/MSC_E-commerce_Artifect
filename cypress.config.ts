@@ -10,6 +10,7 @@ export default defineConfig({
     baseUrl: process.env.CYPRESS_BASE_URL,
     env: {
       auth_storeId: process.env.TEST_STORE_ID,
+      auth_storeId_manage: process.env.TEST_STORE_ID_MANAGE,
       auth_email: process.env.TEST_EMAIL,
       auth_password: process.env.TEST_PASSWORD,
       test_productId: process.env.TEST_PRODUCT_ID,

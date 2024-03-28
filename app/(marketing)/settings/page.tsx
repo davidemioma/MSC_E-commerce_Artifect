@@ -85,7 +85,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <Card className="w-full max-w-[600px] mx-auto">
+    <Card className="w-full max-w-[600px] mx-auto" data-testid="user-settings">
       <CardHeader>
         <CardTitle>⚙️ Settings</CardTitle>
 
@@ -94,7 +94,11 @@ export default function SettingsPage() {
 
       <CardContent>
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            className="space-y-6"
+            onSubmit={form.handleSubmit(onSubmit)}
+            data-cy="user-settings-form"
+          >
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -106,6 +110,7 @@ export default function SettingsPage() {
                         value={field.value}
                         onChange={field.onChange}
                         disabled={isPending}
+                        userTestId="user-settings-image-upload"
                       />
                     </FormControl>
                   </FormItem>
@@ -124,6 +129,7 @@ export default function SettingsPage() {
                         {...field}
                         placeholder="John Doe"
                         disabled={isPending}
+                        data-cy="user-settings-name-input"
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,6 +152,7 @@ export default function SettingsPage() {
                             placeholder="******"
                             type="password"
                             disabled={isPending}
+                            data-cy="user-settings-password-input"
                           />
                         </FormControl>
 
@@ -167,10 +174,11 @@ export default function SettingsPage() {
                             placeholder="******"
                             type="password"
                             disabled={isPending}
+                            data-cy="user-settings-new-password-input"
                           />
                         </FormControl>
 
-                        <FormMessage />
+                        <FormMessage data-cy="user-settings-new-password-input-err" />
                       </FormItem>
                     )}
                   />
@@ -196,6 +204,7 @@ export default function SettingsPage() {
                           disabled={isPending}
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          data-cy="user-settings-2fa-input"
                         />
                       </FormControl>
                     </FormItem>
@@ -204,11 +213,18 @@ export default function SettingsPage() {
               )}
             </div>
 
-            <AuthSuccess message={success} />
+            <AuthSuccess
+              message={success}
+              testId="user-settings-update-success"
+            />
 
-            <AuthError message={error} />
+            <AuthError message={error} testId="user-settings-update-error" />
 
-            <Button disabled={isPending} type="submit">
+            <Button
+              disabled={isPending}
+              type="submit"
+              data-cy="user-settings-save-btn"
+            >
               Save
             </Button>
           </form>
@@ -220,14 +236,22 @@ export default function SettingsPage() {
       <CardFooter>
         <div className="ml-auto flex items-center gap-2">
           {role !== "ADMIN" && (
-            <Button variant="secondary" disabled={isPending}>
+            <Button
+              variant="secondary"
+              disabled={isPending}
+              data-cy="user-settings-secondary-btn"
+            >
               <Link href={"/store"}>
                 {role === "USER" ? "Become a seller" : "Go to store"}
               </Link>
             </Button>
           )}
 
-          <Button onClick={() => signOut()} disabled={isPending}>
+          <Button
+            onClick={() => signOut()}
+            disabled={isPending}
+            data-cy="user-settings-signout-btn"
+          >
             Sign Out
           </Button>
         </div>
