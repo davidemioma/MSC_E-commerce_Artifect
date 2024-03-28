@@ -16,10 +16,7 @@ import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(
-    process.env.NODE_ENV === "production" ? 10 : 1000,
-    process.env.NODE_ENV === "production" ? "60s" : "1h"
-  ),
+  limiter: Ratelimit.slidingWindow(10, "60s"),
 });
 
 export const login = async (
@@ -119,9 +116,7 @@ export const login = async (
 
     const { success, remaining, limit } = await ratelimit.limit(ip);
 
-    console.log({ remaining, limit });
-
-    if (!success) {
+    if (!success && process.env.NODE_ENV === "production") {
       return { error: "Too Many Requests! try again in 1 min" };
     }
 
