@@ -19,7 +19,7 @@ describe("Product for store", () => {
     );
   });
 
-  it("Create fail for invalid form", () => {
+  it("Display fail for invalid form", () => {
     cy.get('[data-cy="new-product-btn"]', {
       timeout: 15000,
     })
@@ -367,7 +367,7 @@ describe("Product for store", () => {
       .click();
   });
 
-  it("Cancel delete an existing size", () => {
+  it("Cancel alert for delete an existing product", () => {
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
       timeout: 15000,
     })
@@ -387,7 +387,7 @@ describe("Product for store", () => {
     );
   });
 
-  it("Continue delete an existing size", () => {
+  it("Continue to delete an existing product", () => {
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
       timeout: 15000,
     })

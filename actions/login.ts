@@ -1,15 +1,23 @@
 "use server";
 
 import { signIn } from "@/auth";
+import redis from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 import { getUserByEmail } from "@/data/user";
+import { Ratelimit } from "@upstash/ratelimit";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { LoginValidator, LoginSchema } from "@/lib/validators/login";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
 import { generateTwofactorToken, generateVerificationToken } from "@/lib/token";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "60s"),
+});
 
 export const login = async (
   values: LoginValidator,
@@ -104,6 +112,16 @@ export const login = async (
   }
 
   try {
+    const ip = headers().get("x-forwarded-for") ?? "".split(",")[0].trim();
+
+    const { success, remaining, limit } = await ratelimit.limit(ip);
+
+    console.log({ remaining, limit });
+
+    if (!success) {
+      return { error: "Too Many Requests! try again in 1 min" };
+    }
+
     await signIn("credentials", {
       email,
       password,
