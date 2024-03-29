@@ -16,7 +16,7 @@ import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, "60s"),
+  limiter: Ratelimit.slidingWindow(5, "60s"),
 });
 
 export const login = async (
@@ -112,12 +112,20 @@ export const login = async (
   }
 
   try {
-    const ip = headers().get("x-forwarded-for") ?? "".split(",")[0].trim();
+    if (process.env.VERCEL_ENV === "production") {
+      const forwardedIps = headers()
+        .get("x-forwarded-for")
+        ?.split(",")
+        .map((ip) => ip.trim());
 
-    const { success } = await ratelimit.limit(ip);
+      const ip =
+        forwardedIps && forwardedIps?.length > 0 ? forwardedIps[0] : "";
 
-    if (!success && process.env.VERCEL_ENV === "production") {
-      return { error: "Too Many Requests! try again in 1 min" };
+      const { success } = await ratelimit.limit(ip);
+
+      if (!success) {
+        return { error: "Too Many Requests! try again in 1 min" };
+      }
     }
 
     await signIn("credentials", {
