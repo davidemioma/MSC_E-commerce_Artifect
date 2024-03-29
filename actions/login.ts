@@ -114,9 +114,9 @@ export const login = async (
   try {
     const ip = headers().get("x-forwarded-for") ?? "".split(",")[0].trim();
 
-    const { success, remaining, limit } = await ratelimit.limit(ip);
+    const { success } = await ratelimit.limit(ip);
 
-    if (!success && process.env.NODE_ENV === "production") {
+    if (!success && process.env.VERCEL_ENV === "production") {
       return { error: "Too Many Requests! try again in 1 min" };
     }
 
