@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prisma";
-import { Redis } from "@upstash/redis";
+import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -8,7 +8,7 @@ import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
 const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
+  redis,
   limiter: Ratelimit.slidingWindow(5, "1 m"),
 });
 
@@ -17,16 +17,10 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { storeId } = params;
-
-    if (!storeId) {
-      return new NextResponse("Store Id is required", { status: 400 });
-    }
-
     //Check if there is a current user
     const { user } = await currentUser();
 
-    if (!user) {
+    if (!user || !user.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -43,6 +37,12 @@ export async function POST(
 
     if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { storeId } = params;
+
+    if (!storeId) {
+      return new NextResponse("Store Id is required", { status: 400 });
     }
 
     //Check if the user owns the store
