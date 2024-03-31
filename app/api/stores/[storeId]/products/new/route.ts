@@ -9,7 +9,7 @@ import { ProductSchema } from "@/lib/validators/product";
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "60 s"),
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
 });
 
 export async function POST(
@@ -32,7 +32,7 @@ export async function POST(
 
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    const { success } = await ratelimit.limit(user.id ?? ip);
+    const { success } = await ratelimit.limit((user.id as string) ?? ip);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
