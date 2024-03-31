@@ -7,6 +7,6 @@ export const redis = new Redis({
 });
 
 export const apiRatelimit = new Ratelimit({
-  redis,
+  redis: redis ?? Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(5, "1 m"),
 });
