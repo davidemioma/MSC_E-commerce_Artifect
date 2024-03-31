@@ -7,10 +7,10 @@ import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
-// const ratelimit = new Ratelimit({
-//   redis,
-//   limiter: Ratelimit.slidingWindow(5, "60 s"),
-// });
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "60 s"),
+});
 
 export async function PATCH(
   request: Request,
@@ -24,13 +24,15 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // const { success } = await ratelimit.limit(user.id ?? "");
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    // if (!success && process.env.VERCEL_ENV === "production") {
-    //   return new NextResponse("Too Many Requests! try again in 1 min", {
-    //     status: 429,
-    //   });
-    // }
+    const { success } = await ratelimit.limit(user.id ?? ip);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return new NextResponse("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
+    }
 
     const { storeId, productId } = params;
 
