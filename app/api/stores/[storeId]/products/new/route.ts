@@ -32,7 +32,7 @@ export async function POST(
 
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    const { success } = await ratelimit.limit((user.id as string) ?? ip);
+    const { success } = await ratelimit.limit(ip);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {

@@ -7,15 +7,15 @@ import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+});
+
 export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string; productId: string } }
 ) {
-  const ratelimit = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(5, "1 m"),
-  });
-
   try {
     //Check if there is a current user
     const { user } = await currentUser();
@@ -26,7 +26,7 @@ export async function PATCH(
 
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    const { success } = await ratelimit.limit((user.id as string) ?? ip);
+    const { success } = await ratelimit.limit(ip);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
