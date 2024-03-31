@@ -7,15 +7,15 @@ import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "1 m"),
-});
-
 export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string; productId: string } }
 ) {
+  const ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+  });
+
   try {
     //Check if there is a current user
     const { user } = await currentUser();
