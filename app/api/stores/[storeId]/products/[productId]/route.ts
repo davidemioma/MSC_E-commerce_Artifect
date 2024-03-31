@@ -1,15 +1,37 @@
 import prismadb from "@/lib/prisma";
+import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
+import { Ratelimit } from "@upstash/ratelimit";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "60 s"),
+});
 
 export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string; productId: string } }
 ) {
   try {
+    //Check if there is a current user
+    const { user } = await currentUser();
+
+    if (!user) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { success } = await ratelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return new NextResponse("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
+    }
+
     const { storeId, productId } = params;
 
     if (!storeId) {
@@ -18,13 +40,6 @@ export async function PATCH(
 
     if (!productId) {
       return new NextResponse("Product Id is required", { status: 400 });
-    }
-
-    //Check if there is a current user
-    const { user } = await currentUser();
-
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     //Check if user is a seller

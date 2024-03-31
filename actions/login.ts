@@ -1,7 +1,7 @@
 "use server";
 
 import { signIn } from "@/auth";
-import redis from "@/lib/redis";
+import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
@@ -16,13 +16,21 @@ import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "60s"),
+  limiter: Ratelimit.slidingWindow(5, "5 m"),
 });
 
 export const login = async (
   values: LoginValidator,
   callbackUrl?: string | null
 ) => {
+  const ip = headers().get("x-forwarded-for") ?? "127.0.0.1";
+
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success && process.env.VERCEL_ENV === "production") {
+    return { error: "Too Many Requests! try again in 5 min" };
+  }
+
   const validatedFields = LoginSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -112,21 +120,8 @@ export const login = async (
   }
 
   try {
-    if (process.env.VERCEL_ENV === "production") {
-      const forwardedIps = headers()
-        .get("x-forwarded-for")
-        ?.split(",")
-        .map((ip) => ip.trim());
-
-      const ip =
-        forwardedIps && forwardedIps?.length > 0 ? forwardedIps[0] : "";
-
-      const { success } = await ratelimit.limit(ip);
-
-      if (!success) {
-        return { error: "Too Many Requests! try again in 1 min" };
-      }
-    }
+    // if (process.env.VERCEL_ENV === "production") {
+    // }
 
     await signIn("credentials", {
       email,

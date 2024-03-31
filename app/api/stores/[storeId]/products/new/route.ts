@@ -1,9 +1,16 @@
 import prismadb from "@/lib/prisma";
+import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
-import { UserRole, storeStatus } from "@prisma/client";
 import { getCurrentPrice } from "@/lib/utils";
+import { Ratelimit } from "@upstash/ratelimit";
+import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "60 s"),
+});
 
 export async function POST(
   request: Request,
@@ -21,6 +28,14 @@ export async function POST(
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { success } = await ratelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return new NextResponse("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     //Check if user is a seller

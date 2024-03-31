@@ -1,13 +1,29 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
+import { headers } from "next/headers";
 import { getUserByEmail } from "@/data/user";
+import { Ratelimit } from "@upstash/ratelimit";
 import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken } from "@/lib/token";
 import { RegisterValidator, RegisterSchema } from "@/lib/validators/register";
 
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "5 m"),
+});
+
 export const register = async (values: RegisterValidator) => {
+  const ip = headers().get("x-forwarded-for") ?? "127.0.0.1";
+
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success && process.env.VERCEL_ENV === "production") {
+    return { error: "Too Many Requests! try again in 5 min" };
+  }
+
   const validatedFields = RegisterSchema.safeParse(values);
 
   if (!validatedFields.success) {
