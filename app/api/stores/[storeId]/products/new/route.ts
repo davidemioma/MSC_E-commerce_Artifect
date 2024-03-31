@@ -17,14 +17,10 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    //Check if there is a current user
-    const { user } = await currentUser();
+    //Rate limiting to prevent users from spaming
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    if (!user || !user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const { success } = await ratelimit.limit(user.id);
+    const { success } = await ratelimit.limit(ip);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
@@ -32,7 +28,13 @@ export async function POST(
       });
     }
 
-    //Check if user is a seller
+    //Check if there is a current user
+    const { user } = await currentUser();
+
+    if (!user || !user.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { role } = await currentRole();
 
     if (role !== UserRole.SELLER) {

@@ -17,19 +17,22 @@ export async function PATCH(
   { params }: { params: { storeId: string; productId: string } }
 ) {
   try {
-    //Check if there is a current user
-    const { user } = await currentUser();
+    //Rate limiting to prevent users from spaming
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
-    if (!user || !user.id) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const { success } = await ratelimit.limit(user.id);
+    const { success } = await ratelimit.limit(ip);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
         status: 429,
       });
+    }
+
+    //Check if there is a current user
+    const { user } = await currentUser();
+
+    if (!user || !user.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     //Check if user is a seller
