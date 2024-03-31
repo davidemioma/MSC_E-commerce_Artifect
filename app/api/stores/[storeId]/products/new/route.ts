@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prisma";
-import { redis } from "@/lib/redis";
+import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -8,7 +8,7 @@ import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
 const ratelimit = new Ratelimit({
-  redis,
+  redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(5, "1 m"),
 });
 
@@ -30,9 +30,7 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-
-    const { success } = await ratelimit.limit(ip);
+    const { success } = await ratelimit.limit(user.id);
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
