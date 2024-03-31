@@ -6,59 +6,10 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
 
-const ratelimit = new Ratelimit({
+const cartRatelimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(5, "1 m"),
 });
-
-export async function GET(request: Request) {
-  try {
-    //Check if there is a current user
-    const { user } = await currentUser();
-
-    if (!user || !user.id) {
-      return NextResponse.json({ cart: null });
-    }
-
-    const { role } = await currentRole();
-
-    if (role !== UserRole.USER) {
-      return NextResponse.json({ cart: null });
-    }
-
-    const cart = await prismadb.cart.findUnique({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        cartItems: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-            productItem: true,
-            availableItem: {
-              include: {
-                size: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(cart);
-  } catch (err) {
-    console.log("[CART_ITEM_GET]", err);
-
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-}
 
 export async function POST(request: Request) {
   try {
@@ -82,7 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { success } = await ratelimit.limit(user.id);
+    const { success } = await cartRatelimit.limit(user.id);
 
     if (!success) {
       return new NextResponse("Too Many Requests! try again in 1 min", {
@@ -208,6 +159,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Item added to cart!" });
   } catch (err) {
     console.log("[CART_ITEM_CREATE]", err);
+
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    //Check if there is a current user
+    const { user } = await currentUser();
+
+    if (!user || !user.id) {
+      return NextResponse.json({ cart: null });
+    }
+
+    const { role } = await currentRole();
+
+    if (role !== UserRole.USER) {
+      return NextResponse.json({ cart: null });
+    }
+
+    const cart = await prismadb.cart.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        cartItems: {
+          include: {
+            product: {
+              include: {
+                category: true,
+              },
+            },
+            productItem: true,
+            availableItem: {
+              include: {
+                size: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(cart);
+  } catch (err) {
+    console.log("[CART_ITEM_GET]", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }
