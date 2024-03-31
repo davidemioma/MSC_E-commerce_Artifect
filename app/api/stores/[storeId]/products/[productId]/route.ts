@@ -16,18 +16,18 @@ export async function PATCH(
   request: Request,
   { params }: { params: { storeId: string; productId: string } }
 ) {
+  //Rate limiting to prevent users from spaming
+  const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success && process.env.VERCEL_ENV === "production") {
+    return new NextResponse("Too Many Requests! try again in 1 min", {
+      status: 429,
+    });
+  }
+
   try {
-    //Rate limiting to prevent users from spaming
-    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-
-    const { success } = await ratelimit.limit(ip);
-
-    if (!success && process.env.VERCEL_ENV === "production") {
-      return new NextResponse("Too Many Requests! try again in 1 min", {
-        status: 429,
-      });
-    }
-
     //Check if there is a current user
     const { user } = await currentUser();
 
