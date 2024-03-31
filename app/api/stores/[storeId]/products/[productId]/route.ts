@@ -24,7 +24,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { success } = await ratelimit.limit(user.id);
+    const { success } = await ratelimit.limit(user.id ?? "");
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
