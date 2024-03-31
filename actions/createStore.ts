@@ -1,18 +1,31 @@
 "use server";
 
 import prismadb from "@/lib/prisma";
+import { redis } from "@/lib/redis";
 import { currentUser } from "@/lib/auth";
+import { Ratelimit } from "@upstash/ratelimit";
 import { postcodeValidator } from "postcode-validator";
 import { generateStoreVerificationToken } from "@/lib/token";
 import { sendStoreVerificationTokenEmail } from "@/lib/mail";
 import { StoreValidator, StoreSchema } from "@/lib/validators/store";
 import { getStoreVerificationTokenByEmail } from "@/data/store-verification-token";
 
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "5 m"),
+});
+
 export const createStore = async (values: StoreValidator) => {
   const { user } = await currentUser();
 
-  if (!user) {
+  if (!user || !user.id) {
     return { error: "Unauthorized!" };
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success && process.env.VERCEL_ENV === "production") {
+    return { error: "Too Many Requests! try again in 5 min" };
   }
 
   const dbUser = await prismadb.user.findUnique({

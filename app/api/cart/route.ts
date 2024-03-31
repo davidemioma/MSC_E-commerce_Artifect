@@ -1,15 +1,22 @@
 import prismadb from "@/lib/prisma";
+import { redis } from "@/lib/redis";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+});
 
 export async function GET(request: Request) {
   try {
     //Check if there is a current user
     const { user } = await currentUser();
 
-    if (!user) {
+    if (!user || !user.id) {
       return NextResponse.json({ cart: null });
     }
 
@@ -58,7 +65,7 @@ export async function POST(request: Request) {
     //Check if there is a current user
     const { user } = await currentUser();
 
-    if (!user) {
+    if (!user || !user.id) {
       return new NextResponse(
         "User must be logged in to perform this action.",
         { status: 401 }
@@ -73,6 +80,14 @@ export async function POST(request: Request) {
         "You do not have permission to add items to the cart.",
         { status: 401 }
       );
+    }
+
+    const { success } = await ratelimit.limit(user.id);
+
+    if (!success) {
+      return new NextResponse("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     const body = await request.json();

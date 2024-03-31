@@ -2,15 +2,28 @@
 
 import bcrypt from "bcryptjs";
 import { update } from "@/auth";
+import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
+import { Ratelimit } from "@upstash/ratelimit";
 import { SettingsValidator } from "@/lib/validators/settings";
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(7, "5 m"),
+});
 
 export const settings = async (values: SettingsValidator) => {
   const { user } = await currentUser();
 
-  if (!user) {
+  if (!user || !user.id) {
     return { error: "Unauthorized" };
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success && process.env.VERCEL_ENV === "production") {
+    return { error: "Too Many Requests! try again in 7 min" };
   }
 
   const dbUser = await prismadb.user.findUnique({

@@ -62,8 +62,6 @@ const StoreForm = ({ isModal }: { isModal?: boolean }) => {
       createStore(values)
         .then((data) => {
           if (data?.error) {
-            form.reset();
-
             setError(data.error);
           }
 
