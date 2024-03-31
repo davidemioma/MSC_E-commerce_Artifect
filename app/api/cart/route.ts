@@ -1,15 +1,9 @@
 import prismadb from "@/lib/prisma";
-import { redis } from "@/lib/redis";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
+import { apiRatelimit } from "@/lib/redis";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
-
-const cartRatelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "1 m"),
-});
 
 export async function POST(request: Request) {
   try {
@@ -33,9 +27,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const { success } = await cartRatelimit.limit(user.id);
+    const { success } = await apiRatelimit?.limit(user.id);
 
-    if (!success) {
+    if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
         status: 429,
       });
