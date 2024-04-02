@@ -1,7 +1,7 @@
 import { z } from "zod";
+import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
-import { redisServer } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 
@@ -131,7 +131,7 @@ export async function PATCH(
       },
     });
 
-    await redisServer.set(`${user.id}-cart`, JSON.stringify(newCart));
+    await redis.set(`${user.id}-cart`, newCart);
 
     return NextResponse.json({ message: "Cart item updated!" });
   } catch (err) {
@@ -214,7 +214,7 @@ export async function DELETE(
       },
     });
 
-    await redisServer.set(`${user.id}-cart`, JSON.stringify(newCart));
+    await redis.set(`${user.id}-cart`, newCart);
 
     return NextResponse.json({ message: "Cart item deleted!" });
   } catch (err) {
