@@ -196,8 +196,6 @@ export async function GET(request: Request) {
     const cachedCart = await redis.get(`${user.id}-cart`);
 
     if (cachedCart) {
-      console.log("Cached cart was returned");
-
       return NextResponse.json(cachedCart);
     }
 
