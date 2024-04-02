@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { success } = await apiRatelimit?.limit(user.id);
+    const { success } = await apiRatelimit?.limit(user.id ?? "");
 
     if (!success && process.env.VERCEL_ENV === "production") {
       return new NextResponse("Too Many Requests! try again in 1 min", {
