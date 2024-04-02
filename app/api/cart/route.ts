@@ -27,11 +27,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const { success } = await apiRatelimit?.limit(user.id ?? "");
+    try {
+      const { success } = await apiRatelimit?.limit(user.id ?? "");
 
-    if (!success && process.env.VERCEL_ENV === "production") {
-      return new NextResponse("Too Many Requests! try again in 1 min", {
-        status: 429,
+      if (!success && process.env.VERCEL_ENV === "production") {
+        return new NextResponse("Too Many Requests! try again in 1 min", {
+          status: 429,
+        });
+      }
+    } catch (err) {
+      console.error("Rate Limiting Error:", err);
+
+      return new NextResponse("An error occurred. Please try again later.", {
+        status: 503,
       });
     }
 
