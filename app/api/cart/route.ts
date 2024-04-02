@@ -1,7 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { apiRatelimit } from "@/lib/redis";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
 
@@ -25,22 +24,6 @@ export async function POST(request: Request) {
         "You do not have permission to add items to the cart.",
         { status: 401 }
       );
-    }
-
-    try {
-      const { success } = await apiRatelimit?.limit(user.id ?? "");
-
-      if (!success && process.env.VERCEL_ENV === "production") {
-        return new NextResponse("Too Many Requests! try again in 1 min", {
-          status: 429,
-        });
-      }
-    } catch (err) {
-      console.error("Rate Limiting Error:", err);
-
-      return new NextResponse("An error occurred. Please try again later.", {
-        status: 503,
-      });
     }
 
     const body = await request.json();
