@@ -1,3 +1,4 @@
+import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -141,6 +142,34 @@ export async function POST(request: Request) {
       },
     });
 
+    const newCart = await prismadb.cart.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        cartItems: {
+          include: {
+            product: {
+              include: {
+                category: true,
+              },
+            },
+            productItem: true,
+            availableItem: {
+              include: {
+                size: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    await redis.set(`${user.id}-cart`, newCart);
+
     return NextResponse.json({ message: "Item added to cart!" });
   } catch (err) {
     console.log("[CART_ITEM_CREATE]", err);
@@ -162,6 +191,14 @@ export async function GET(request: Request) {
 
     if (role !== UserRole.USER) {
       return NextResponse.json({ cart: null });
+    }
+
+    const cachedCart = await redis.get(`${user.id}-cart`);
+
+    if (cachedCart) {
+      console.log("Cached cart was returned");
+
+      return NextResponse.json(cachedCart);
     }
 
     const cart = await prismadb.cart.findUnique({
@@ -189,6 +226,8 @@ export async function GET(request: Request) {
         },
       },
     });
+
+    await redis.set(`${user.id}-cart`, cart);
 
     return NextResponse.json(cart);
   } catch (err) {
