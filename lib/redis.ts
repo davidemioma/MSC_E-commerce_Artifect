@@ -1,19 +1,9 @@
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
-const url = process.env.UPSTASH_REDIS_REST_URL as string;
-
-const token = process.env.UPSTASH_REDIS_REST_TOKEN as string;
-
-if (!url || !token) {
-  throw new Error(
-    "Redis URL or Token is not defined in environment variables."
-  );
-}
-
 export const redis = new Redis({
-  url,
-  token,
+  url: "https://firm-macaw-48172.upstash.io",
+  token: process.env.UPSTASH_REDIS_REST_TOKEN ?? "",
 });
 
 export const apiRatelimit = new Ratelimit({
