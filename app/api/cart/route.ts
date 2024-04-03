@@ -193,12 +193,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ cart: null });
     }
 
-    if (process.env.VERCEL_ENV !== "preview") {
-      const cachedCart = await redis.get(`${user.id}-cart`);
+    const cachedCart = await redis.get(`${user.id}-cart`);
 
-      if (cachedCart) {
-        return NextResponse.json(cachedCart);
-      }
+    if (cachedCart) {
+      return NextResponse.json(cachedCart);
     }
 
     const cart = await prismadb.cart.findUnique({
@@ -227,9 +225,7 @@ export async function GET(request: Request) {
       },
     });
 
-    if (process.env.VERCEL_ENV !== "preview") {
-      await redis.set(`${user.id}-cart`, cart);
-    }
+    await redis.set(`${user.id}-cart`, cart);
 
     return NextResponse.json(cart);
   } catch (err) {

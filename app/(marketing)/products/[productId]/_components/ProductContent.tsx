@@ -84,7 +84,7 @@ const ProductContent = ({ product }: Props) => {
   });
 
   return (
-    <div className="w-full grid md:grid-cols-2" data-testId="product-content">
+    <div className="w-full grid md:grid-cols-2" data-testid="product-content">
       <ProductSlider images={curProductItem?.images || []} />
 
       <div className="py-5 md:py-0 md:pl-10">
