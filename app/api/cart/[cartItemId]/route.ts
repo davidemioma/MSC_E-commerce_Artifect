@@ -29,7 +29,7 @@ export async function PATCH(
     //Check if there is a current user
     const { user } = await currentUser();
 
-    if (!user) {
+    if (!user || !user.id) {
       return new NextResponse("Unauthorized, You need to be logged in.", {
         status: 401,
       });
@@ -155,7 +155,7 @@ export async function DELETE(
     //Check if there is a current user
     const { user } = await currentUser();
 
-    if (!user) {
+    if (!user || !user.id) {
       return new NextResponse("Unauthorized, You need to be logged in.", {
         status: 401,
       });
