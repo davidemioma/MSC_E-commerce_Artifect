@@ -2,6 +2,7 @@ import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { getProductStatusValue } from "@/lib/utils";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
+import { getCachedProductData, cacheProductData } from "./redis-data";
 
 export const getProductsByAdmin = async ({
   status,
@@ -125,6 +126,12 @@ export const getProductById = async (productId: string) => {
       return null;
     }
 
+    const cachedProduct = await getCachedProductData(productId);
+
+    if (cachedProduct) {
+      return cachedProduct;
+    }
+
     const product = await prismadb.product.findUnique({
       where: {
         id: productId,
@@ -177,6 +184,8 @@ export const getProductById = async (productId: string) => {
         },
       },
     });
+
+    await cacheProductData(productId);
 
     return product;
   } catch (err) {

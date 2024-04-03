@@ -4,6 +4,7 @@ import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { cacheCartData } from "@/data/redis-data";
 import { currentRole, currentUser } from "@/lib/auth";
+import { apiRatelimit } from "@/lib/redis";
 
 export async function PATCH(
   request: Request,
@@ -41,6 +42,14 @@ export async function PATCH(
     if (role !== UserRole.USER) {
       return new NextResponse("Unauthorized, Only users can delete cartItem", {
         status: 401,
+      });
+    }
+
+    const { success } = await apiRatelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json("Too Many Requests! try again in 1 min", {
+        status: 429,
       });
     }
 

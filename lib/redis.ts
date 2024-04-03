@@ -2,7 +2,7 @@ import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
 export const redis = new Redis({
-  url: "https://firm-macaw-48172.upstash.io",
+  url: process.env.UPSTASH_REDIS_REST_URL ?? "",
   token: process.env.UPSTASH_REDIS_REST_TOKEN ?? "",
 });
 

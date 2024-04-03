@@ -1,9 +1,11 @@
 import prismadb from "@/lib/prisma";
+import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
-import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
+import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
+import { cacheProductData, deleteCachedProductData } from "@/data/redis-data";
 
 export async function PATCH(
   request: Request,
@@ -22,6 +24,14 @@ export async function PATCH(
 
     if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { success } = await apiRatelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     const { storeId, productId } = params;
@@ -204,6 +214,10 @@ export async function PATCH(
       },
     });
 
+    if (product.status === "APPROVED") {
+      await cacheProductData(productId);
+    }
+
     return NextResponse.json({ message: "Product Updated!" });
   } catch (err) {
     console.log("[PRODUCT_UPDATE]", err);
@@ -281,6 +295,8 @@ export async function DELETE(
         storeId,
       },
     });
+
+    await deleteCachedProductData(productId);
 
     return NextResponse.json({ message: "Product Deleted!" });
   } catch (err) {

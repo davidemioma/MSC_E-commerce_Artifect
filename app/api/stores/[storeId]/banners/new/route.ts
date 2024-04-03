@@ -1,5 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
+import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { BannerSchema } from "@/lib/validators/banner";
@@ -27,6 +28,14 @@ export async function POST(
 
     if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { success } = await apiRatelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     //Check if the user owns the store

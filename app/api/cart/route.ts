@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { apiRatelimit } from "@/lib/redis";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
 import { cacheCartData, getCachedCartData } from "@/data/redis-data";
@@ -25,6 +26,14 @@ export async function POST(request: Request) {
         "You do not have permission to add items to the cart.",
         { status: 401 }
       );
+    }
+
+    const { success } = await apiRatelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     const body = await request.json();

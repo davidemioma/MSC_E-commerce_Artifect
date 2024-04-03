@@ -1,6 +1,8 @@
 import prismadb from "@/lib/prisma";
+import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
+import { cacheProductData } from "@/data/redis-data";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
@@ -21,6 +23,14 @@ export async function POST(
 
     if (role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { success } = await apiRatelimit.limit(user.id);
+
+    if (!success && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json("Too Many Requests! try again in 1 min", {
+        status: 429,
+      });
     }
 
     const { storeId } = params;
@@ -105,6 +115,10 @@ export async function POST(
         });
       })
     );
+
+    if (product.status === "APPROVED") {
+      await cacheProductData(product.id);
+    }
 
     return NextResponse.json({ message: "Product Created!" });
   } catch (err) {

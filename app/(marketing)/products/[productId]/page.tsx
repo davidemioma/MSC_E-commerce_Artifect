@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ProductStatus } from "@prisma/client";
 import Container from "@/components/Container";
 import { getProductById } from "@/data/product";
 import Reviews from "./_components/reviews/Reviews";
@@ -11,7 +12,6 @@ import {
   getReviewCount,
   checkIfReviewed,
 } from "@/data/review";
-import { ProductStatus } from "@prisma/client";
 
 export default async function ProductPage({
   params: { productId },
