@@ -2,8 +2,8 @@ import { z } from "zod";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
 import { cacheCartData } from "@/data/redis-data";
+import { currentRole, currentUser } from "@/lib/auth";
 
 export async function PATCH(
   request: Request,
