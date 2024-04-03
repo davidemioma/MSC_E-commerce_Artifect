@@ -168,7 +168,9 @@ export async function POST(request: Request) {
       },
     });
 
-    await redis.set(`${user.id}-cart`, newCart);
+    if (redis && user.id) {
+      await redis.set(`${user.id}-cart`, newCart);
+    }
 
     return NextResponse.json({ message: "Item added to cart!" });
   } catch (err) {
@@ -193,10 +195,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ cart: null });
     }
 
-    const cachedCart = await redis.get(`${user.id}-cart`);
+    if (redis && user.id) {
+      const cachedCart = await redis.get(`${user.id}-cart`);
 
-    if (cachedCart) {
-      return NextResponse.json(cachedCart);
+      if (cachedCart) {
+        return NextResponse.json(cachedCart);
+      }
     }
 
     const cart = await prismadb.cart.findUnique({
@@ -225,7 +229,9 @@ export async function GET(request: Request) {
       },
     });
 
-    await redis.set(`${user.id}-cart`, cart);
+    if (redis && user.id) {
+      await redis.set(`${user.id}-cart`, cart);
+    }
 
     return NextResponse.json(cart);
   } catch (err) {

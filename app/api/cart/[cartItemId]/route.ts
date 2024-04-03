@@ -131,7 +131,9 @@ export async function PATCH(
       },
     });
 
-    await redis.set(`${user.id}-cart`, newCart);
+    if (redis && user.id) {
+      await redis.set(`${user.id}-cart`, newCart);
+    }
 
     return NextResponse.json({ message: "Cart item updated!" });
   } catch (err) {
@@ -214,7 +216,9 @@ export async function DELETE(
       },
     });
 
-    await redis.set(`${user.id}-cart`, newCart);
+    if (redis && user.id) {
+      await redis.set(`${user.id}-cart`, newCart);
+    }
 
     return NextResponse.json({ message: "Cart item deleted!" });
   } catch (err) {
