@@ -1,9 +1,9 @@
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
-const url = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL;
+const url = process.env.UPSTASH_REDIS_REST_URL;
 
-const token = process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN;
+const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
 if (!url || !token) {
   throw new Error(
