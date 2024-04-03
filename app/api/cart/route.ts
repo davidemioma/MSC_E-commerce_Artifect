@@ -3,7 +3,7 @@ import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
-import { getCachedCartData, cacheCartData } from "@/data/redis-data";
+import { cacheCartData, getCachedCartData } from "@/data/redis-data";
 
 export async function POST(request: Request) {
   try {

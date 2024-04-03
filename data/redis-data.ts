@@ -1,9 +1,7 @@
-"use server";
-
 import prismadb from "@/lib/prisma";
 import { redis } from "@/lib/redis";
 
-export const getCachedCartData = async (userId: string) => {
+export const getCachedCartData = async (userId?: string) => {
   if (!userId) return null;
 
   const cachedCart = await redis.get(`${userId}-cart`);
@@ -11,7 +9,7 @@ export const getCachedCartData = async (userId: string) => {
   return cachedCart;
 };
 
-export const cacheCartData = async (userId: string) => {
+export const cacheCartData = async (userId?: string) => {
   if (!userId) return;
 
   const cart = await prismadb.cart.findUnique({
