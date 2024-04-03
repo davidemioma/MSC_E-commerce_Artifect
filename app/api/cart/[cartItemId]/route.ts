@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { redis } from "@/lib/redis";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { cacheCartData } from "@/data/redis-data";
 import { currentRole, currentUser } from "@/lib/auth";
 
 export async function PATCH(
@@ -105,35 +105,7 @@ export async function PATCH(
       }
     }
 
-    const newCart = await prismadb.cart.findUnique({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        cartItems: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-            productItem: true,
-            availableItem: {
-              include: {
-                size: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-      },
-    });
-
-    if (redis && user.id) {
-      await redis.set(`${user.id}-cart`, newCart);
-    }
+    await cacheCartData(user.id);
 
     return NextResponse.json({ message: "Cart item updated!" });
   } catch (err) {
@@ -190,35 +162,7 @@ export async function DELETE(
       },
     });
 
-    const newCart = await prismadb.cart.findUnique({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        cartItems: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-            productItem: true,
-            availableItem: {
-              include: {
-                size: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-      },
-    });
-
-    if (redis && user.id) {
-      await redis.set(`${user.id}-cart`, newCart);
-    }
+    await cacheCartData(user.id);
 
     return NextResponse.json({ message: "Cart item deleted!" });
   } catch (err) {
