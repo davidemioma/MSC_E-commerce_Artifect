@@ -36,38 +36,22 @@ export const getStoreProducts = async ({
 
     let products = [];
 
-    if (search !== "") {
+    if (search && search.trim() !== "") {
       products = await prismadb.product.findMany({
         where: {
           storeId,
           status: "APPROVED",
           OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { name: { equals: search, mode: "insensitive" } },
             {
-              name: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              name: {
-                equals: search,
-                mode: "insensitive",
+              category: {
+                name: { contains: search, mode: "insensitive" },
               },
             },
             {
               category: {
-                name: {
-                  contains: search,
-                  mode: "insensitive",
-                },
-              },
-            },
-            {
-              category: {
-                name: {
-                  equals: search,
-                  mode: "insensitive",
-                },
+                name: { equals: search, mode: "insensitive" },
               },
             },
           ],
@@ -167,22 +151,5 @@ export const getStoreProducts = async ({
     return products;
   } catch (err) {
     return [];
-  }
-};
-
-export const getStoreProductsCount = async (storeId: string) => {
-  try {
-    if (!storeId) return 0;
-
-    const productCount = await prismadb.product.count({
-      where: {
-        storeId,
-        status: "APPROVED",
-      },
-    });
-
-    return productCount;
-  } catch (err) {
-    return 0;
   }
 };

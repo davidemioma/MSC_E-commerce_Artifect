@@ -12,7 +12,7 @@ import { RegisterValidator, RegisterSchema } from "@/lib/validators/register";
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "5 m"),
+  limiter: Ratelimit.slidingWindow(5, "10 m"),
 });
 
 export const register = async (values: RegisterValidator) => {
@@ -21,7 +21,7 @@ export const register = async (values: RegisterValidator) => {
   const { success } = await ratelimit.limit(ip);
 
   if (!success && process.env.VERCEL_ENV === "production") {
-    return { error: "Too Many Requests! try again in 5 min" };
+    return { error: "Too Many Requests! try again in 10 min" };
   }
 
   const validatedFields = RegisterSchema.safeParse(values);

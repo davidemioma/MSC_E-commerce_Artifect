@@ -6,17 +6,13 @@ import StoreFeed from "./_components/StoreFeed";
 import { Separator } from "@/components/ui/separator";
 import ProductFilters from "./_components/ProductFilters";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import {
-  getProductStore,
-  getStoreProducts,
-  getStoreProductsCount,
-} from "@/data/store-products";
+import { getProductStore, getStoreProducts } from "@/data/store-products";
 
 export default async function StorePage({
-  params: { storeId, productId },
+  params: { storeId },
   searchParams: { search },
 }: {
-  params: { productId: string; storeId: string };
+  params: { storeId: string };
   searchParams: {
     search: string;
   };
@@ -26,8 +22,6 @@ export default async function StorePage({
   if (!store) {
     return redirect("/");
   }
-
-  const productCount = await getStoreProductsCount(storeId);
 
   const products = await getStoreProducts({
     storeId,
@@ -91,14 +85,13 @@ export default async function StorePage({
 
         <main className="mt-10 space-y-5">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-            <h1 className="text-2xl font-bold">Products ({productCount})</h1>
+            <h1 className="text-2xl font-bold">Products</h1>
 
-            <ProductFilters storeId={storeId} productId={productId} />
+            <ProductFilters storeId={storeId} />
           </div>
 
           <StoreFeed
             storeId={storeId}
-            productId={productId}
             initialData={products}
             searchValue={search}
           />

@@ -217,7 +217,7 @@ const ProductContent = ({ product }: Props) => {
           <div className="mt-4 mb-10">
             <TooltipContainer message="View Store">
               <Link
-                href={`/products/${product.id}/stores/${product.storeId}`}
+                href={`/stores/${product.storeId}`}
                 data-cy="view-store-link"
               >
                 <div className="flex items-center gap-2">

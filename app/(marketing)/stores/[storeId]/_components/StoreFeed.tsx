@@ -11,12 +11,12 @@ import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
 
 type Props = {
   storeId: string;
-  productId: string;
+
   searchValue: string;
   initialData: HomeProductType[];
 };
 
-const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
+const StoreFeed = ({ storeId, searchValue, initialData }: Props) => {
   const productRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -29,7 +29,9 @@ const StoreFeed = ({ productId, storeId, searchValue, initialData }: Props) => {
     isFetchingNextPage,
   } = useUnlimitedScrolling({
     key: ["search-store-products", searchValue],
-    query: `/api/products/${productId}/stores/${storeId}?q=${searchValue}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
+    query: `/api/stores/${storeId}/search?q=${
+      searchValue || ""
+    }&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
     initialData,
   });
 

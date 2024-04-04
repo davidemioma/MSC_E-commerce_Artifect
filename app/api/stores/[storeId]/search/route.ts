@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { productId: string; storeId: string } }
+  { params }: { params: { storeId: string } }
 ) {
   try {
     const url = new URL(request.url);
@@ -13,7 +13,7 @@ export async function GET(
       .object({
         limit: z.string(),
         page: z.string(),
-        q: z.string(),
+        q: z.string().optional(),
       })
       .parse({
         limit: url.searchParams.get("limit"),
@@ -21,11 +21,7 @@ export async function GET(
         q: url.searchParams.get("q"),
       });
 
-    const { productId, storeId } = params;
-
-    if (!productId) {
-      return new NextResponse("Product Id is required", { status: 400 });
-    }
+    const { storeId } = params;
 
     if (!storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
@@ -36,57 +32,33 @@ export async function GET(
       where: {
         id: storeId,
       },
+      select: {
+        id: true,
+      },
     });
 
     if (!store) {
       return new NextResponse("Store not found!", { status: 404 });
     }
 
-    //check if product exists
-    const product = await prismadb.product.findUnique({
-      where: {
-        id: productId,
-      },
-    });
-
-    if (!product) {
-      return new NextResponse("Product not found!", { status: 404 });
-    }
-
     let products = [];
 
-    if (q !== "") {
+    if (q && q.trim() !== "") {
       products = await prismadb.product.findMany({
         where: {
           storeId,
           status: "APPROVED",
           OR: [
+            { name: { contains: q, mode: "insensitive" } },
+            { name: { equals: q, mode: "insensitive" } },
             {
-              name: {
-                contains: q,
-                mode: "insensitive",
-              },
-            },
-            {
-              name: {
-                equals: q,
-                mode: "insensitive",
+              category: {
+                name: { contains: q, mode: "insensitive" },
               },
             },
             {
               category: {
-                name: {
-                  contains: q,
-                  mode: "insensitive",
-                },
-              },
-            },
-            {
-              category: {
-                name: {
-                  equals: q,
-                  mode: "insensitive",
-                },
+                name: { equals: q, mode: "insensitive" },
               },
             },
           ],
@@ -134,56 +106,56 @@ export async function GET(
         take: parseInt(limit),
         skip: (parseInt(page) - 1) * parseInt(limit),
       });
+    } else {
+      products = await prismadb.product.findMany({
+        where: {
+          storeId,
+          status: "APPROVED",
+          productItems: {
+            some: {
+              availableItems: {
+                some: {
+                  numInStocks: {
+                    gt: 0,
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          category: true,
+          productItems: {
+            where: {
+              availableItems: {
+                some: {
+                  numInStocks: {
+                    gt: 0,
+                  },
+                },
+              },
+            },
+            include: {
+              availableItems: {
+                include: {
+                  size: true,
+                },
+              },
+            },
+          },
+          reviews: {
+            select: {
+              value: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: parseInt(limit),
+        skip: (parseInt(page) - 1) * parseInt(limit),
+      });
     }
-
-    products = await prismadb.product.findMany({
-      where: {
-        storeId,
-        status: "APPROVED",
-        productItems: {
-          some: {
-            availableItems: {
-              some: {
-                numInStocks: {
-                  gt: 0,
-                },
-              },
-            },
-          },
-        },
-      },
-      include: {
-        category: true,
-        productItems: {
-          where: {
-            availableItems: {
-              some: {
-                numInStocks: {
-                  gt: 0,
-                },
-              },
-            },
-          },
-          include: {
-            availableItems: {
-              include: {
-                size: true,
-              },
-            },
-          },
-        },
-        reviews: {
-          select: {
-            value: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: parseInt(limit),
-      skip: (parseInt(page) - 1) * parseInt(limit),
-    });
 
     return NextResponse.json(products);
   } catch (err) {

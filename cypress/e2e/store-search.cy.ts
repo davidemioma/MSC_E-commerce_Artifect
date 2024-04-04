@@ -33,7 +33,7 @@ describe("Users Interactions", () => {
 
     cy.url({ timeout: 16000 }).should(
       "include",
-      `/products/${Cypress.env("test_user_productId")}/stores`
+      `/stores/${Cypress.env("auth_storeId")}`
     );
   });
 

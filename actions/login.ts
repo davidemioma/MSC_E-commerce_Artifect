@@ -16,7 +16,7 @@ import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "5 m"),
+  limiter: Ratelimit.slidingWindow(5, "10 m"),
 });
 
 export const login = async (
@@ -28,7 +28,7 @@ export const login = async (
   const { success } = await ratelimit.limit(ip);
 
   if (!success && process.env.VERCEL_ENV === "production") {
-    return { error: "Too Many Requests! try again in 5 min" };
+    return { error: "Too Many Requests! try again in 10 min" };
   }
 
   const validatedFields = LoginSchema.safeParse(values);

@@ -6,10 +6,9 @@ import { SearchIcon, XIcon } from "lucide-react";
 
 type Props = {
   storeId: string;
-  productId: string;
 };
 
-const ProductFilters = ({ storeId, productId }: Props) => {
+const ProductFilters = ({ storeId }: Props) => {
   const router = useRouter();
 
   const [value, setValue] = useState("");
@@ -17,14 +16,14 @@ const ProductFilters = ({ storeId, productId }: Props) => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    router.push(`/products/${productId}/stores/${storeId}?search=${value}`);
+    router.push(`/stores/${storeId}?search=${value}`);
   };
 
   useEffect(() => {
-    if (value === "") {
-      router.push(`/products/${productId}/stores/${storeId}?search=""`);
+    if (value.trim() === "") {
+      router.push(`/stores/${storeId}`);
     }
-  }, [value]);
+  }, [value, router]);
 
   return (
     <form
