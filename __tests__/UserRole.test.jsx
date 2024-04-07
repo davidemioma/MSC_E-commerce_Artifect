@@ -3,6 +3,7 @@ import { mocked } from "jest-mock";
 import Cart from "../components/cart/Cart";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import UserAccount from "../components/UserAccount";
 import NavBar from "../app/(marketing)/_components/NavBar";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -13,6 +14,7 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
   useParams: jest.fn(),
   usePathname: jest.fn(),
+  useSearchParams: jest.fn(),
 }));
 
 jest.mock("@tanstack/react-query", () => ({
@@ -27,6 +29,10 @@ describe("Checking user roles (USER)", () => {
       data: [],
       error: null,
       isLoading: false,
+    });
+
+    useSearchParams.mockReturnValue({
+      get: jest.fn(),
     });
 
     mocked(useSession).mockReturnValue({
