@@ -35,7 +35,9 @@ const StoreAlertModal = ({
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

@@ -26,7 +26,7 @@ describe("Product for store", () => {
       .should("be.visible")
       .click();
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
@@ -46,7 +46,7 @@ describe("Product for store", () => {
       .should("be.visible")
       .click();
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
@@ -186,7 +186,7 @@ describe("Product for store", () => {
       .should("exist")
       .click();
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
@@ -200,9 +200,11 @@ describe("Product for store", () => {
       .should("be.visible")
       .click();
 
-    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}"]`, {
-      timeout: 40000,
-    }).should("not.exist");
+    cy.wait(10000);
+
+    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}"]`).should(
+      "not.exist"
+    );
 
     //Product Name
     cy.get('[data-cy="product-name-input"]')

@@ -15,6 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Spinner from "@/components/Spinner";
 
 type Props = {
   query: string;
@@ -26,6 +27,7 @@ type Props = {
   minDiscount?: string;
   maxDiscount?: string;
   refetch: () => void;
+  isLoading: boolean;
 };
 
 const SearchFilters = ({
@@ -38,6 +40,7 @@ const SearchFilters = ({
   minDiscount,
   maxDiscount,
   refetch,
+  isLoading,
 }: Props) => {
   const router = useRouter();
 
@@ -72,13 +75,19 @@ const SearchFilters = ({
       );
 
       refetch();
-    }, 400);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [filters, query, router, refetch]);
 
   if (!mounted) {
     return null;
+  }
+
+  if (isLoading) {
+    <div className="w-full md:sticky md:top-20 md:w-[270px] md:h-[80vh] md:overflow-y-auto md:scrollbar-hide">
+      <Spinner />
+    </div>;
   }
 
   return (
@@ -92,8 +101,9 @@ const SearchFilters = ({
           <AccordionContent>
             <ToggleGroup
               type="single"
-              className="grid justify-start text-start"
+              className="grid justify-start text-start disabled:cursor-not-allowed"
               value={filters.category}
+              disabled={isLoading}
               onValueChange={(value) => {
                 setFilters((prev) => ({
                   ...prev,
@@ -105,12 +115,13 @@ const SearchFilters = ({
                 <ToggleGroupItem
                   key={cat.toLowerCase()}
                   className={cn(
-                    "flex justify-start",
+                    "flex justify-start disabled:cursor-not-allowed",
                     filters.category === cat.toLowerCase()
                       ? "text-black font-medium"
                       : "text-muted-foreground"
                   )}
                   value={cat.toLowerCase()}
+                  disabled={isLoading}
                 >
                   {cat}
                 </ToggleGroupItem>
@@ -132,6 +143,7 @@ const SearchFilters = ({
                     type="radio"
                     className="h-4 w-4 rounded border-gray-300 \"
                     id={`price-${i}`}
+                    disabled={isLoading}
                     onChange={() => {
                       setFilters((prev) => ({
                         ...prev,
@@ -162,6 +174,7 @@ const SearchFilters = ({
                   type="radio"
                   className="h-4 w-4 rounded border-gray-300 \"
                   id="price-custom"
+                  disabled={isLoading}
                   onChange={() =>
                     setFilters((prev) => ({
                       ...prev,
@@ -190,6 +203,7 @@ const SearchFilters = ({
                     placeholder="Min (£)"
                     max={filters.price.range[1]}
                     step={2}
+                    disabled={isLoading}
                     onChange={(e) =>
                       setFilters((prev) => ({
                         ...prev,
@@ -207,6 +221,7 @@ const SearchFilters = ({
                     value={filters.price.range[1]}
                     min={filters.price.range[0]}
                     step={2}
+                    disabled={isLoading}
                     placeholder="Max (£)"
                     onChange={(e) =>
                       setFilters((prev) => ({
@@ -222,6 +237,7 @@ const SearchFilters = ({
 
                 <Button
                   className="w-16"
+                  disabled={isLoading}
                   onClick={() => {
                     if (
                       filters.price.range[0] > filters.price.range[1] ||
@@ -260,6 +276,7 @@ const SearchFilters = ({
               min={0}
               max={100}
               step={5}
+              disabled={isLoading}
               onValueChange={(range) => {
                 const [min, max] = range;
 

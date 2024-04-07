@@ -5,12 +5,14 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
+import { cacheCartData } from "@/data/redis-data";
 import { generateTrackingId } from "@/lib/functions";
 import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
 import {
   sendConfirmationOrderEmail,
   sendStoreConfirmationEmail,
 } from "@/lib/mail";
+import { cacheProductData } from "@/data/redis-data";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -105,6 +107,8 @@ export async function POST(req: Request) {
       },
     });
 
+    await cacheCartData(userId);
+
     //Generate Tracking ID and checking for uniqueness.
     let trackingId;
 
@@ -142,6 +146,7 @@ export async function POST(req: Request) {
             quantity: true,
             product: {
               select: {
+                id: true,
                 name: true,
               },
             },

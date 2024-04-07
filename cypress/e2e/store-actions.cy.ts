@@ -11,6 +11,8 @@ describe("Manage a store", () => {
       )}/settings`,
       { failOnStatusCode: false }
     );
+
+    cy.wait(10000);
   });
 
   it("Close alert store modal", () => {

@@ -2,7 +2,6 @@ import prismadb from "@/lib/prisma";
 import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
-import { cacheProductData } from "@/data/redis-data";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
@@ -115,10 +114,6 @@ export async function POST(
         });
       })
     );
-
-    if (product.status === "APPROVED") {
-      await cacheProductData(product.id);
-    }
 
     return NextResponse.json({ message: "Product Created!" });
   } catch (err) {

@@ -5,7 +5,6 @@ import { getCurrentPrice } from "@/lib/utils";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
-import { cacheProductData, deleteCachedProductData } from "@/data/redis-data";
 
 export async function PATCH(
   request: Request,
@@ -214,10 +213,6 @@ export async function PATCH(
       },
     });
 
-    if (product.status === "APPROVED") {
-      await cacheProductData(productId);
-    }
-
     return NextResponse.json({ message: "Product Updated!" });
   } catch (err) {
     console.log("[PRODUCT_UPDATE]", err);
@@ -295,8 +290,6 @@ export async function DELETE(
         storeId,
       },
     });
-
-    await deleteCachedProductData(productId);
 
     return NextResponse.json({ message: "Product Deleted!" });
   } catch (err) {

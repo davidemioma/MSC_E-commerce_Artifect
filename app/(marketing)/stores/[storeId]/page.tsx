@@ -77,10 +77,9 @@ export default async function StorePage({
         <Separator className="my-4" />
 
         {store.description && (
-          <div
-            className="w-full text-sm text-gray-500 max-w-2xl"
-            dangerouslySetInnerHTML={{ __html: store.description }}
-          />
+          <p className="w-full text-sm text-gray-500 max-w-2xl">
+            {store.description}
+          </p>
         )}
 
         <main className="mt-10 space-y-5">

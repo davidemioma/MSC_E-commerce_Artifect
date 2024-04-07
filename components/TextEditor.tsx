@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { Textarea } from "./ui/textarea";
 
 type Props = {
   value: string | undefined;
@@ -19,15 +18,7 @@ const TextEditor = ({ value, onChange, disabled }: Props) => {
   }, []);
 
   if (!isClient) {
-    return (
-      <Textarea
-        rows={6}
-        placeholder="Product Description..."
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-      />
-    );
+    return null;
   }
 
   return (

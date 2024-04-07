@@ -15,6 +15,10 @@ export default async function StoreDashboardPage({
 }) {
   const { storeId } = params;
 
+  if (!storeId) {
+    return redirect("/");
+  }
+
   const { user } = await currentUser();
 
   if (!user) {
@@ -61,7 +65,7 @@ export default async function StoreDashboardPage({
       <div className="w-full space-y-3">
         <h1 className="text-2xl font-bold">Details</h1>
 
-        <SettingsForm store={store} />
+        {store && <SettingsForm store={store} />}
       </div>
 
       <Separator className="my-4" />

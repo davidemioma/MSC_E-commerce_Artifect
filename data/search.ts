@@ -54,14 +54,14 @@ export const getProductBySearchQuery = async ({
       },
     };
 
-    //   if (category !== undefined) {
-    //     whereQuery.category = {
-    //       name: {
-    //         equals: category,
-    //         mode: "insensitive",
-    //       },
-    //     };
-    //   }
+    if (category !== "") {
+      whereQuery.category = {
+        name: {
+          equals: category,
+          mode: "insensitive",
+        },
+      };
+    }
 
     //  if (minPrice !== undefined && maxPrice !== undefined) {
     //    whereQuery.productItems.some.availableItems.some.currentPrice = {

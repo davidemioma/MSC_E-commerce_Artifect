@@ -103,6 +103,7 @@ const SearchFeed = ({
           minDiscount={minDiscount || "0"}
           maxDiscount={maxDiscount || "50"}
           refetch={() => refetch()}
+          isLoading={isLoading}
         />
 
         {products.length > 0 ? (

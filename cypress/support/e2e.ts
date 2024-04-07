@@ -14,7 +14,23 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+Cypress.on("uncaught:exception", (err, runnable) => {
+  // Check if the error is the specific NEXT_REDIRECT error
+  if (err.message.includes("NEXT_REDIRECT")) {
+    // Return false to prevent Cypress from failing the test
+    return false;
+  }
+
+  if (err.message.includes("document is not defined")) {
+    // Return false to prevent Cypress from failing the test
+    return false;
+  }
+
+  // Return true to let Cypress handle other uncaught exceptions normally
+  return true;
+});

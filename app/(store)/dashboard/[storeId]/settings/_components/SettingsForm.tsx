@@ -9,9 +9,9 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
 import useCountries from "@/hooks/use-countries";
+import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -211,11 +211,15 @@ const SettingsForm = ({ store }: Props) => {
                 <FormLabel>Description</FormLabel>
 
                 <FormControl>
-                  <TextEditor
+                  <Textarea
+                    className="max-w-lg"
+                    rows={6}
+                    placeholder="Store Description..."
                     value={field.value}
                     onChange={field.onChange}
                     disabled={isPending}
                     data-testId="store-description-input"
+                    data-cy="store-description-input"
                   />
                 </FormControl>
 

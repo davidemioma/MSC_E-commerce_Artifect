@@ -140,7 +140,7 @@ const ProductForm = ({ data }: Props) => {
     onSuccess: () => {
       toast.success("Item deleted successfully");
 
-      window.location.reload();
+      router.refresh();
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -504,7 +504,11 @@ const ProductForm = ({ data }: Props) => {
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => deleteItem(data.productItems[index].id)}
+                      onClick={() => {
+                        remove(index);
+
+                        deleteItem(data.productItems[index].id);
+                      }}
                       disabled={creating || updating || deletingItem}
                       data-cy={`product-item-form-${index}-delete`}
                     >

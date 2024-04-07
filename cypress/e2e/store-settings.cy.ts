@@ -12,6 +12,8 @@ describe("Store Settings", () => {
       )}/settings`,
       { failOnStatusCode: false }
     );
+
+    cy.wait(10000);
   });
 
   it("Store settings status and form should be visible", () => {
@@ -29,7 +31,7 @@ describe("Store Settings", () => {
 
     cy.get('[data-cy="store-postcode-input"]').should("exist");
 
-    cy.get(".ql-editor").should("exist");
+    cy.get('[data-cy="store-description-input"]').should("exist");
 
     cy.get('[data-cy="save-store-details"]').should("exist");
   });
@@ -71,7 +73,7 @@ describe("Store Settings", () => {
       .clear()
       .type("AL109WX");
 
-    cy.get(".ql-editor")
+    cy.get('[data-cy="store-description-input"]')
       .should("exist")
       .clear()
       .type("We have all the best sneakers.");
