@@ -12,7 +12,6 @@ import {
   sendConfirmationOrderEmail,
   sendStoreConfirmationEmail,
 } from "@/lib/mail";
-import { cacheProductData } from "@/data/redis-data";
 
 export async function POST(req: Request) {
   const body = await req.text();
