@@ -1,9 +1,9 @@
 import { z } from "zod";
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { SearchBodySchema } from "@/lib/validators/search-body";
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
     const url = new URL(request.url);
 
@@ -23,37 +23,69 @@ export async function GET(request: Request) {
       return NextResponse.json([]);
     }
 
-    const products = await prismadb.product.findMany({
-      where: {
-        status: "APPROVED",
-        OR: [
-          {
+    const body = await request.json();
+
+    const validatedBody = SearchBodySchema.parse(body);
+
+    const { category, minPrice, maxPrice, minDiscount, maxDiscount } =
+      validatedBody;
+
+    let whereQuery: any = {
+      status: "APPROVED",
+      OR: [
+        {
+          name: {
+            contains: q,
+            mode: "insensitive",
+          },
+        },
+        {
+          category: {
             name: {
               contains: q,
               mode: "insensitive",
             },
           },
-          {
-            category: {
-              name: {
-                contains: q,
-                mode: "insensitive",
-              },
-            },
-          },
-        ],
-        productItems: {
-          some: {
-            availableItems: {
-              some: {
-                numInStocks: {
-                  gt: 0,
-                },
+        },
+      ],
+      productItems: {
+        some: {
+          availableItems: {
+            some: {
+              numInStocks: {
+                gt: 0,
               },
             },
           },
         },
       },
+    };
+
+    // if (category !== undefined) {
+    //   whereQuery.category = {
+    //     name: {
+    //       equals: category,
+    //       mode: "insensitive",
+    //     },
+    //   };
+    // }
+
+    // if (minPrice !== undefined && maxPrice !== undefined) {
+    //   whereQuery.productItems.some.availableItems.some.currentPrice = {
+    //     gte: +minPrice,
+    //     lte: +maxPrice,
+    //   };
+    // }
+
+    // if (minDiscount !== undefined && maxDiscount !== undefined) {
+    //   whereQuery.productItems.some.discount = {
+    //     gte: +minDiscount,
+    //     lte: +maxDiscount,
+    //   };
+    // }
+
+    const products = await prismadb.product.findMany({
+      where: whereQuery,
       include: {
         category: true,
         productItems: {
@@ -89,7 +121,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(products);
   } catch (err) {
-    console.log("GET_SEARCHED_PRODUCTS", err);
+    console.error("GET_SEARCHED_PRODUCTS", err);
 
     return new NextResponse("Internal Error", { status: 500 });
   }

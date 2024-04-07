@@ -37,13 +37,14 @@ const UserAccount = () => {
         <DropdownMenuSeparator />
 
         {role === "ADMIN" && (
-          <DropdownMenuItem data-testid="go-to-dashboard">
+          <DropdownMenuItem asChild data-testid="go-to-dashboard">
             <Link href={"/admin"}>Go to admin dashboard</Link>
           </DropdownMenuItem>
         )}
 
         {role !== "ADMIN" && (
           <DropdownMenuItem
+            asChild
             data-testid={role === "USER" ? "become-a-seller" : "go-to-store"}
           >
             <Link href={"/store"}>
@@ -58,14 +59,14 @@ const UserAccount = () => {
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href={"/settings"}>Settings</Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem>
-          <button onClick={() => signOut()}>Sign Out</button>
+          <button onClick={async () => await signOut()}>Sign Out</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

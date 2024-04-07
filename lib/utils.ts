@@ -399,3 +399,24 @@ export const reasonsForReturn = [
   "Delivery Issues",
   "Ordered the wrong item by mistake",
 ];
+
+export const generatePriceRanges = ({
+  maxPrice,
+  step,
+}: {
+  maxPrice: number;
+  step: number;
+}) => {
+  let ranges = [];
+
+  for (let minPrice = 0; minPrice <= maxPrice; minPrice += step) {
+    ranges.push({
+      value: [minPrice, minPrice + step],
+      label: `Up to ${formatPrice(minPrice + step, {
+        currency: "GBP",
+      })}`,
+    });
+  }
+
+  return [{ value: [0, maxPrice], label: "Any price" }, ...ranges];
+};

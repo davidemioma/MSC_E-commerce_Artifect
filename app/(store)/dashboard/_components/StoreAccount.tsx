@@ -42,11 +42,11 @@ const StoreAccount = ({ currentStore }: Props) => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/">Go to Homepage</Link>
         </DropdownMenuItem>
 
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href={`/dashboard/${currentStore.id}/settings`}>
             Store Settings
           </Link>
@@ -55,7 +55,7 @@ const StoreAccount = ({ currentStore }: Props) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem>
-          <button onClick={() => signOut()}>Sign Out</button>
+          <button onClick={async () => await signOut()}>Sign Out</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

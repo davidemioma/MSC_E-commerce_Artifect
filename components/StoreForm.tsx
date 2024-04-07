@@ -13,6 +13,11 @@ import useStoreModal from "@/hooks/use-store-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StoreValidator, StoreSchema } from "@/lib/validators/store";
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -50,6 +55,7 @@ const StoreForm = ({ isModal }: { isModal?: boolean }) => {
       email: "",
       country: "",
       postcode: "",
+      code: "",
     },
   });
 
@@ -92,26 +98,30 @@ const StoreForm = ({ isModal }: { isModal?: boolean }) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
           {showVerifyEmail ? (
-            <FormField
-              control={form.control}
-              name="code"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Verification Code</FormLabel>
+            <div>
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Verification Code</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isPending}
-                      placeholder="123456"
-                      data-cy="veriification-input"
-                    />
-                  </FormControl>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type=""
+                        disabled={isPending}
+                        placeholder="123456"
+                        data-cy="veriification-input"
+                        autoComplete="new-password"
+                      />
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           ) : (
             <>
               <FormField

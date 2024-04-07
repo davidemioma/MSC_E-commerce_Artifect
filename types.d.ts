@@ -134,3 +134,12 @@ export type ReturnItemProps = ReturnItem & {
 export type ReturnRequestProps = ReturnRequest & {
   returnItems: ReturnItemProps[];
 };
+
+export type SearchFilters = {
+  category: string;
+  price: {
+    isCustom: boolean;
+    range: number[];
+  };
+  discount:number[];
+};
