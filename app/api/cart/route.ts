@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { apiRatelimit } from "@/lib/redis";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CartItemSchema } from "@/lib/validators/cart-item";
-import { cacheCartData, getCachedCartData } from "@/data/redis-data";
 
 export async function POST(request: Request) {
   try {
@@ -151,8 +150,6 @@ export async function POST(request: Request) {
       },
     });
 
-    await cacheCartData(user.id);
-
     return NextResponse.json({ message: "Item added to cart!" });
   } catch (err) {
     console.log("[CART_ITEM_CREATE]", err);
@@ -174,12 +171,6 @@ export async function GET(request: Request) {
 
     if (role !== UserRole.USER) {
       return NextResponse.json({ cart: null });
-    }
-
-    const cachedCart = await getCachedCartData(user.id);
-
-    if (cachedCart) {
-      return NextResponse.json(cachedCart);
     }
 
     const cart = await prismadb.cart.findUnique({
@@ -207,8 +198,6 @@ export async function GET(request: Request) {
         },
       },
     });
-
-    await cacheCartData(user.id);
 
     return NextResponse.json(cart);
   } catch (err) {

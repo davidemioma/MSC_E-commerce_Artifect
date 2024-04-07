@@ -5,7 +5,6 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
-import { cacheCartData } from "@/data/redis-data";
 import { generateTrackingId } from "@/lib/functions";
 import { SHIPPING_FEE, TRANSACTION_FEE, formatPrice } from "@/lib/utils";
 import {
@@ -105,8 +104,6 @@ export async function POST(req: Request) {
         cartId: cart?.id,
       },
     });
-
-    await cacheCartData(userId);
 
     //Generate Tracking ID and checking for uniqueness.
     let trackingId;

@@ -2,9 +2,8 @@ import { z } from "zod";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { cacheCartData } from "@/data/redis-data";
-import { currentRole, currentUser } from "@/lib/auth";
 import { apiRatelimit } from "@/lib/redis";
+import { currentRole, currentUser } from "@/lib/auth";
 
 export async function PATCH(
   request: Request,
@@ -114,8 +113,6 @@ export async function PATCH(
       }
     }
 
-    await cacheCartData(user.id);
-
     return NextResponse.json({ message: "Cart item updated!" });
   } catch (err) {
     console.log("[CART_ITEM_PATCH]", err);
@@ -170,8 +167,6 @@ export async function DELETE(
         id: cartItemId,
       },
     });
-
-    await cacheCartData(user.id);
 
     return NextResponse.json({ message: "Cart item deleted!" });
   } catch (err) {

@@ -7,18 +7,20 @@ describe("Cart and payment", () => {
     cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
       "be.visible"
     );
+
+    cy.wait(10000);
   });
 
   it("Add to cart", () => {
     //Ensure there is a product
-    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    })
+    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`)
       .should("be.visible")
       .click();
 
+    cy.wait(10000);
+
     //Redirect to product details page.
-    cy.url({ timeout: 16000 }).should(
+    cy.url().should(
       "include",
       `/products/${Cypress.env("test_user_productId")}`
     );
@@ -29,11 +31,7 @@ describe("Cart and payment", () => {
 
   it("Should open cart and redirect to Stripe checkout", () => {
     //Cart trigger button
-    cy.get('[data-cy="cart-trigger"]', {
-      timeout: 10000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="cart-trigger"]').should("be.visible").click();
 
     cy.get('[data-cy="cart-content"]', { timeout: 10000 }).should("be.visible");
 
@@ -41,11 +39,15 @@ describe("Cart and payment", () => {
       .should("be.visible")
       .click();
 
-    cy.url({ timeout: 10000 }).should("include", "/checkout");
+    cy.wait(8000);
+
+    cy.url().should("include", "/checkout");
 
     cy.get('[data-cy="cart-item-0"]', { timeout: 10000 }).should("be.visible");
 
     cy.get('[data-cy="stripe-checkout-btn"]').should("not.be.disabled").click();
+
+    cy.wait(5000);
 
     cy.window().then((win) => {
       cy.stub(win, "open").as("redirect");
