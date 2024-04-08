@@ -1,9 +1,15 @@
 import { z } from "zod";
 import prismadb from "@/lib/prisma";
+import { HomeProductType } from "@/types";
 import { NextResponse } from "next/server";
 import { SearchBodySchema } from "@/lib/validators/search-body";
 
-export async function POST(request: Request) {
+export type Response = {
+  products: HomeProductType[];
+  hasMore: boolean;
+};
+
+export async function POST(request: Request): Promise<NextResponse<Response>> {
   try {
     const url = new URL(request.url);
 
@@ -20,7 +26,7 @@ export async function POST(request: Request) {
       });
 
     if (q === "") {
-      return NextResponse.json([]);
+      return NextResponse.json({ products: [], hasMore: false });
     }
 
     const body = await request.json();
@@ -70,19 +76,28 @@ export async function POST(request: Request) {
       };
     }
 
-    // if (minPrice !== undefined && maxPrice !== undefined) {
-    //   whereQuery.productItems.some.availableItems.some.currentPrice = {
-    //     gte: +minPrice,
-    //     lte: +maxPrice,
-    //   };
-    // }
+    if (minPrice && minPrice !== "" && maxPrice && maxPrice !== "") {
+      whereQuery.productItems.some.availableItems.some.currentPrice = {
+        gte: +minPrice,
+        lte: +maxPrice,
+      };
+    }
 
-    // if (minDiscount !== undefined && maxDiscount !== undefined) {
-    //   whereQuery.productItems.some.discount = {
-    //     gte: +minDiscount,
-    //     lte: +maxDiscount,
-    //   };
-    // }
+    if (
+      minDiscount &&
+      minDiscount !== "" &&
+      maxDiscount &&
+      maxDiscount !== ""
+    ) {
+      whereQuery.productItems.some.discount = {
+        gte: +minDiscount,
+        lte: +maxDiscount,
+      };
+    }
+
+    const totalCount = await prismadb.product.count({
+      where: whereQuery,
+    });
 
     const products = await prismadb.product.findMany({
       where: whereQuery,
@@ -119,7 +134,12 @@ export async function POST(request: Request) {
       skip: (parseInt(page) - 1) * parseInt(limit),
     });
 
-    return NextResponse.json(products);
+    return NextResponse.json({
+      products,
+      hasMore:
+        products.length === parseInt(limit) &&
+        parseInt(page) * parseInt(limit) < totalCount,
+    });
   } catch (err) {
     console.error("GET_SEARCHED_PRODUCTS", err);
 

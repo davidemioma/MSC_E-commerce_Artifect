@@ -418,5 +418,5 @@ export const generatePriceRanges = ({
     });
   }
 
-  return [{ value: [0, maxPrice], label: "Any price" }, ...ranges];
+  return ranges;
 };

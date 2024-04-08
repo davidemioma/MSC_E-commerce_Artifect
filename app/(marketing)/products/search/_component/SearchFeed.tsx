@@ -1,80 +1,94 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import axios from "axios";
 import Empty from "@/components/Empty";
-import { HomeProductType } from "@/types";
 import Spinner from "@/components/Spinner";
 import SearchFilters from "./SearchFilters";
+import { useQuery } from "@tanstack/react-query";
 import Product from "../../../_components/Product";
+import { Response } from "@/app/api/products/search/route";
 import ProductSkeleton from "@/components/ProductSkeleton";
-import useUnlimitedSearch from "@/hooks/use-unlimited-search";
 import SearchBar from "@/app/(marketing)/_components/SearchBar";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 
 type Props = {
   query: string;
-  initialData: HomeProductType[];
-  category?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  minDiscount?: string;
-  maxDiscount?: string;
+  category: string;
+  minPrice: string;
+  maxPrice: string;
+  minDiscount: string;
+  maxDiscount: string;
 };
 
 const SearchFeed = ({
   query,
-  initialData,
   category,
   minPrice,
   maxPrice,
   minDiscount,
   maxDiscount,
 }: Props) => {
-  const {
-    ref,
-    entry,
-    data,
-    error,
-    refetch,
-    isLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useUnlimitedSearch({
-    key: ["search-products-feed", query],
-    query: `/api/products/search?q=${query}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
-    initialData,
-    body: {
-      category: category || "",
-      minPrice: minPrice || "0",
-      maxPrice: maxPrice || "1000000",
-      minDiscount: minDiscount || "0",
-      maxDiscount: maxDiscount || "50",
+  const observer = useRef<any>();
+
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [
+      "search-products-feed",
+      query,
+      category,
+      minPrice,
+      maxPrice,
+      minDiscount,
+      maxDiscount,
+    ],
+    queryFn: async () => {
+      const res = await axios.post(
+        `/api/products/search?q=${query}&page=${pageNumber}&limit=${INFINITE_SCROLL_PAGINATION_RESULTS}`,
+        {
+          category,
+          minPrice,
+          maxPrice,
+          minDiscount,
+          maxDiscount,
+        }
+      );
+
+      return res.data as Response;
     },
   });
 
-  //@ts-ignore
-  const products: HomeProductType[] =
-    data?.pages?.flatMap((page) => page) ?? initialData;
+  const lastElementRef = useCallback(
+    (node: any) => {
+      if (isLoading) return;
+
+      if (observer?.current) observer?.current?.disconnect();
+
+      observer.current = new IntersectionObserver((entries: any[]) => {
+        if (entries[0]?.isIntersecting && data?.hasMore) {
+          setPageNumber((prev) => prev + 1);
+        }
+      });
+
+      if (node) observer?.current?.observe(node);
+    },
+    [isLoading, data?.hasMore]
+  );
 
   const categories =
-    Array.from(new Set(products?.map((product) => product?.category?.name))) ||
-    [];
+    Array.from(
+      new Set(data?.products?.map((product) => product?.category?.name))
+    ) || [];
 
   const prices =
-    products.map(
+    data?.products.map(
       (product) => product?.productItems[0]?.availableItems[0]?.currentPrice
     ) || [];
 
-  //When you scroll to the bottom it triggers the fetchNextPage() to fetch more products
-  useEffect(() => {
-    if (entry?.isIntersecting) {
-      fetchNextPage();
-    }
-  }, [entry, fetchNextPage]);
-
-  if (isLoading) {
+  if (!data && isLoading) {
     return (
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {new Array(20).fill("").map((_, i) => (
           <ProductSkeleton key={i} />
         ))}
@@ -85,7 +99,7 @@ const SearchFeed = ({
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold" data-cy="product-search-result-text">
-        Results ({products?.length || 0})
+        Results ({data?.products?.length || 0})
       </h1>
 
       <div className="w-full max-w-lg md:hidden">
@@ -97,25 +111,24 @@ const SearchFeed = ({
           query={query}
           categories={categories}
           prices={prices}
-          category={category || ""}
-          minPrice={minPrice || "0"}
-          maxPrice={maxPrice || "1000000"}
-          minDiscount={minDiscount || "0"}
-          maxDiscount={maxDiscount || "50"}
-          refetch={() => refetch()}
           isLoading={isLoading}
+          category={category}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          minDiscount={minDiscount}
+          maxDiscount={maxDiscount}
         />
 
-        {products.length > 0 ? (
+        {data?.products && data.products?.length > 0 ? (
           <div className="flex-1">
             <div
               className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
               data-testid="search-product-feed"
             >
-              {products?.map((product, i) => {
-                if (i === products.length - 1) {
+              {data.products?.map((product, i) => {
+                if (i === data.products.length - 1) {
                   return (
-                    <div key={product.id} ref={ref}>
+                    <div key={product.id} ref={lastElementRef}>
                       <Product product={product} />
                     </div>
                   );
@@ -125,9 +138,9 @@ const SearchFeed = ({
               })}
             </div>
 
-            {isFetchingNextPage && <Spinner />}
+            {isLoading && <Spinner />}
 
-            {error && (
+            {isError && (
               <div className="py-5 text-center text-sm text-red-500 font-medium">
                 Could not get products! Try refreshing the page.
               </div>

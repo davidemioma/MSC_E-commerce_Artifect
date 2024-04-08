@@ -15,18 +15,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Spinner from "@/components/Spinner";
 
 type Props = {
   query: string;
   categories: string[];
   prices: number[];
-  category?: string;
-  minPrice?: string;
-  maxPrice?: string;
-  minDiscount?: string;
-  maxDiscount?: string;
-  refetch: () => void;
+  category: string;
+  minPrice: string;
+  maxPrice: string;
+  minDiscount: string;
+  maxDiscount: string;
   isLoading: boolean;
 };
 
@@ -39,7 +37,6 @@ const SearchFilters = ({
   maxPrice,
   minDiscount,
   maxDiscount,
-  refetch,
   isLoading,
 }: Props) => {
   const router = useRouter();
@@ -65,34 +62,26 @@ const SearchFilters = ({
   });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     const timer = setTimeout(() => {
       router.push(
         `/products/search?query=${query}&category=${filters.category}&minPrice=${filters.price.range[0]}&maxPrice=${filters.price.range[1]}&minDiscount=${filters.discount[0]}&maxDiscount=${filters.discount[1]}`
       );
-
-      refetch();
-    }, 300);
+    }, 400);
 
     return () => clearTimeout(timer);
-  }, [filters, query, router, refetch]);
+  }, [query, filters, router]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return null;
   }
 
-  if (isLoading) {
-    <div className="w-full md:sticky md:top-20 md:w-[270px] md:h-[80vh] md:overflow-y-auto md:scrollbar-hide">
-      <Spinner />
-    </div>;
-  }
-
   return (
     <div className="w-full md:sticky md:top-20 md:w-[270px] md:h-[80vh] md:overflow-y-auto md:scrollbar-hide">
-      <Accordion type="multiple">
+      <Accordion type="multiple" defaultValue={["item-1", "item-2", "item-3"]}>
         <AccordionItem value="item-1">
           <AccordionTrigger className="font-semibold text-lg hover:no-underline">
             Category
@@ -104,12 +93,12 @@ const SearchFilters = ({
               className="grid justify-start text-start disabled:cursor-not-allowed"
               value={filters.category}
               disabled={isLoading}
-              onValueChange={(value) => {
+              onValueChange={(value) =>
                 setFilters((prev) => ({
                   ...prev,
                   category: prev.category === value ? "" : value,
-                }));
-              }}
+                }))
+              }
             >
               {categories.map((cat) => (
                 <ToggleGroupItem
@@ -180,7 +169,7 @@ const SearchFilters = ({
                       ...prev,
                       price: {
                         isCustom: true,
-                        range: priceRanges[0].value,
+                        range: [0, 100],
                       },
                     }))
                   }
