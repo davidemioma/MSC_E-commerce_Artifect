@@ -68,7 +68,9 @@ const SearchFilters = ({
       );
     }, 400);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [query, filters, router]);
 
   useEffect(() => {
