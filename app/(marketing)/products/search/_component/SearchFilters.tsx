@@ -43,6 +43,7 @@ const SearchFilters = ({
 
   const [mounted, setMounted] = useState(false);
 
+  //Get Max product price
   const maxProductPrice = Math.max(...prices);
 
   const priceRanges = generatePriceRanges({
