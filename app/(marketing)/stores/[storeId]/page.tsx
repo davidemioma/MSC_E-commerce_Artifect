@@ -8,8 +8,6 @@ import ProductFilters from "./_components/ProductFilters";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { getProductStore, getStoreProducts } from "@/data/store-products";
 
-export const revalidate = 3600; //Revalidate every 60 seconds
-
 export default async function StorePage({
   params: { storeId },
   searchParams: { search },
