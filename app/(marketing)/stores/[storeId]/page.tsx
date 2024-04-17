@@ -23,6 +23,7 @@ export default async function StorePage({
     return redirect("/");
   }
 
+  //Fetch initial products
   const products = await getStoreProducts({
     storeId,
     search,
