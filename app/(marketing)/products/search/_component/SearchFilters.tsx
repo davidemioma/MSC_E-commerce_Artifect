@@ -47,7 +47,7 @@ const SearchFilters = ({
 
   const priceRanges = generatePriceRanges({
     maxPrice: maxProductPrice,
-    step: 20,
+    step: maxProductPrice <= 100 ? 20 : maxProductPrice <= 300 ? 50 : 100,
   });
 
   const [filters, setFilters] = useState<SearchFilters>({

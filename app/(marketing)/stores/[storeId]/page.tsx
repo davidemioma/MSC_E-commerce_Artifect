@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { MdVerified } from "react-icons/md";
-import { getStoreIds } from "@/data/static";
 import Container from "@/components/Container";
 import StoreFeed from "./_components/StoreFeed";
 import { Separator } from "@/components/ui/separator";
@@ -9,15 +8,7 @@ import ProductFilters from "./_components/ProductFilters";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { getProductStore, getStoreProducts } from "@/data/store-products";
 
-export const revalidate = 60; //Revalidate every 60 seconds
-
-export async function generateStaticParams() {
-  const storeIds = await getStoreIds();
-
-  return storeIds?.map((store) => ({
-    storeId: store.id,
-  }));
-}
+export const revalidate = 3600; //Revalidate every 60 seconds
 
 export default async function StorePage({
   params: { storeId },

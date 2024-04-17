@@ -11,7 +11,6 @@ import useUnlimitedScrolling from "@/hooks/use-unlimited-scrolling";
 
 type Props = {
   storeId: string;
-
   searchValue: string;
   initialData: HomeProductType[];
 };

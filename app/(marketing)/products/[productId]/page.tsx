@@ -1,7 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getProductIds } from "@/data/static";
 import { ProductStatus } from "@prisma/client";
 import Container from "@/components/Container";
 import { getProductById } from "@/data/product";
@@ -15,14 +14,6 @@ import {
 } from "@/data/review";
 
 export const revalidate = 60; //Revalidate every 60 seconds
-
-export async function generateStaticParams() {
-  const productIds = await getProductIds();
-
-  return productIds?.map((product) => ({
-    productId: product.id,
-  }));
-}
 
 export default async function ProductPage({
   params: { productId },
