@@ -13,6 +13,23 @@ import {
   checkIfReviewed,
 } from "@/data/review";
 
+export const revalidate = 60; //Revalidate every 60 seconds
+
+export async function generateStaticParams() {
+  const productIds = await prismadb.product.findMany({
+    where: {
+      status: "APPROVED",
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return productIds?.map((product) => ({
+    productId: product.id,
+  }));
+}
+
 export default async function ProductPage({
   params: { productId },
 }: {
