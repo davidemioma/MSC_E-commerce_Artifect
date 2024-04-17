@@ -1,7 +1,7 @@
 import Image from "next/image";
-import prismadb from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { MdVerified } from "react-icons/md";
+import { getStoreIds } from "@/data/static";
 import Container from "@/components/Container";
 import StoreFeed from "./_components/StoreFeed";
 import { Separator } from "@/components/ui/separator";
@@ -12,14 +12,7 @@ import { getProductStore, getStoreProducts } from "@/data/store-products";
 export const revalidate = 60; //Revalidate every 60 seconds
 
 export async function generateStaticParams() {
-  const storeIds = await prismadb.store.findMany({
-    where: {
-      status: "APPROVED",
-    },
-    select: {
-      id: true,
-    },
-  });
+  const storeIds = await getStoreIds();
 
   return storeIds?.map((store) => ({
     storeId: store.id,
