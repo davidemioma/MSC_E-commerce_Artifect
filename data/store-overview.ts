@@ -30,30 +30,6 @@ export const getStore = async ({
   }
 };
 
-export const getFirstProduct = async ({
-  userId,
-  storeId,
-}: {
-  userId: string;
-  storeId: string;
-}) => {
-  try {
-    const product = await prismadb.product.findFirst({
-      where: {
-        storeId,
-        userId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    return product;
-  } catch (err) {
-    return null;
-  }
-};
-
 export const getStoreBanner = async ({ storeId }: { storeId: string }) => {
   try {
     const banner = await prismadb.banner.findFirst({

@@ -11,13 +11,12 @@ import {
 
 type Props = {
   storeId: string;
-  productId: string;
 };
 
-const ShareStoreLink = ({ storeId, productId }: Props) => {
+const ShareStoreLink = ({ storeId }: Props) => {
   const [copied, setCopied] = useState(false);
 
-  const url = `${process.env.NEXT_PUBLIC_APP_URL}/products/${productId}/stores/${storeId}`;
+  const url = `${process.env.NEXT_PUBLIC_APP_URL}/stores/${storeId}`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(url);

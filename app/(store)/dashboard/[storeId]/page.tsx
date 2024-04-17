@@ -11,7 +11,6 @@ import ShareStoreLink from "../_components/ShareStoreLink";
 import { PoundSterling, CreditCard, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  getFirstProduct,
   getGraphData,
   getNumOfProductsInStock,
   getSalesCountByStoreId,
@@ -35,8 +34,6 @@ export default async function StoreDashboardPage({
 
   const store = await getStore({ userId: user?.id, storeId });
 
-  const firstProduct = await getFirstProduct({ userId: user?.id, storeId });
-
   if (!store) {
     return redirect("/store");
   }
@@ -57,8 +54,8 @@ export default async function StoreDashboardPage({
         <div className="flex items-center justify-between gap-3">
           <Heading title={store.name} description="Overview of your store" />
 
-          {store.status === storeStatus.APPROVED && firstProduct && (
-            <ShareStoreLink storeId={storeId} productId={firstProduct?.id} />
+          {store.status === storeStatus.APPROVED && (
+            <ShareStoreLink storeId={storeId} />
           )}
         </div>
 

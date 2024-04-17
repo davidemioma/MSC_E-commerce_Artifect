@@ -32,7 +32,7 @@ export default async function StorePage({
   return (
     <div className="w-full space-y-10">
       <div className="relative w-full h-40 md:h-[50vh] bg-white overflow-hidden border-b shadow-sm">
-        {store.Banners[0].image ? (
+        {store?.Banners?.[0]?.image! ? (
           <Image
             className="object-cover"
             src={store.Banners[0].image}
