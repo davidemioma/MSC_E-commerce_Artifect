@@ -150,7 +150,8 @@ export const createStore = async (values: StoreValidator) => {
       });
 
       return {
-        success: "Email verified, your store has been created!",
+        success:
+          "Email verified, your store has been created. Please wait redirecting to store...",
         storeId: storeExists.id,
       };
     } else {
