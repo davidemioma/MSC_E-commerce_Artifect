@@ -32,6 +32,8 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["get-cart-item"],
       });
+
+      isCheckout && router.refresh();
     },
     onError: (err) => {
       if (err instanceof AxiosError) {

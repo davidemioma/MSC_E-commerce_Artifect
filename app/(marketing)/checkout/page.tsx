@@ -1,16 +1,21 @@
-import prismadb from "@/lib/prisma";
+"use client";
+
+import axios from "axios";
+import { CartType } from "@/types";
 import Empty from "@/components/Empty";
-import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
+import { useQuery } from "@tanstack/react-query";
 import CartItem from "@/components/cart/CartItem";
 import { Separator } from "@/components/ui/separator";
 import OrderSummary from "./_components/OrderSummary";
+import useCurrentUser from "@/hooks/use-current-user";
+import CheckoutSkeleton from "@/components/CheckoutSkeleton";
 
-export default async function CheckoutPage() {
-  const { user } = await currentUser();
+export default function CheckoutPage() {
+  const { user } = useCurrentUser();
 
   if (!user) {
     return redirect("/auth/sign-in");
@@ -20,29 +25,16 @@ export default async function CheckoutPage() {
     return redirect("/");
   }
 
-  const cart = await prismadb.cart.findUnique({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      cartItems: {
-        include: {
-          product: {
-            include: {
-              category: true,
-            },
-          },
-          productItem: true,
-          availableItem: {
-            include: {
-              size: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
+  const {
+    data: cart,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["get-cart-item"],
+    queryFn: async () => {
+      const res = await axios.get("/api/cart");
+
+      return res.data as CartType;
     },
   });
 
@@ -52,24 +44,43 @@ export default async function CheckoutPage() {
 
       <Separator className="my-4" />
 
-      <main className="grid md:grid-cols-3 gap-5">
-        <div className="md:col-span-2">
-          {cart?.cartItems && cart?.cartItems?.length > 0 ? (
-            <div className="space-y-5">
-              {cart.cartItems.map((item, i) => (
-                <CartItem key={item.id} cartItem={item} isCheckout index={i} />
-              ))}
-            </div>
-          ) : (
-            <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
-          )}
-        </div>
+      {isError && (
+        <Empty message="Something went wrong! could not get cart items." />
+      )}
 
-        <OrderSummary
-          cartId={cart?.id || ""}
-          cartItems={cart?.cartItems || []}
-        />
-      </main>
+      {isLoading && (
+        <div className="space-y-5">
+          {new Array(5).fill("").map((_, i) => (
+            <CheckoutSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!isError && !isLoading && cart && (
+        <main className="grid md:grid-cols-3 gap-5">
+          <div className="md:col-span-2">
+            {cart?.cartItems && cart?.cartItems?.length > 0 ? (
+              <div className="space-y-5">
+                {cart.cartItems.map((item, i) => (
+                  <CartItem
+                    key={item.id}
+                    cartItem={item}
+                    isCheckout
+                    index={i}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Empty message="Looks like you haven't added anything to your cart yet. Ready to start shopping? Browse our collection to find something you'll love!" />
+            )}
+          </div>
+
+          <OrderSummary
+            cartId={cart?.id || ""}
+            cartItems={cart?.cartItems || []}
+          />
+        </main>
+      )}
     </Container>
   );
 }
