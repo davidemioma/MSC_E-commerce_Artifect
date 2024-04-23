@@ -23,7 +23,7 @@ const ProductFilters = ({ storeId }: Props) => {
     if (value.trim() === "") {
       router.push(`/stores/${storeId}`);
     }
-  }, [value, router]);
+  }, [value, router, storeId]);
 
   return (
     <form

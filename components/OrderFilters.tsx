@@ -31,7 +31,7 @@ const OrderFilters = ({ path }: Props) => {
     };
 
     pushToUrl();
-  }, [value]);
+  }, [path, value]);
 
   return (
     <Combobox frameworks={orderCategories} value={value} setValue={setValue} />
