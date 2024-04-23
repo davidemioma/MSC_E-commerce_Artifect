@@ -63,7 +63,6 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          headless: true
           command: npm run cypress:run
         env:
           CYPRESS_BASE_URL: ${{ needs.preview-deployment.outputs.preview-url }}
