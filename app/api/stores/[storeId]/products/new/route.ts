@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
 import { checkImage } from "@/actions/checkImage";
+import { sendCreatedProductEmail } from "@/lib/mail";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
@@ -78,61 +79,63 @@ export async function POST(
       });
     }
 
-    //Check if name and desctiption are appropiate
-    const nameIsAppropiate = await checkText({ text: name });
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name and desctiption are appropiate
+      const nameIsAppropiate = await checkText({ text: name });
 
-    if (
-      nameIsAppropiate.success === "NEGATIVE" ||
-      nameIsAppropiate.success === "MIXED" ||
-      nameIsAppropiate.error
-    ) {
-      return new NextResponse(
-        "The name of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
-      );
-    }
-
-    const descriptionIsAppropiate = await checkText({ text: description });
-
-    if (
-      descriptionIsAppropiate.success === "NEGATIVE" ||
-      descriptionIsAppropiate.success === "MIXED" ||
-      descriptionIsAppropiate.error
-    ) {
-      return new NextResponse(
-        "The description of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
-      );
-    }
-
-    //Check if images are appropiate
-    let hasInappropriateImages = false;
-
-    await Promise.all(
-      productItems.map(async (item) => {
-        await Promise.all(
-          item.images.map(async (imageUrl) => {
-            const imgIsAppropiate = await checkImage({ imageUrl });
-
-            if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
-              hasInappropriateImages = true;
-            }
-          })
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
         );
-      })
-    );
+      }
 
-    if (hasInappropriateImages) {
-      return new NextResponse(
-        "The images of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
+      const descriptionIsAppropiate = await checkText({ text: description });
+
+      if (
+        descriptionIsAppropiate.success === "NEGATIVE" ||
+        descriptionIsAppropiate.success === "MIXED" ||
+        descriptionIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The description of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      //Check if images are appropiate
+      let hasInappropriateImages = false;
+
+      await Promise.all(
+        productItems.map(async (item) => {
+          await Promise.all(
+            item.images.map(async (imageUrl) => {
+              const imgIsAppropiate = await checkImage({ imageUrl });
+
+              if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+                hasInappropriateImages = true;
+              }
+            })
+          );
+        })
       );
+
+      if (hasInappropriateImages) {
+        return new NextResponse(
+          "The images of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
     }
 
     //Create Product
@@ -172,7 +175,7 @@ export async function POST(
           })),
         });
 
-        await prismadb.product.update({
+        const updatedProduct = await prismadb.product.update({
           where: {
             id: product?.id,
           },
@@ -181,6 +184,28 @@ export async function POST(
             statusFeedback:
               "Your product has been approved. It will be shown to potential customers.",
           },
+          select: {
+            name: true,
+            store: {
+              select: {
+                name: true,
+              },
+            },
+            category: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
+        //Send email confirmation
+        await sendCreatedProductEmail({
+          email: user.email || "",
+          storeName: updatedProduct.store.name,
+          username: user.name || "",
+          productName: updatedProduct.name,
+          categoryName: updatedProduct.category.name,
         });
       })
     );

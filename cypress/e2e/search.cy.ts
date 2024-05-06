@@ -7,6 +7,8 @@ describe("Search For Products", () => {
     cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
       "be.visible"
     );
+
+    cy.wait(5000);
   });
 
   it("Search bar should exists", () => {

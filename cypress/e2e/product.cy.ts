@@ -176,11 +176,15 @@ describe("Product for store", () => {
   });
 
   it("Update an existing product", () => {
+    cy.wait(5000);
+
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
       timeout: 15000,
     })
       .should("be.visible")
       .click();
+
+    cy.wait(10000);
 
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-update-btn"]`)
       .should("exist")

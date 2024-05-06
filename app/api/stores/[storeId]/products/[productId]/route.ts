@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
 import { checkImage } from "@/actions/checkImage";
+import { sendDeletedProductEmail, sendUpdatedProductEmail } from "@/lib/mail";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
@@ -83,61 +84,63 @@ export async function PATCH(
       });
     }
 
-    //Check if name and desctiption are appropiate
-    const nameIsAppropiate = await checkText({ text: name });
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name and desctiption are appropiate
+      const nameIsAppropiate = await checkText({ text: name });
 
-    if (
-      nameIsAppropiate.success === "NEGATIVE" ||
-      nameIsAppropiate.success === "MIXED" ||
-      nameIsAppropiate.error
-    ) {
-      return new NextResponse(
-        "The name of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
-      );
-    }
-
-    const descriptionIsAppropiate = await checkText({ text: description });
-
-    if (
-      descriptionIsAppropiate.success === "NEGATIVE" ||
-      descriptionIsAppropiate.success === "MIXED" ||
-      descriptionIsAppropiate.error
-    ) {
-      return new NextResponse(
-        "The description of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
-      );
-    }
-
-    //Check if images are appropiate
-    let hasInappropriateImages = false;
-
-    await Promise.all(
-      productItems.map(async (item) => {
-        await Promise.all(
-          item.images.map(async (imageUrl) => {
-            const imgIsAppropiate = await checkImage({ imageUrl });
-
-            if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
-              hasInappropriateImages = true;
-            }
-          })
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
         );
-      })
-    );
+      }
 
-    if (hasInappropriateImages) {
-      return new NextResponse(
-        "The images of your product is inappropiate! Change it.",
-        {
-          status: 400,
-        }
+      const descriptionIsAppropiate = await checkText({ text: description });
+
+      if (
+        descriptionIsAppropiate.success === "NEGATIVE" ||
+        descriptionIsAppropiate.success === "MIXED" ||
+        descriptionIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The description of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      //Check if images are appropiate
+      let hasInappropriateImages = false;
+
+      await Promise.all(
+        productItems.map(async (item) => {
+          await Promise.all(
+            item.images.map(async (imageUrl) => {
+              const imgIsAppropiate = await checkImage({ imageUrl });
+
+              if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+                hasInappropriateImages = true;
+              }
+            })
+          );
+        })
       );
+
+      if (hasInappropriateImages) {
+        return new NextResponse(
+          "The images of your product is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
     }
 
     //Check if product exists
@@ -260,7 +263,7 @@ export async function PATCH(
     );
 
     //Update Product
-    await prismadb.product.update({
+    const updatedProduct = await prismadb.product.update({
       where: {
         id: productId,
         storeId,
@@ -273,6 +276,23 @@ export async function PATCH(
         statusFeedback:
           "Your product has been approved. It will be shown to potential customers.",
       },
+      select: {
+        name: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    //Send email confirmation
+    await sendUpdatedProductEmail({
+      email: user.email || "",
+      storeName: store.name,
+      username: user.name || "",
+      productName: updatedProduct.name,
+      categoryName: updatedProduct.category.name,
     });
 
     return NextResponse.json({ message: "Product Updated!" });
@@ -351,6 +371,14 @@ export async function DELETE(
         id: product.id,
         storeId,
       },
+    });
+
+    //Send email confirmation
+    await sendDeletedProductEmail({
+      email: user.email || "",
+      storeName: store.name,
+      username: user.name || "",
+      productName: product.name || "Unknown",
     });
 
     return NextResponse.json({ message: "Product Deleted!" });

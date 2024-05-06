@@ -1,16 +1,20 @@
 import nodemailer from "nodemailer";
 import { TwoFAEmailHtml } from "@/components/email/TwoFactorEmail";
+import { ReturnOrderEmailHtml } from "@/components/email/ReturnOrderEmail";
 import { OrderUpdateEmailHtml } from "@/components/email/OrderUpdateEmail";
 import { CancelOrderEmailHtml } from "@/components/email/CancelOrderEmail";
+import { CreateStoreEmailHtml } from "@/components/email/CreateStoreEmail";
 import { VerificationEmailHtml } from "@/components/email/VerificationEmail";
 import { ReturnRequestEmailHtml } from "@/components/email/ReturnRequestEmail";
 import { PasswordResetEmailHtml } from "@/components/email/PasswordResetEmail";
+import { CreateProductEmailHtml } from "@/components/email/CreateProductEmail";
+import { UpdateProductEmailHtml } from "@/components/email/UpdateProductEmail";
+import { DeletedProductEmailHtml } from "@/components/email/deletedProductEmail";
+import { StoreReturnOrderEmailHtml } from "@/components/email/StoreReturnOrderEmail";
 import { StoreCancelOrderEmailHtml } from "@/components/email/StoreCancelOrderEmail";
 import { StoreVerificationEmailHtml } from "@/components/email/StoreVerificationEmail";
 import { ConfirmationOrderEmailHtml } from "@/components/email/ConfirmationOrderEmail";
 import { StoreConfirmationEmailHtml } from "@/components/email/StoreConfirmationEmail";
-import { ReturnOrderEmailHtml } from "@/components/email/ReturnOrderEmail";
-import { StoreReturnOrderEmailHtml } from "@/components/email/StoreReturnOrderEmail";
 
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -356,6 +360,123 @@ export const sendStoreReturnOrderEmail = async ({
         orderDate,
         item,
         reason,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendCreatedStoreEmail = async ({
+  email,
+  storeName,
+  description,
+  storeEmail,
+  ownerName,
+}: {
+  email: string;
+  description: string;
+  storeName: string;
+  storeEmail: string;
+  ownerName: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Store Creation Confirmation",
+      html: CreateStoreEmailHtml({
+        storeName,
+        description,
+        storeEmail,
+        ownerName,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendCreatedProductEmail = async ({
+  email,
+  storeName,
+  username,
+  productName,
+  categoryName,
+}: {
+  email: string;
+  username: string;
+  storeName: string;
+  productName: string;
+  categoryName: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Product Creation Confirmation",
+      html: CreateProductEmailHtml({
+        storeName,
+        username,
+        productName,
+        categoryName,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendUpdatedProductEmail = async ({
+  email,
+  storeName,
+  username,
+  productName,
+  categoryName,
+}: {
+  email: string;
+  username: string;
+  storeName: string;
+  productName: string;
+  categoryName: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Product Update Confirmation",
+      html: UpdateProductEmailHtml({
+        storeName,
+        username,
+        productName,
+        categoryName,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const sendDeletedProductEmail = async ({
+  email,
+  storeName,
+  username,
+  productName,
+}: {
+  email: string;
+  username: string;
+  storeName: string;
+  productName: string;
+}) => {
+  try {
+    await transporter.sendMail({
+      from,
+      to: email,
+      subject: "Product Deletion Notification",
+      html: DeletedProductEmailHtml({
+        storeName,
+        username,
+        productName,
       }),
     });
   } catch (err) {

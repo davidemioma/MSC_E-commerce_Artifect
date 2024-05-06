@@ -120,9 +120,6 @@ export const login = async (
   }
 
   try {
-    // if (process.env.VERCEL_ENV === "production") {
-    // }
-
     await signIn("credentials", {
       email,
       password,

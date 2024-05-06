@@ -6,9 +6,12 @@ import { currentUser } from "@/lib/auth";
 import { Ratelimit } from "@upstash/ratelimit";
 import { postcodeValidator } from "postcode-validator";
 import { generateStoreVerificationToken } from "@/lib/token";
-import { sendStoreVerificationTokenEmail } from "@/lib/mail";
 import { StoreValidator, StoreSchema } from "@/lib/validators/store";
 import { getStoreVerificationTokenByEmail } from "@/data/store-verification-token";
+import {
+  sendCreatedStoreEmail,
+  sendStoreVerificationTokenEmail,
+} from "@/lib/mail";
 
 const ratelimit = new Ratelimit({
   redis,
@@ -129,7 +132,7 @@ export const createStore = async (values: StoreValidator) => {
       });
 
       //Verify email address
-      await prismadb.store.update({
+      const store = await prismadb.store.update({
         where: {
           id: storeExists.id,
           email: storeExists.email,
@@ -140,13 +143,30 @@ export const createStore = async (values: StoreValidator) => {
       });
 
       //Change current user to seller
-      await prismadb.user.update({
+      const storeUser = await prismadb.user.update({
         where: {
           id: dbUser.id,
         },
         data: {
           role: "SELLER",
         },
+      });
+
+      //Send email notification
+      await sendCreatedStoreEmail({
+        email: storeUser?.email || "",
+        storeName: store.name,
+        description: store.description || "",
+        storeEmail: store.email,
+        ownerName: storeUser.name || "",
+      });
+
+      await sendCreatedStoreEmail({
+        email: store.email || "",
+        storeName: store.name,
+        description: store.description || "",
+        storeEmail: store.email,
+        ownerName: storeUser.name || "",
       });
 
       return {
