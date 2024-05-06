@@ -2,6 +2,8 @@ import prismadb from "@/lib/prisma";
 import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
+import { checkText } from "@/actions/checkText";
+import { checkImage } from "@/actions/checkImage";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
@@ -79,6 +81,63 @@ export async function PATCH(
       return new NextResponse("At least one product item is required.", {
         status: 400,
       });
+    }
+
+    //Check if name and desctiption are appropiate
+    const nameIsAppropiate = await checkText({ text: name });
+
+    if (
+      nameIsAppropiate.success === "NEGATIVE" ||
+      nameIsAppropiate.success === "MIXED" ||
+      nameIsAppropiate.error
+    ) {
+      return new NextResponse(
+        "The name of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const descriptionIsAppropiate = await checkText({ text: description });
+
+    if (
+      descriptionIsAppropiate.success === "NEGATIVE" ||
+      descriptionIsAppropiate.success === "MIXED" ||
+      descriptionIsAppropiate.error
+    ) {
+      return new NextResponse(
+        "The description of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
+    }
+
+    //Check if images are appropiate
+    let hasInappropriateImages = false;
+
+    await Promise.all(
+      productItems.map(async (item) => {
+        await Promise.all(
+          item.images.map(async (imageUrl) => {
+            const imgIsAppropiate = await checkImage({ imageUrl });
+
+            if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+              hasInappropriateImages = true;
+            }
+          })
+        );
+      })
+    );
+
+    if (hasInappropriateImages) {
+      return new NextResponse(
+        "The images of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
     }
 
     //Check if product exists
@@ -210,6 +269,9 @@ export async function PATCH(
         name,
         categoryId,
         description,
+        status: "APPROVED",
+        statusFeedback:
+          "Your product has been approved. It will be shown to potential customers.",
       },
     });
 

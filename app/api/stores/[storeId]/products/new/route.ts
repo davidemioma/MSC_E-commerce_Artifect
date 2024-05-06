@@ -2,6 +2,8 @@ import prismadb from "@/lib/prisma";
 import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
+import { checkText } from "@/actions/checkText";
+import { checkImage } from "@/actions/checkImage";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
@@ -76,6 +78,63 @@ export async function POST(
       });
     }
 
+    //Check if name and desctiption are appropiate
+    const nameIsAppropiate = await checkText({ text: name });
+
+    if (
+      nameIsAppropiate.success === "NEGATIVE" ||
+      nameIsAppropiate.success === "MIXED" ||
+      nameIsAppropiate.error
+    ) {
+      return new NextResponse(
+        "The name of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const descriptionIsAppropiate = await checkText({ text: description });
+
+    if (
+      descriptionIsAppropiate.success === "NEGATIVE" ||
+      descriptionIsAppropiate.success === "MIXED" ||
+      descriptionIsAppropiate.error
+    ) {
+      return new NextResponse(
+        "The description of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
+    }
+
+    //Check if images are appropiate
+    let hasInappropriateImages = false;
+
+    await Promise.all(
+      productItems.map(async (item) => {
+        await Promise.all(
+          item.images.map(async (imageUrl) => {
+            const imgIsAppropiate = await checkImage({ imageUrl });
+
+            if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+              hasInappropriateImages = true;
+            }
+          })
+        );
+      })
+    );
+
+    if (hasInappropriateImages) {
+      return new NextResponse(
+        "The images of your product is inappropiate! Change it.",
+        {
+          status: 400,
+        }
+      );
+    }
+
     //Create Product
     const product = await prismadb.product.create({
       data: {
@@ -111,6 +170,17 @@ export async function POST(
               discount: productItem.discount || 0,
             }),
           })),
+        });
+
+        await prismadb.product.update({
+          where: {
+            id: product?.id,
+          },
+          data: {
+            status: "APPROVED",
+            statusFeedback:
+              "Your product has been approved. It will be shown to potential customers.",
+          },
         });
       })
     );
