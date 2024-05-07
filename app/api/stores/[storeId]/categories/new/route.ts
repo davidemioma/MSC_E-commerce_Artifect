@@ -1,8 +1,9 @@
 import prismadb from "@/lib/prisma";
+import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { checkText } from "@/actions/checkText";
 import { currentRole, currentUser } from "@/lib/auth";
 import { CategorySchema } from "@/lib/validators/category";
-import { UserRole } from "@prisma/client";
 
 export async function POST(
   request: Request,
@@ -52,6 +53,24 @@ export async function POST(
     }
 
     const { name } = validatedBody;
+
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name is appropiate
+      const nameIsAppropiate = await checkText({ text: name });
+
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your category is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+    }
 
     //Check if category name exists
     const category = await prismadb.category.findFirst({

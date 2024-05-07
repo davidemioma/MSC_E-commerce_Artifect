@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { SizeSchema } from "@/lib/validators/size";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import { checkText } from "@/actions/checkText";
 
 export async function PATCH(
   request: Request,
@@ -56,6 +57,39 @@ export async function PATCH(
     }
 
     const { name, value } = validatedBody;
+
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name and value are appropiate
+      const nameIsAppropiate = await checkText({ text: name });
+
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your size is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      const valueIsAppropiate = await checkText({ text: value });
+
+      if (
+        valueIsAppropiate.success === "NEGATIVE" ||
+        valueIsAppropiate.success === "MIXED" ||
+        valueIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The value of your size is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+    }
 
     //Check if category name exists
     const size = await prismadb.size.findFirst({

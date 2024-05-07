@@ -12,6 +12,7 @@ import {
   sendCreatedStoreEmail,
   sendStoreVerificationTokenEmail,
 } from "@/lib/mail";
+import { checkText } from "./checkText";
 
 const ratelimit = new Ratelimit({
   redis,
@@ -48,6 +49,19 @@ export const createStore = async (values: StoreValidator) => {
   }
 
   const { name, email, country, postcode, code } = validatedFields.data;
+
+  if (process.env.VERCEL_ENV === "production") {
+    //Check if name and desctiption are appropiate
+    const nameIsAppropiate = await checkText({ text: name });
+
+    if (
+      nameIsAppropiate.success === "NEGATIVE" ||
+      nameIsAppropiate.success === "MIXED" ||
+      nameIsAppropiate.error
+    ) {
+      return { error: "The name of your store is inappropiate! Change it" };
+    }
+  }
 
   // Check if postcode is valid
   const locationIsValid = postcodeValidator(postcode, country);

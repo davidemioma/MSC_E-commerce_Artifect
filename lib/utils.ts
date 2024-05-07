@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import Filter from "bad-words";
 import { OrderStatus, ProductStatus, storeStatus } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
@@ -419,4 +420,14 @@ export const generatePriceRanges = ({
   }
 
   return ranges;
+};
+
+export const containBadWords = (text: string) => {
+  let hasBadWords: boolean = false;
+
+  const filter = new Filter();
+
+  hasBadWords = filter.isProfane(text.toLowerCase());
+
+  return hasBadWords;
 };

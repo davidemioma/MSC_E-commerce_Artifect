@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { apiRatelimit } from "@/lib/redis";
 import { currentRole, currentUser } from "@/lib/auth";
 import { BannerSchema } from "@/lib/validators/banner";
+import { checkText } from "@/actions/checkText";
+import { checkImage } from "@/actions/checkImage";
 
 export async function PATCH(
   request: Request,
@@ -65,6 +67,36 @@ export async function PATCH(
     }
 
     const { name, image } = validatedBody;
+
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name and desctiption are appropiate
+      const nameIsAppropiate = await checkText({ text: name });
+
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your banner is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      //Check if images are appropiate
+      const imgIsAppropiate = await checkImage({ imageUrl: image });
+
+      if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+        return new NextResponse(
+          "The image of your banner is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+    }
 
     //Check if banner name exists
     const banner = await prismadb.category.findFirst({

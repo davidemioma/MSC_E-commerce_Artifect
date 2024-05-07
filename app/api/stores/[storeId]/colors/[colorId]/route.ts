@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ColorSchema } from "@/lib/validators/color";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
+import { checkText } from "@/actions/checkText";
 
 export async function PATCH(
   request: Request,
@@ -56,6 +57,24 @@ export async function PATCH(
     }
 
     const { name, value } = validatedBody;
+
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name is appropiate
+      const nameIsAppropiate = await checkText({ text: name });
+
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your color is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+    }
 
     //Check if category name exists
     const color = await prismadb.color.findFirst({

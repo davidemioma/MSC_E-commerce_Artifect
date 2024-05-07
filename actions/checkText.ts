@@ -1,5 +1,6 @@
 "use server";
 
+import { containBadWords } from "@/lib/utils";
 import { comprehendClient } from "@/lib/aws-client-comprehend";
 import { DetectSentimentCommand } from "@aws-sdk/client-comprehend";
 
@@ -11,6 +12,12 @@ export const checkText = async ({ text }: Props) => {
   try {
     if (!text.trim()) {
       return { error: "Text shound not be empty!" };
+    }
+
+    const hasBadWords = containBadWords(text);
+
+    if (hasBadWords) {
+      return { error: "Text is inappropiate!" };
     }
 
     const languageCode =

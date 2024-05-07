@@ -1,6 +1,8 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { checkText } from "@/actions/checkText";
+import { checkImage } from "@/actions/checkImage";
 import { currentRole, currentUser } from "@/lib/auth";
 import { postcodeValidator } from "postcode-validator";
 import { StoreSettingsSchema } from "@/lib/validators/storeSettings";
@@ -53,6 +55,55 @@ export async function PATCH(
     }
 
     const { name, country, postcode, description, logo } = validatedBody;
+
+    if (process.env.VERCEL_ENV === "production") {
+      //Check if name and description is appropiate
+      const nameIsAppropiate = await checkText({ text: name });
+
+      if (
+        nameIsAppropiate.success === "NEGATIVE" ||
+        nameIsAppropiate.success === "MIXED" ||
+        nameIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The name of your store is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      const descIsAppropiate = await checkText({
+        text: description || "hello",
+      });
+
+      if (
+        descIsAppropiate.success === "NEGATIVE" ||
+        descIsAppropiate.success === "MIXED" ||
+        descIsAppropiate.error
+      ) {
+        return new NextResponse(
+          "The description of your store is inappropiate! Change it.",
+          {
+            status: 400,
+          }
+        );
+      }
+
+      if (logo) {
+        //Check if logo are appropiate
+        const imgIsAppropiate = await checkImage({ imageUrl: logo });
+
+        if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+          return new NextResponse(
+            "The logo of your store is inappropiate! Change it.",
+            {
+              status: 400,
+            }
+          );
+        }
+      }
+    }
 
     //Check if postcode is valid
     const locationIsValid = postcodeValidator(postcode, country);
