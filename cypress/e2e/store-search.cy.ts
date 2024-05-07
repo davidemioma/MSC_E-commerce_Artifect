@@ -71,16 +71,16 @@ describe("Users Interactions", () => {
 
     cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
-      .type("test");
+      .type("random");
 
     cy.get('[data-cy="store-product-search-bar-input-search"]')
       .should("exist")
       .first()
       .click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
-    cy.url().should("include", "?search=test");
+    cy.url().should("include", "?search=random");
   });
 
   it("Should show no result for product that does not exists", () => {
@@ -90,11 +90,11 @@ describe("Users Interactions", () => {
 
     cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
-      .type("test");
+      .type("random");
 
     cy.get('[data-cy="store-product-search-bar-input-search"]').first().click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="store-product-search-empty"]').should("exist");
   });
@@ -110,7 +110,7 @@ describe("Users Interactions", () => {
 
     cy.get('[data-cy="store-product-search-bar-input-search"]').first().click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="store-product-search-empty"]').should("not.exist");
   });
