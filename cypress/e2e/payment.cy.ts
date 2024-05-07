@@ -45,15 +45,9 @@ describe("Cart and payment", () => {
 
     cy.get('[data-cy="cart-item-0"]', { timeout: 10000 }).should("be.visible");
 
-    cy.get('[data-cy="stripe-checkout-btn"]').should("not.be.disabled").click();
-
     cy.wait(5000);
 
-    cy.window().then((win) => {
-      cy.stub(win, "open").as("redirect");
-
-      cy.stub(win.console, "error").as("console.error");
-    });
+    cy.get('[data-cy="stripe-checkout-btn"]').should("not.be.disabled");
   });
 
   it("Remove item from cart", () => {

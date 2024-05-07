@@ -12,17 +12,13 @@ describe("Size for store", () => {
       )}/sizes`
     );
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Create fail for invalid form", () => {
-    cy.get('[data-cy="new-size-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-size-btn"]').should("be.visible").click();
 
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy="size-form"]').should("exist");
 
@@ -34,13 +30,9 @@ describe("Size for store", () => {
   });
 
   it("Create a new size", () => {
-    cy.get('[data-cy="new-size-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-size-btn"]').should("be.visible").click();
 
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy="size-form"]').should("exist");
 
@@ -65,15 +57,15 @@ describe("Size for store", () => {
   });
 
   it("Update an existing size", () => {
-    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
+    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`)
       .should("be.visible")
       .click();
 
+    cy.wait(10000);
+
     cy.get(`[data-cy="size-${SIZE_INDEX}-update-btn"]`).should("exist").click();
 
-    cy.wait(2000);
+    cy.wait(10000);
 
     cy.get('[data-cy="size-form"]').should("exist");
 
@@ -100,11 +92,11 @@ describe("Size for store", () => {
   });
 
   it("Cancel delete an existing size", () => {
-    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
+    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`)
       .should("be.visible")
       .click();
+
+    cy.wait(10000);
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-btn"]`).should("exist").click();
 
@@ -118,11 +110,11 @@ describe("Size for store", () => {
   });
 
   it("Continue delete an existing size", () => {
-    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
+    cy.get(`[data-cy="size-${SIZE_INDEX}-trigger"]`)
       .should("be.visible")
       .click();
+
+    cy.wait(10000);
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-btn"]`).should("exist").click();
 

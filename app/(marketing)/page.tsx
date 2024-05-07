@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import SearchBar from "./_components/SearchBar";
 import { getHomePageProducts } from "@/data/product";
 
-export const revalidate = 60; //Revalidate every 60 seconds
-
 export default async function Home() {
   const { user } = await currentUser();
 

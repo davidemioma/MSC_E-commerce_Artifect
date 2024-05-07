@@ -82,7 +82,7 @@ describe("Store Form", () => {
     cy.get('[data-cy="store-submit-btn"]').should("contain", "Create").click();
 
     //wait for API
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="create-store-err"]').should("exist");
   });
@@ -108,7 +108,7 @@ describe("Store Form", () => {
     cy.get('[data-cy="store-submit-btn"]').should("contain", "Create").click();
 
     //wait for API
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="create-store-err"]').should("exist");
   });

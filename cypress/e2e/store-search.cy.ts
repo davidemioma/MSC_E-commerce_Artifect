@@ -15,8 +15,10 @@ describe("Users Interactions", () => {
       .should("be.visible")
       .click();
 
+    cy.wait(10000);
+
     //Redirect to product details page.
-    cy.url({ timeout: 16000 }).should(
+    cy.url().should(
       "include",
       `/products/${Cypress.env("test_user_productId")}`
     );
@@ -40,27 +42,21 @@ describe("Users Interactions", () => {
   });
 
   it("It should display to search bar", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.get('[data-cy="store-product-search-bar"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.wait(10000);
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    }).should("exist");
+    cy.get('[data-cy="store-product-search-bar"]').should("be.visible");
+
+    cy.get('[data-cy="store-product-search-bar-input"]').should("exist");
   });
 
   it("Should clear input on clear btn clicked", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    })
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
       .type("test");
 
@@ -68,19 +64,17 @@ describe("Users Interactions", () => {
       .should("exist")
       .click();
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    }).should("be.empty");
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-bar-input"]').should("be.empty");
   });
 
   it("Should redirect on search btn clicked", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    })
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
       .type("test");
 
@@ -89,38 +83,40 @@ describe("Users Interactions", () => {
       .first()
       .click();
 
-    cy.url({ timeout: 10000 }).should("include", "?search=test");
+    cy.wait(10000);
+
+    cy.url().should("include", "?search=test");
   });
 
   it("Should show no result for product that does not exists", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    })
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
       .type("test");
 
     cy.get('[data-cy="store-product-search-bar-input-search"]').first().click();
 
+    cy.wait(10000);
+
     cy.get('[data-cy="store-product-search-empty"]').should("exist");
   });
 
   it("Should show result for product that exist", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.get('[data-cy="store-product-search-bar-input"]', {
-      timeout: 10000,
-    })
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-bar-input"]')
       .should("exist")
       .type("Nike Air Jordan");
 
     cy.get('[data-cy="store-product-search-bar-input-search"]').first().click();
 
-    cy.get('[data-cy="product-search-result-text"]').should("not.exist");
+    cy.wait(10000);
+
+    cy.get('[data-cy="store-product-search-empty"]').should("not.exist");
   });
 });

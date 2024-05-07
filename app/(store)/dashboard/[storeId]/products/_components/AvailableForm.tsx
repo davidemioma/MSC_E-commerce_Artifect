@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
@@ -48,6 +48,8 @@ const AvailableForm = ({
 }: Props) => {
   const params = useParams();
 
+  const [mounted, setMounted] = useState(false);
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: `productItems.${index}.availableItems`,
@@ -75,6 +77,12 @@ const AvailableForm = ({
       }
     },
   });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-2">

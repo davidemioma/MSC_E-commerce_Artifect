@@ -33,7 +33,7 @@ const ProductSlider = ({ images }: Props) => {
                 className="object-cover"
                 fill
                 src={img}
-                alt={`product-item-${i}`}
+                alt={`product-slider-item-${i}`}
               />
             </div>
           ))}

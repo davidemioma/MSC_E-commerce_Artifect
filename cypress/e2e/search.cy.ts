@@ -2,23 +2,17 @@ describe("Search For Products", () => {
   beforeEach(() => {
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
-    cy.url({ timeout: 10000 }).should("include", "/");
+    cy.wait(15000);
 
-    cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.url().should("include", "/");
 
-    cy.wait(10000);
+    cy.get('[data-cy="become-a-seller"]').should("be.visible");
   });
 
   it("Search bar should exists", () => {
-    cy.get('[data-cy="product-search-bar"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.get('[data-cy="product-search-bar"]').should("be.visible");
 
-    cy.get('[data-cy="product-search-bar-input"]', { timeout: 10000 }).should(
-      "exist"
-    );
+    cy.get('[data-cy="product-search-bar-input"]').should("exist");
   });
 
   it("Should clear input on clear btn clicked", () => {
@@ -27,6 +21,8 @@ describe("Search For Products", () => {
     cy.get('[data-cy="product-search-bar-input-clear"]')
       .should("exist")
       .click();
+
+    cy.wait(10000);
 
     cy.get('[data-cy="product-search-bar-input"]').should("be.empty");
   });
@@ -39,13 +35,17 @@ describe("Search For Products", () => {
       .first()
       .click();
 
-    cy.url({ timeout: 10000 }).should("include", "/products/search?query=test");
+    cy.wait(15000);
+
+    cy.url().should("include", "/products/search?query=test");
   });
 
   it("Should show no result for product that does not exists", () => {
     cy.get('[data-cy="product-search-bar-input"]').first().type("test");
 
     cy.get('[data-cy="product-search-bar-input-search"]').first().click();
+
+    cy.wait(15000);
 
     cy.get('[data-cy="product-search-empty"]').should("exist");
   });
@@ -56,6 +56,8 @@ describe("Search For Products", () => {
       .type("Nike Air Jordan");
 
     cy.get('[data-cy="product-search-bar-input-search"]').first().click();
+
+    cy.wait(15000);
 
     cy.get('[data-cy="product-search-result-text"]').should("exist");
   });

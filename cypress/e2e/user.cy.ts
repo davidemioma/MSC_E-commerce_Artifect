@@ -2,21 +2,21 @@ describe("Users Interactions", () => {
   beforeEach(() => {
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
-    cy.url({ timeout: 10000 }).should("include", "/");
+    cy.wait(10000);
 
-    cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.url().should("include", "/");
+
+    cy.get('[data-cy="become-a-seller"]').should("be.visible");
 
     //Ensure there is a product
-    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    })
+    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`)
       .should("be.visible")
       .click();
 
+    cy.wait(10000);
+
     //Redirect to product details page.
-    cy.url({ timeout: 16000 }).should(
+    cy.url().should(
       "include",
       `/products/${Cypress.env("test_user_productId")}`
     );

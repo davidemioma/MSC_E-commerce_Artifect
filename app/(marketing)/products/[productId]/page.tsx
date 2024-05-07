@@ -13,8 +13,6 @@ import {
   checkIfReviewed,
 } from "@/data/review";
 
-export const revalidate = 60; //Revalidate every 60 seconds
-
 export default async function ProductPage({
   params: { productId },
 }: {

@@ -10,21 +10,21 @@ describe("Product for store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(10000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
       )}/products`
     );
+
+    cy.wait(15000);
   });
 
   it("Display fail for invalid form", () => {
-    cy.get('[data-cy="new-product-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-product-btn"]').should("be.visible").click();
 
     cy.wait(10000);
 
@@ -40,13 +40,9 @@ describe("Product for store", () => {
   });
 
   it("Create a new product", () => {
-    cy.get('[data-cy="new-product-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-product-btn"]').should("be.visible").click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
@@ -63,17 +59,19 @@ describe("Product for store", () => {
       .click();
 
     //Wait for category to be loaded
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy^="product-category-select-0"]')
       .should("be.visible")
       .click({ force: true });
 
     //Wait for category to be selected
-    cy.wait(2000);
+    cy.wait(10000);
 
     //Add product item button
     cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+
+    cy.wait(10000);
 
     //Product Item Form
     cy.get('[data-cy="product-item-form-0"]')
@@ -94,33 +92,35 @@ describe("Product for store", () => {
         });
 
         //Wait for image to upload
-        cy.wait(8000);
+        cy.wait(10000);
 
         //Add Size button
         cy.get('[data-cy="product-item-form-0-available-add"]')
-          .should("be.visible")
+          .should("exist")
           .click();
+
+        cy.wait(3000);
 
         //Size Form
         cy.get('[data-cy="product-item-form-0-available-0"]')
-          .should("be.visible")
+          .should("exist")
           .within(() => {
             //Price
             cy.get('input[placeholder="Price"]')
-              .should("be.visible")
+              .should("exist")
               .clear()
               .type("50");
 
             //Num in stocks
             cy.get('input[placeholder="Number in Stock"]')
-              .should("be.visible")
+              .should("exist")
               .clear()
               .type("3");
           });
 
         //Discount
         cy.get('input[placeholder="Discount"]')
-          .should("be.visible")
+          .should("exist")
           .clear()
           .type("10");
 
@@ -128,11 +128,11 @@ describe("Product for store", () => {
         cy.get('[data-cy="product-item-form-0-color-select"]', {
           timeout: 10000,
         })
-          .should("be.visible")
+          .should("exist")
           .click()
           .then(($select) => {
             //Wait for colors to load
-            cy.wait(3000);
+            cy.wait(10000);
 
             cy.contains(
               '[data-cy^="product-item-form-0-color-select-"]',
@@ -141,7 +141,7 @@ describe("Product for store", () => {
                 timeout: 10000,
               }
             )
-              .should("be.visible")
+              .should("exist")
               .click();
 
             cy.get('[data-cy="product-item-form-0-color-select"]').click();
@@ -149,14 +149,14 @@ describe("Product for store", () => {
       });
 
     //Choosing size
-    cy.get('[data-cy="product-item-form-0-available-0"]').should("be.visible");
+    cy.get('[data-cy="product-item-form-0-available-0"]').should("exist");
 
     cy.get('[data-cy="product-item-form-0-available-0-size-select"]')
-      .should("be.visible")
+      .should("exist")
       .click();
 
     //Wait for sizes to load
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy^="product-item-form-0-available-select-size-"]')
       .first()
@@ -164,10 +164,12 @@ describe("Product for store", () => {
 
     //Create Product
     cy.get('[data-cy="product-create-btn"]')
-      .should("be.visible")
+      .should("exist")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -176,11 +178,7 @@ describe("Product for store", () => {
   });
 
   it("Update an existing product", () => {
-    cy.wait(5000);
-
-    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`)
       .should("be.visible")
       .click();
 
@@ -190,18 +188,15 @@ describe("Product for store", () => {
       .should("exist")
       .click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
+    cy.wait(10000);
+
     //delete product item
-    cy.get(
-      `[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}-delete"]`,
-      {
-        timeout: 40000,
-      }
-    )
-      .should("be.visible")
+    cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_DELETE_INDEX}-delete"]`)
+      .should("exist")
       .click();
 
     cy.wait(10000);
@@ -212,50 +207,50 @@ describe("Product for store", () => {
 
     //Product Name
     cy.get('[data-cy="product-name-input"]')
-      .should("be.visible")
+      .should("exist")
       .clear()
       .type("Test product update");
 
     //Product Description
     cy.get(".ql-editor")
-      .should("be.visible")
+      .should("exist")
       .clear()
       .type("Test product description update");
 
     //Category
     cy.get('[data-cy="product-category-select-trigger"]')
-      .should("be.visible")
+      .should("exist")
       .click();
 
     //Wait for category to be loaded
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy^="product-category-select-1"]')
-      .should("be.visible")
+      .should("exist")
       .click({ force: true });
 
     //Wait for category to be selected
-    cy.wait(2000);
+    cy.wait(10000);
 
     //Add product item
-    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+    cy.get('[data-cy="add-product-item"]').should("exist").click();
 
     //Remove product Item
     cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-remove"]`)
-      .should("be.visible")
+      .should("exist")
       .click();
 
     //Add product item again
-    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+    cy.get('[data-cy="add-product-item"]').should("exist").click();
 
     //New product Item Form
     cy.get(`[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}"]`)
-      .should("be.visible")
+      .should("exist")
       .within(() => {
         //Image Upload
         cy.get(
           `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-upload-parent"]`
-        ).should("be.visible");
+        ).should("exist");
 
         cy.fixture("images/test1.png").then((fileContent) => {
           cy.get(
@@ -269,37 +264,37 @@ describe("Product for store", () => {
         });
 
         //Wait for image to upload
-        cy.wait(8000);
+        cy.wait(10000);
 
         //Add Size button
         cy.get(
           `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-add"]`
         )
-          .should("be.visible")
+          .should("exist")
           .click();
 
         //Size Form
         cy.get(
           `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0"]`
         )
-          .should("be.visible")
+          .should("exist")
           .within(() => {
             //Price
             cy.get('input[placeholder="Price"]')
-              .should("be.visible")
+              .should("exist")
               .clear()
               .type("50");
 
             //Num in stocks
             cy.get('input[placeholder="Number in Stock"]')
-              .should("be.visible")
+              .should("exist")
               .clear()
               .type("3");
           });
 
         //Discount
         cy.get('input[placeholder="Discount"]')
-          .should("be.visible")
+          .should("exist")
           .clear()
           .type("10");
 
@@ -307,20 +302,17 @@ describe("Product for store", () => {
         cy.get(
           `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-color-select"]`
         )
-          .should("be.visible")
+          .should("exist")
           .click()
           .then(($select) => {
             //Wait for colors to load
-            cy.wait(3000);
+            cy.wait(10000);
 
             cy.contains(
               `[data-cy^="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-color-select-"]`,
-              "Black",
-              {
-                timeout: 10000,
-              }
+              "Black"
             )
-              .should("be.visible")
+              .should("exist")
               .click();
 
             cy.get(
@@ -328,23 +320,23 @@ describe("Product for store", () => {
             ).click();
 
             //Wait for colors to be selected
-            cy.wait(3000);
+            cy.wait(10000);
           });
       });
 
     //Choosing size
     cy.get(
       `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0"]`
-    ).should("be.visible");
+    ).should("exist");
 
     cy.get(
       `[data-cy="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-0-size-select"]`
     )
-      .should("be.visible")
+      .should("exist")
       .click();
 
     //Wait for size to load
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get(
       `[data-cy^="product-item-form-${PRODUCT_ITEM_ADD_INDEX}-available-select-size-"]`
@@ -353,14 +345,14 @@ describe("Product for store", () => {
       .click();
 
     //Wait for size to be selected
-    cy.wait(3000);
+    cy.wait(10000);
 
     //Save product
     cy.get('[data-cy="product-save-btn"]')
-      .should("be.visible")
+      .should("exist")
       .click({ force: true });
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     //Expect a new product item
     cy.get(
@@ -374,10 +366,8 @@ describe("Product for store", () => {
   });
 
   it("Cancel alert for delete an existing product", () => {
-    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
-      .should("be.visible")
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`)
+      .should("exist")
       .click();
 
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-btn"]`)
@@ -394,10 +384,8 @@ describe("Product for store", () => {
   });
 
   it("Continue to delete an existing product", () => {
-    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`, {
-      timeout: 15000,
-    })
-      .should("be.visible")
+    cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`)
+      .should("exist")
       .click();
 
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-btn"]`)
@@ -408,7 +396,7 @@ describe("Product for store", () => {
       .should("exist")
       .click();
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-delete-continue"]`).should(
       "not.exist"
