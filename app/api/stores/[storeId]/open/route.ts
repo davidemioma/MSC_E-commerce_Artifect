@@ -54,8 +54,9 @@ export async function PATCH(
         userId: user.id,
       },
       data: {
-        status: "REVIEWING",
-        statusFeedback: "Welcome back, Your product is under review.",
+        status: "APPROVED",
+        statusFeedback:
+          "Welcome back, Your product has been approved. It will be shown to potential customers.",
       },
     });
 
