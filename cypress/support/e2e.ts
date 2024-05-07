@@ -32,7 +32,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
   }
 
   if (
-    err.message.includes("Text content does not match server-rendered HTML.")
+    err.message.includes("Text content does not match server-rendered HTML")
   ) {
     // Return false to prevent Cypress from failing the test
     return false;
@@ -40,7 +40,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 
   if (
     err.message.includes(
-      "There was an error while hydrating this Suspense boundary. Switched to client rendering."
+      "There was an error while hydrating this Suspense boundary. Switched to client rendering"
     )
   ) {
     // Return false to prevent Cypress from failing the test
@@ -48,5 +48,5 @@ Cypress.on("uncaught:exception", (err, runnable) => {
   }
 
   // Return true to let Cypress handle other uncaught exceptions normally
-  return true;
+  return false;
 });
