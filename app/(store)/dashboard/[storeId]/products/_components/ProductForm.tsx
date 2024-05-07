@@ -334,27 +334,29 @@ const ProductForm = ({ data }: Props) => {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
+              <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Description</FormLabel>
 
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        disabled={creating || updating || deletingItem}
-                        placeholder="Product Description..."
-                        data-cy="product-description-input"
-                        rows={10}
-                      />
-                    </FormControl>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          disabled={creating || updating || deletingItem}
+                          placeholder="Product Description..."
+                          data-cy="product-description-input"
+                          rows={10}
+                        />
+                      </FormControl>
 
-                    <FormMessage data-cy="product-description-input-err" />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage data-cy="product-description-input-err" />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="pt-16 lg:pt-10" />

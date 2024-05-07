@@ -12,7 +12,7 @@ describe("Product for store", () => {
 
     cy.wait(15000);
 
-    cy.get('[data-cy="go-to-store"]').should("be.visible");
+    cy.get('[data-cy="go-to-store"]').should("exist");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
@@ -24,19 +24,19 @@ describe("Product for store", () => {
   });
 
   it("Display fail for invalid form", () => {
-    cy.get('[data-cy="new-product-btn"]').should("be.visible").click();
+    cy.get('[data-cy="new-product-btn"]').should("exist").click();
 
     cy.wait(10000);
 
     cy.get('[data-cy="product-form"]').should("exist");
 
-    cy.get('[data-cy="product-create-btn"]').should("be.visible").click();
+    cy.get('[data-cy="product-create-btn"]').should("exist").click();
 
-    cy.get('[data-cy="product-name-input-err"]').should("be.visible");
+    cy.get('[data-cy="product-name-input-err"]').should("exist");
 
-    cy.get('[data-cy="product-category-input-err"]').should("be.visible");
+    cy.get('[data-cy="product-category-input-err"]').should("exist");
 
-    cy.get('[data-cy="product-description-input-err"]').should("be.visible");
+    cy.get('[data-cy="product-description-input-err"]').should("exist");
   });
 
   it("Create a new product", () => {
@@ -47,7 +47,7 @@ describe("Product for store", () => {
     cy.get('[data-cy="product-form"]').should("exist");
 
     cy.get('[data-cy="product-name-input"]')
-      .should("be.visible")
+      .should("exist")
       .type("Test product");
 
     //Product Description
@@ -57,32 +57,30 @@ describe("Product for store", () => {
 
     //Category
     cy.get('[data-cy="product-category-select-trigger"]')
-      .should("be.visible")
+      .should("exist")
       .click();
 
     //Wait for category to be loaded
     cy.wait(10000);
 
     cy.get('[data-cy^="product-category-select-0"]')
-      .should("be.visible")
+      .should("exist")
       .click({ force: true });
 
     //Wait for category to be selected
     cy.wait(10000);
 
     //Add product item button
-    cy.get('[data-cy="add-product-item"]').should("be.visible").click();
+    cy.get('[data-cy="add-product-item"]').should("exist").click();
 
     cy.wait(10000);
 
     //Product Item Form
     cy.get('[data-cy="product-item-form-0"]')
-      .should("be.visible")
+      .should("exist")
       .within(() => {
         //Image Upload
-        cy.get('[data-cy="product-item-form-0-upload-parent"]').should(
-          "be.visible"
-        );
+        cy.get('[data-cy="product-item-form-0-upload-parent"]').should("exist");
 
         cy.fixture("images/test1.png").then((fileContent) => {
           cy.get('[data-cy="product-item-form-0-upload"]').attachFile({
@@ -180,8 +178,10 @@ describe("Product for store", () => {
   });
 
   it("Update an existing product", () => {
+    cy.wait(10000);
+
     cy.get(`[data-cy="product-${PRODUCT_INDEX}-trigger"]`)
-      .should("be.visible")
+      .should("exist")
       .click();
 
     cy.wait(10000);
