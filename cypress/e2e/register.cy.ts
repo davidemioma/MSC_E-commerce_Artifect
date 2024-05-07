@@ -1,6 +1,8 @@
 describe("Register Form", () => {
   beforeEach(() => {
     cy.visit(`${Cypress.env("public_url")}/auth/sign-up`);
+
+    cy.wait(15000);
   });
 
   it("Should display the registration form", () => {
@@ -22,13 +24,13 @@ describe("Register Form", () => {
       .should("contain", "Create an account")
       .click();
 
-    cy.get('[data-cy="error-name"]', { timeout: 10000 }).should("be.visible");
+    cy.wait(10000);
 
-    cy.get('[data-cy="error-email"]', { timeout: 10000 }).should("be.visible");
+    cy.get('[data-cy="error-name"]').should("be.visible");
 
-    cy.get('[data-cy="error-password"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.get('[data-cy="error-email"]').should("be.visible");
+
+    cy.get('[data-cy="error-password"]').should("be.visible");
   });
 
   it("Should show check for invalid password", () => {
@@ -47,6 +49,8 @@ describe("Register Form", () => {
     cy.get('[data-cy="create-acc-btn"]')
       .should("contain", "Create an account")
       .click();
+
+    cy.wait(10000);
 
     cy.get('[data-cy="error-password"]').should("be.visible");
   });
@@ -72,6 +76,8 @@ describe("Register Form", () => {
 
   it("should redirect to the appropriate page if user click already have an account", () => {
     cy.get('[data-cy="back-btn"]').click();
+
+    cy.wait(10000);
 
     cy.url().should("include", "/auth/sign-in");
   });

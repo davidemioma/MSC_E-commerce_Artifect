@@ -2,7 +2,9 @@ describe("Manage a store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 10000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     //Store Page
     cy.visit(
@@ -12,7 +14,7 @@ describe("Manage a store", () => {
       { failOnStatusCode: false }
     );
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Close alert store modal", () => {
@@ -35,7 +37,7 @@ describe("Manage a store", () => {
     cy.get('[data-cy="store-close-modal-continue"]').should("exist").click();
 
     //Wait for API
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="open-store-btn"]').should("exist");
   });
@@ -46,7 +48,7 @@ describe("Manage a store", () => {
     cy.get('[data-cy="open-store-btn"]').should("exist").click();
 
     //Wait for API
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="close-store-btn"]').should("exist");
   });

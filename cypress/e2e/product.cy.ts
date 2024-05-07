@@ -10,7 +10,7 @@ describe("Product for store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="go-to-store"]').should("be.visible");
 

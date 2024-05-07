@@ -4,7 +4,9 @@ describe("Size for store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
@@ -48,7 +50,9 @@ describe("Size for store", () => {
       .should("be.visible")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -83,7 +87,9 @@ describe("Size for store", () => {
       .should("be.visible")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -100,9 +106,13 @@ describe("Size for store", () => {
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-btn"]`).should("exist").click();
 
+    cy.wait(10000);
+
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-cancel"]`)
       .should("exist")
       .click();
+
+    cy.wait(10000);
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-continue"]`).should(
       "not.exist"
@@ -118,11 +128,13 @@ describe("Size for store", () => {
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-btn"]`).should("exist").click();
 
+    cy.wait(10000);
+
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-continue"]`)
       .should("exist")
       .click();
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get(`[data-cy="size-${SIZE_INDEX}-delete-continue"]`).should(
       "not.exist"

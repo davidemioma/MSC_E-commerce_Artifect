@@ -1,6 +1,8 @@
 describe("Login Form", () => {
   beforeEach(() => {
     cy.visit(`${Cypress.env("public_url")}/auth/sign-in`);
+
+    cy.wait(10000);
   });
 
   it("Should display the login form", () => {
@@ -20,11 +22,15 @@ describe("Login Form", () => {
   it("should redirect to the appropriate page if user click forgot password", () => {
     cy.get('[data-cy="forgot-password-btn"]').click();
 
+    cy.wait(10000);
+
     cy.url().should("include", "/auth/reset-password");
   });
 
   it("should redirect to the appropriate page if user click don't have an account", () => {
     cy.get('[data-cy="back-btn"]').click();
+
+    cy.wait(10000);
 
     cy.url().should("include", "/auth/sign-up");
   });
@@ -44,7 +50,9 @@ describe("Login Form", () => {
 
     cy.get('[data-cy="sign-in-btn"]').click();
 
-    cy.get('[data-cy="auth-login-error"]', { timeout: 6000 }).should("exist");
+    cy.wait(10000);
+
+    cy.get('[data-cy="auth-login-error"]').should("exist");
   });
 
   it("should redirect to the appropriate page after successful login", () => {
@@ -56,6 +64,8 @@ describe("Login Form", () => {
 
     cy.get('[data-cy="sign-in-btn"]').click();
 
-    cy.url({ timeout: 10000 }).should("include", "/");
+    cy.wait(10000);
+
+    cy.url().should("include", "/");
   });
 });

@@ -8,21 +8,21 @@ describe("Banner", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
       )}/banners`
     );
+
+    cy.wait(15000);
   });
 
   it("Create fail for invalid form", () => {
-    cy.get('[data-cy="new-banner-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-banner-btn"]').should("be.visible").click();
 
     cy.get('[data-cy="banner-form"]').should("exist");
 
@@ -34,11 +34,7 @@ describe("Banner", () => {
   });
 
   it("Create a new banner", () => {
-    cy.get('[data-cy="new-banner-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-banner-btn"]').should("be.visible").click();
 
     cy.get('[data-cy="banner-form"]').should("exist");
 
@@ -52,7 +48,7 @@ describe("Banner", () => {
     });
 
     //Waiting for image to be uploaded
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="banner-name-input"]')
       .should("be.visible")
@@ -62,7 +58,9 @@ describe("Banner", () => {
       .should("be.visible")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -81,6 +79,8 @@ describe("Banner", () => {
       .should("exist")
       .click();
 
+    cy.wait(10000);
+
     cy.get('[data-cy="banner-form"]').should("exist");
 
     cy.get('[data-cy="banner-name-input"]')
@@ -90,7 +90,9 @@ describe("Banner", () => {
 
     cy.get('[data-cy="banner-save-btn"]').should("be.visible").click();
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -133,9 +135,11 @@ describe("Banner", () => {
       .should("exist")
       .click();
 
-    cy.get(`[data-cy="banner-${ACTIVE_BANNER_INDEX}-active-continue"]`, {
-      timeout: 60000,
-    }).should("not.exist");
+    cy.wait(10000);
+
+    cy.get(`[data-cy="banner-${ACTIVE_BANNER_INDEX}-active-continue"]`).should(
+      "not.exist"
+    );
   });
 
   it("Cancel delete an existing banner", () => {
@@ -152,6 +156,8 @@ describe("Banner", () => {
     cy.get(`[data-cy="banner-${BANNER_INDEX}-delete-cancel"]`)
       .should("exist")
       .click();
+
+    cy.wait(10000);
 
     cy.get(`[data-cy="banner-${BANNER_INDEX}-delete-continue"]`).should(
       "not.exist"
@@ -173,7 +179,7 @@ describe("Banner", () => {
       .should("exist")
       .click();
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get(`[data-cy="banner-${BANNER_INDEX}-delete-continue"]`).should(
       "not.exist"

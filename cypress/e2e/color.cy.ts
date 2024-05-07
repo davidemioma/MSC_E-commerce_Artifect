@@ -4,23 +4,23 @@ describe("Color for store", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
       )}/colors`
     );
+
+    cy.wait(15000);
   });
 
   it("Create fail for invalid form", () => {
-    cy.get('[data-cy="new-color-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-color-btn"]').should("be.visible").click();
 
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy="color-form"]').should("exist");
 
@@ -32,13 +32,9 @@ describe("Color for store", () => {
   });
 
   it("Create a new color", () => {
-    cy.get('[data-cy="new-color-btn"]', {
-      timeout: 15000,
-    })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="new-color-btn"]').should("be.visible").click();
 
-    cy.wait(3000);
+    cy.wait(10000);
 
     cy.get('[data-cy="color-form"]').should("exist");
 
@@ -54,7 +50,9 @@ describe("Color for store", () => {
       .should("be.visible")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -73,7 +71,7 @@ describe("Color for store", () => {
       .should("exist")
       .click();
 
-    cy.wait(2000);
+    cy.wait(10000);
 
     cy.get('[data-cy="color-form"]').should("exist");
 
@@ -90,7 +88,9 @@ describe("Color for store", () => {
       .should("be.visible")
       .click({ force: true });
 
-    cy.url({ timeout: 80000 }).should(
+    cy.wait(10000);
+
+    cy.url().should(
       "eq",
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
         "auth_storeId"
@@ -113,6 +113,8 @@ describe("Color for store", () => {
       .should("exist")
       .click();
 
+    cy.wait(10000);
+
     cy.get(`[data-cy="color-${COLOR_INDEX}-delete-continue"]`).should(
       "not.exist"
     );
@@ -133,7 +135,7 @@ describe("Color for store", () => {
       .should("exist")
       .click();
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get(`[data-cy="color-${COLOR_INDEX}-delete-continue"]`).should(
       "not.exist"

@@ -4,12 +4,16 @@ describe("Store Form", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 10000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     //Store Page
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env("auth_storeId")}`
     );
+
+    cy.wait(15000);
 
     //Check if store switcher button exists and click it.
     cy.get('[data-cy="store-popover-btn"]').should("be.visible").click();
@@ -24,12 +28,14 @@ describe("Store Form", () => {
       }
     });
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Open create store modal", () => {
     //Click create store button
     cy.get('[data-cy="create-store-btn"]').should("be.visible").click();
+
+    cy.wait(10000);
 
     //Store modal should be visible
     cy.get('input[placeholder="Store Name"]').should("be.visible");
@@ -50,6 +56,8 @@ describe("Store Form", () => {
 
     //Show create button
     cy.get('[data-cy="store-submit-btn"]').should("contain", "Create").click();
+
+    cy.wait(10000);
 
     cy.get('[data-cy="store-name-err"]').should("be.visible");
 

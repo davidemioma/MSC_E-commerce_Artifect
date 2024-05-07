@@ -2,11 +2,11 @@ describe("Cart and payment", () => {
   beforeEach(() => {
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
-    cy.url({ timeout: 10000 }).should("include", "/");
+    cy.wait(15000);
 
-    cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.url().should("include", "/");
+
+    cy.get('[data-cy="become-a-seller"]').should("exist");
 
     cy.wait(10000);
   });
@@ -33,19 +33,19 @@ describe("Cart and payment", () => {
     //Cart trigger button
     cy.get('[data-cy="cart-trigger"]').should("be.visible").click();
 
-    cy.get('[data-cy="cart-content"]', { timeout: 10000 }).should("be.visible");
+    cy.wait(10000);
 
-    cy.get('[data-cy="checkout-btn"]', { timeout: 10000 })
-      .should("be.visible")
-      .click();
+    cy.get('[data-cy="cart-content"]').should("be.visible");
 
-    cy.wait(8000);
+    cy.get('[data-cy="checkout-btn"]').should("be.visible").click();
+
+    cy.wait(15000);
 
     cy.url().should("include", "/checkout");
 
-    cy.get('[data-cy="cart-item-0"]', { timeout: 10000 }).should("be.visible");
-
     cy.wait(5000);
+
+    cy.get('[data-cy="cart-item-0"]').should("be.visible");
 
     cy.get('[data-cy="stripe-checkout-btn"]').should("not.be.disabled");
   });

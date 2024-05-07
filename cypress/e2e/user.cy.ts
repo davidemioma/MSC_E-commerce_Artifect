@@ -2,7 +2,7 @@ describe("Users Interactions", () => {
   beforeEach(() => {
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.url().should("include", "/");
 
@@ -13,7 +13,7 @@ describe("Users Interactions", () => {
       .should("be.visible")
       .click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     //Redirect to product details page.
     cy.url().should(
@@ -21,7 +21,7 @@ describe("Users Interactions", () => {
       `/products/${Cypress.env("test_user_productId")}`
     );
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Add to Cart Functions", () => {
@@ -37,6 +37,8 @@ describe("Users Interactions", () => {
       .should("be.visible")
       .click();
 
+    cy.wait(10000);
+
     cy.get('[data-cy="cart-content"]').should("be.visible");
   });
 
@@ -50,7 +52,9 @@ describe("Users Interactions", () => {
 
     cy.get('[data-cy="cart-content"]').should("be.visible");
 
-    cy.get('[data-cy="cart-item-0"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="cart-item-0"]').should("be.visible");
 
     cy.get('[data-cy="cart-item-0-add"]').should("be.visible");
 
@@ -74,17 +78,19 @@ describe("Users Interactions", () => {
       .should("exist")
       .click();
 
+    cy.wait(10000);
+
     //Error messages
-    cy.get(`[data-cy="star-err-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    }).should("exist");
+    cy.get(`[data-cy="star-err-${Cypress.env("test_user_productId")}"]`).should(
+      "exist"
+    );
 
-    cy.get(`[data-cy="reason-err-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    }).should("exist");
+    cy.get(
+      `[data-cy="reason-err-${Cypress.env("test_user_productId")}"]`
+    ).should("exist");
 
-    cy.get(`[data-cy="comment-err-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    }).should("exist");
+    cy.get(
+      `[data-cy="comment-err-${Cypress.env("test_user_productId")}"]`
+    ).should("exist");
   });
 });

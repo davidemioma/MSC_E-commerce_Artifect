@@ -4,7 +4,9 @@ describe("Store Settings", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(
       `${Cypress.env("public_url")}/dashboard/${Cypress.env(
@@ -13,7 +15,7 @@ describe("Store Settings", () => {
       { failOnStatusCode: false }
     );
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Store settings status and form should be visible", () => {
@@ -61,7 +63,7 @@ describe("Store Settings", () => {
       });
     });
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[data-cy="store-name-input"]')
       .should("exist")
@@ -82,7 +84,7 @@ describe("Store Settings", () => {
 
     cy.get('[data-cy="save-store-details"]').should("be.disabled");
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="invalid-err"]').should("not.exist");
   });

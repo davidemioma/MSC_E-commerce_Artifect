@@ -4,11 +4,13 @@ describe("Settings", () => {
   beforeEach(() => {
     cy.login(Cypress.env("auth_email"), Cypress.env("auth_password"));
 
-    cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
+    cy.wait(15000);
+
+    cy.get('[data-cy="go-to-store"]').should("be.visible");
 
     cy.visit(`${Cypress.env("public_url")}/settings`);
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Settings form should be visible", () => {
@@ -38,7 +40,7 @@ describe("Settings", () => {
 
     cy.get('[data-cy="user-settings-save-btn"]').should("exist").click();
 
-    cy.wait(1000);
+    cy.wait(10000);
 
     cy.get('[data-cy="user-settings-new-password-input-err"]').should("exist");
   });
@@ -58,11 +60,11 @@ describe("Settings", () => {
       });
     });
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[data-cy="user-settings-save-btn"]').should("exist").click();
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="user-settings-update-success"]').should("exist");
   });

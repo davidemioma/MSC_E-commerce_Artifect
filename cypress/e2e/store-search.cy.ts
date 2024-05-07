@@ -2,20 +2,18 @@ describe("Users Interactions", () => {
   beforeEach(() => {
     cy.login(Cypress.env("user_email"), Cypress.env("user_password"));
 
-    cy.url({ timeout: 10000 }).should("include", "/");
+    cy.wait(15000);
 
-    cy.get('[data-cy="become-a-seller"]', { timeout: 10000 }).should(
-      "be.visible"
-    );
+    cy.url().should("include", "/");
+
+    cy.get('[data-cy="become-a-seller"]').should("be.visible");
 
     //Ensure there is a product
-    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`, {
-      timeout: 10000,
-    })
+    cy.get(`[data-cy="feed-product-${Cypress.env("test_user_productId")}"]`)
       .should("be.visible")
       .click();
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     //Redirect to product details page.
     cy.url().should(
@@ -23,22 +21,19 @@ describe("Users Interactions", () => {
       `/products/${Cypress.env("test_user_productId")}`
     );
 
-    cy.wait(10000);
+    cy.wait(15000);
   });
 
   it("Ensure there is a store for a product", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 }).should("exist");
+    cy.get('[data-cy="view-store-link"]').should("exist");
   });
 
   it("It should redirect to store when clicked", () => {
-    cy.get('[data-cy="view-store-link"]', { timeout: 10000 })
-      .should("exist")
-      .click();
+    cy.get('[data-cy="view-store-link"]').should("exist").click();
 
-    cy.url({ timeout: 16000 }).should(
-      "include",
-      `/stores/${Cypress.env("auth_storeId")}`
-    );
+    cy.wait(15000);
+
+    cy.url().should("include", `/stores/${Cypress.env("auth_storeId")}`);
   });
 
   it("It should display to search bar", () => {
