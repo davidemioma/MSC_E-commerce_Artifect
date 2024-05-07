@@ -41,7 +41,7 @@ describe("Search For Products", () => {
   });
 
   it("Should show no result for product that does not exists", () => {
-    cy.get('[data-cy="product-search-bar-input"]').first().type("test");
+    cy.get('[data-cy="product-search-bar-input"]').first().type("test product");
 
     cy.get('[data-cy="product-search-bar-input-search"]').first().click();
 
