@@ -20,6 +20,8 @@ describe("Users Interactions", () => {
       "include",
       `/products/${Cypress.env("test_user_productId")}`
     );
+
+    cy.wait(10000);
   });
 
   it("Ensure there is a store for a product", () => {

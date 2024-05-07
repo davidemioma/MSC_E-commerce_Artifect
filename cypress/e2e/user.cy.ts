@@ -20,6 +20,8 @@ describe("Users Interactions", () => {
       "include",
       `/products/${Cypress.env("test_user_productId")}`
     );
+
+    cy.wait(10000);
   });
 
   it("Add to Cart Functions", () => {

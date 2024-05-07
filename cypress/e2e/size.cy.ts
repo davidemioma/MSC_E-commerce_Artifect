@@ -11,6 +11,8 @@ describe("Size for store", () => {
         "auth_storeId"
       )}/sizes`
     );
+
+    cy.wait(10000);
   });
 
   it("Create fail for invalid form", () => {

@@ -23,6 +23,8 @@ describe("Store Form", () => {
         return false;
       }
     });
+
+    cy.wait(10000);
   });
 
   it("Open create store modal", () => {

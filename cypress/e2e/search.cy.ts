@@ -8,7 +8,7 @@ describe("Search For Products", () => {
       "be.visible"
     );
 
-    cy.wait(5000);
+    cy.wait(10000);
   });
 
   it("Search bar should exists", () => {

@@ -7,6 +7,8 @@ describe("Settings", () => {
     cy.get('[data-cy="go-to-store"]', { timeout: 15000 }).should("be.visible");
 
     cy.visit(`${Cypress.env("public_url")}/settings`);
+
+    cy.wait(10000);
   });
 
   it("Settings form should be visible", () => {
