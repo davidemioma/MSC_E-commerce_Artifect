@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AddBtn from "./AddBtn";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
@@ -11,7 +11,6 @@ import { Available, Size } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import SizeModal from "@/components/modal/SizeModal";
 import { ProductValidator } from "@/lib/validators/product";
-import TooltipContainer from "@/components/TooltipContainer";
 import { UseFormReturn, useFieldArray, Controller } from "react-hook-form";
 import {
   Select,
@@ -48,8 +47,6 @@ const AvailableForm = ({
 }: Props) => {
   const params = useParams();
 
-  const [mounted, setMounted] = useState(false);
-
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: `productItems.${index}.availableItems`,
@@ -78,32 +75,24 @@ const AvailableForm = ({
     },
   });
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <h4 className="text-lg font-bold">Add Size</h4>
 
-        <TooltipContainer message="Add sizes for product items with unique prices">
-          <AddBtn
-            onClick={() =>
-              append({
-                id: "",
-                sizeId: "",
-                price: 0,
-                numInStocks: 0,
-              })
-            }
-            testId="add-new-size"
-            cypressTestId={`${testId}-add`}
-            disabled={disabled || isPending}
-          />
-        </TooltipContainer>
+        <AddBtn
+          onClick={() =>
+            append({
+              id: "",
+              sizeId: "",
+              price: 0,
+              numInStocks: 0,
+            })
+          }
+          testId="add-new-size"
+          cypressTestId={`${testId}-add`}
+          disabled={disabled || isPending}
+        />
       </div>
 
       <div className="space-y-6">
@@ -123,9 +112,7 @@ const AvailableForm = ({
                       <span>Size</span>
 
                       <SizeModal>
-                        <TooltipContainer message="Add a new size">
-                          <AddBtn disabled={disabled || isPending} />
-                        </TooltipContainer>
+                        <AddBtn disabled={disabled || isPending} />
                       </SizeModal>
                     </FormLabel>
 

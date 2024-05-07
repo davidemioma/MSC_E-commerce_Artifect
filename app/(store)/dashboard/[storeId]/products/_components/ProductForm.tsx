@@ -8,7 +8,6 @@ import axios, { AxiosError } from "axios";
 import AvailableForm from "./AvailableForm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import TextEditor from "@/components/TextEditor";
 import BtnSpinner from "@/components/BtnSpinner";
 import ImageUpload from "@/components/ImageUpload";
 import MultiSelect from "@/components/MultiSelect";
@@ -16,7 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import ColorModal from "@/components/modal/ColorModal";
 import AlertModal from "@/components/modal/AlertModal";
-import TooltipContainer from "@/components/TooltipContainer";
 import CategoryModal from "@/components/modal/CategoryModal";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
@@ -44,6 +42,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 
 type ProductItemType = ProductItem & {
   availableItems: Available[];
@@ -228,7 +227,7 @@ const ProductForm = ({ data }: Props) => {
   };
 
   return (
-    <div data-testid="product-form" data-cy="product-form">
+    <>
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -237,138 +236,138 @@ const ProductForm = ({ data }: Props) => {
         featureToDelete="product"
       />
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <div className="hidden">
-              <input
-                type="text"
-                value={honeyPot}
-                onChange={(e) => setHoneyPot(e.target.value)}
-              />
-            </div>
+      <div data-testid="product-form" data-cy="product-form">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <div className="hidden">
+                <input
+                  type="text"
+                  value={honeyPot}
+                  onChange={(e) => setHoneyPot(e.target.value)}
+                />
+              </div>
 
-            <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
+              <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
 
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={creating || updating || deletingItem}
-                        placeholder="Name..."
-                        data-cy="product-name-input"
-                      />
-                    </FormControl>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          disabled={creating || updating || deletingItem}
+                          placeholder="Name..."
+                          data-cy="product-name-input"
+                        />
+                      </FormControl>
 
-                    <FormMessage data-cy="product-name-input-err" />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage data-cy="product-name-input-err" />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <span>Category</span>
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <span>Category</span>
 
-                      <CategoryModal>
-                        <TooltipContainer message="Add new category">
+                        <CategoryModal>
                           <AddBtn
                             testId="add-new-category"
                             disabled={creating || updating || deletingItem}
                           />
-                        </TooltipContainer>
-                      </CategoryModal>
-                    </FormLabel>
+                        </CategoryModal>
+                      </FormLabel>
+
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={creating || updating || deletingItem}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-cy="product-category-select-trigger">
+                              <SelectValue placeholder="Choose Category" />
+                            </SelectTrigger>
+                          </FormControl>
+
+                          <SelectContent>
+                            {isLoading && (
+                              <div className="py-4">
+                                <BtnSpinner />
+                              </div>
+                            )}
+
+                            {categories?.length === 0 && (
+                              <div className="flex items-center justify-center py-4 text-sm">
+                                No category found! Create a new category.
+                              </div>
+                            )}
+
+                            {!isLoading && !error && categories && (
+                              <>
+                                {categories?.map((cat: Category, i: number) => (
+                                  <SelectItem
+                                    key={cat.id}
+                                    value={cat.id}
+                                    data-cy={`product-category-select-${i}`}
+                                  >
+                                    {cat.name}
+                                  </SelectItem>
+                                ))}
+                              </>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+
+                      <FormMessage data-cy="product-category-input-err" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
 
                     <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                      <Textarea
+                        {...field}
                         disabled={creating || updating || deletingItem}
-                      >
-                        <FormControl>
-                          <SelectTrigger data-cy="product-category-select-trigger">
-                            <SelectValue placeholder="Choose Category" />
-                          </SelectTrigger>
-                        </FormControl>
-
-                        <SelectContent>
-                          {isLoading && (
-                            <div className="py-4">
-                              <BtnSpinner />
-                            </div>
-                          )}
-
-                          {categories?.length === 0 && (
-                            <div className="flex items-center justify-center py-4 text-sm">
-                              No category found! Create a new category.
-                            </div>
-                          )}
-
-                          {!isLoading && !error && categories && (
-                            <>
-                              {categories?.map((cat: Category, i: number) => (
-                                <SelectItem
-                                  key={cat.id}
-                                  value={cat.id}
-                                  data-cy={`product-category-select-${i}`}
-                                >
-                                  {cat.name}
-                                </SelectItem>
-                              ))}
-                            </>
-                          )}
-                        </SelectContent>
-                      </Select>
+                        placeholder="Product Description..."
+                        data-cy="product-description-input"
+                        rows={10}
+                      />
                     </FormControl>
 
-                    <FormMessage data-cy="product-category-input-err" />
+                    <FormMessage data-cy="product-description-input-err" />
                   </FormItem>
                 )}
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
+            <div className="pt-16 lg:pt-10" />
 
-                  <FormControl>
-                    <TextEditor
-                      value={field.value}
-                      onChange={field.onChange}
-                      disabled={creating || updating || deletingItem}
-                    />
-                  </FormControl>
+            {form.formState.errors.productItems && (
+              <div className="text-red-500 text-sm">
+                {form.formState.errors.productItems.message}
+              </div>
+            )}
 
-                  <FormMessage data-cy="product-description-input-err" />
-                </FormItem>
-              )}
-            />
-          </div>
+            <div className="flex items-center gap-2">
+              <h4 className="text-xl font-bold">Add Product Details</h4>
 
-          <div className="pt-16 lg:pt-10" />
-
-          {form.formState.errors.productItems && (
-            <div className="text-red-500 text-sm">
-              {form.formState.errors.productItems.message}
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            <h4 className="text-xl font-bold">Add Product Details</h4>
-
-            <TooltipContainer message="Customise your product">
               <button
                 type="button"
                 className="bg-blue-400 w-5 h-5 flex items-center justify-center rounded-full overflow-hidden disabled:cursor-not-allowed"
@@ -387,109 +386,31 @@ const ProductForm = ({ data }: Props) => {
               >
                 <Plus className="w-3 h-3 text-white" />
               </button>
-            </TooltipContainer>
-          </div>
+            </div>
 
-          <div className="space-y-6">
-            {fields.map((item, index) => (
-              <div
-                key={item.id}
-                className="space-y-4"
-                data-testid="product-item-form"
-                data-cy={`product-item-form-${index}`}
-              >
-                <Controller
-                  name={`productItems.${index}.images`}
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Images (Max 6)</FormLabel>
-
-                      <FormControl>
-                        <ImageUpload
-                          forProduct
-                          value={field.value}
-                          onChange={field.onChange}
-                          disabled={creating || updating || deletingItem}
-                          storeId={params.storeId as string}
-                          testId={`product-item-form-${index}-upload`}
-                        />
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <AvailableForm
-                  form={form}
-                  index={index}
-                  sizes={sizes || []}
-                  productId={data?.id || undefined}
-                  disabled={creating || updating || deletingItem}
-                  availableItems={
-                    data?.productItems?.[index]?.availableItems || []
-                  }
-                  testId={`product-item-form-${index}-available`}
-                />
-
-                <div className="w-full grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="space-y-6">
+              {fields.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="space-y-4"
+                  data-testid="product-item-form"
+                  data-cy={`product-item-form-${index}`}
+                >
                   <Controller
-                    name={`productItems.${index}.colorIds`}
+                    name={`productItems.${index}.images`}
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
-                          <span>Colors</span>
-
-                          <ColorModal>
-                            <TooltipContainer message="Add new color">
-                              <AddBtn
-                                testId="add-color-btn"
-                                disabled={creating || updating || deletingItem}
-                              />
-                            </TooltipContainer>
-                          </ColorModal>
-                        </FormLabel>
+                        <FormLabel>Images (Max 6)</FormLabel>
 
                         <FormControl>
-                          {!colorsError &&
-                            !colorsLoading &&
-                            colors &&
-                            colors.length > 0 && (
-                              <MultiSelect
-                                options={colors.map((color) => ({
-                                  value: color.id,
-                                  label: color.name,
-                                }))}
-                                value={field.value}
-                                onChange={field.onChange}
-                                placeholder="Choose Colors..."
-                                testId={`product-item-form-${index}-color`}
-                              />
-                            )}
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Controller
-                    name={`productItems.${index}.discount`}
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Discount (%)</FormLabel>
-
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="number"
-                            step="0.01"
-                            min={0}
+                          <ImageUpload
+                            forProduct
+                            value={field.value}
+                            onChange={field.onChange}
                             disabled={creating || updating || deletingItem}
-                            placeholder="Discount"
+                            storeId={params.storeId as string}
+                            testId={`product-item-form-${index}-upload`}
                           />
                         </FormControl>
 
@@ -497,80 +418,156 @@ const ProductForm = ({ data }: Props) => {
                       </FormItem>
                     )}
                   />
+
+                  <AvailableForm
+                    form={form}
+                    index={index}
+                    sizes={sizes || []}
+                    productId={data?.id || undefined}
+                    disabled={creating || updating || deletingItem}
+                    availableItems={
+                      data?.productItems?.[index]?.availableItems || []
+                    }
+                    testId={`product-item-form-${index}-available`}
+                  />
+
+                  <div className="w-full grid items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <Controller
+                      name={`productItems.${index}.colorIds`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <span>Colors</span>
+
+                            <ColorModal>
+                              <AddBtn
+                                testId="add-color-btn"
+                                disabled={creating || updating || deletingItem}
+                              />
+                            </ColorModal>
+                          </FormLabel>
+
+                          <FormControl>
+                            {!colorsError &&
+                              !colorsLoading &&
+                              colors &&
+                              colors.length > 0 && (
+                                <MultiSelect
+                                  options={colors.map((color) => ({
+                                    value: color.id,
+                                    label: color.name,
+                                  }))}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  placeholder="Choose Colors..."
+                                  testId={`product-item-form-${index}-color`}
+                                />
+                              )}
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Controller
+                      name={`productItems.${index}.discount`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Discount (%)</FormLabel>
+
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              disabled={creating || updating || deletingItem}
+                              placeholder="Discount"
+                            />
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end">
+                    {data?.productItems?.[index]?.id ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                          remove(index);
+
+                          deleteItem(data.productItems[index].id);
+                        }}
+                        disabled={creating || updating || deletingItem}
+                        data-cy={`product-item-form-${index}-delete`}
+                      >
+                        Delete Item
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        data-testid="remove-product-item"
+                        data-cy={`product-item-form-${index}-remove`}
+                        variant="secondary"
+                        onClick={() => remove(index)}
+                        disabled={creating || updating || deletingItem}
+                      >
+                        Remove Item
+                      </Button>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="flex items-center justify-end">
-                  {data?.productItems?.[index]?.id ? (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        remove(index);
-
-                        deleteItem(data.productItems[index].id);
-                      }}
-                      disabled={creating || updating || deletingItem}
-                      data-cy={`product-item-form-${index}-delete`}
-                    >
-                      Delete Item
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      data-testid="remove-product-item"
-                      data-cy={`product-item-form-${index}-remove`}
-                      variant="secondary"
-                      onClick={() => remove(index)}
-                      disabled={creating || updating || deletingItem}
-                    >
-                      Remove Item
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-10 flex items-center justify-between gap-3">
-            {data && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  router.push(`/dashboard/${params.storeId}/products`)
-                }
-                disabled={creating || updating || deletingItem}
-                data-cy="back-btn"
-              >
-                Back to products
-              </Button>
-            )}
-
-            <div className="flex items-center gap-3">
-              <Button
-                className="disabled:cursor-not-allowed disabled:opacity-75"
-                type="submit"
-                disabled={creating || updating || deletingItem}
-                data-cy={data ? `product-save-btn` : "product-create-btn"}
-              >
-                {data ? "Save" : "Create"}
-              </Button>
-
+            <div className="pt-10 flex items-center justify-between gap-3">
               {data && (
                 <Button
                   type="button"
-                  variant="destructive"
-                  onClick={() => setOpen(true)}
+                  variant="outline"
+                  onClick={() =>
+                    router.push(`/dashboard/${params.storeId}/products`)
+                  }
                   disabled={creating || updating || deletingItem}
+                  data-cy="back-btn"
                 >
-                  Delete
+                  Back to products
                 </Button>
               )}
+
+              <div className="flex items-center gap-3">
+                <Button
+                  className="disabled:cursor-not-allowed disabled:opacity-75"
+                  type="submit"
+                  disabled={creating || updating || deletingItem}
+                  data-cy={data ? `product-save-btn` : "product-create-btn"}
+                >
+                  {data ? "Save" : "Create"}
+                </Button>
+
+                {data && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setOpen(true)}
+                    disabled={creating || updating || deletingItem}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        </form>
-      </Form>
-    </div>
+          </form>
+        </Form>
+      </div>
+    </>
   );
 };
 

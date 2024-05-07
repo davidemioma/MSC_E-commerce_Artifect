@@ -51,7 +51,9 @@ describe("Product for store", () => {
       .type("Test product");
 
     //Product Description
-    cy.get(".ql-editor").should("be.visible").type("Test product description");
+    cy.get('[data-cy="product-description-input"]')
+      .should("exist")
+      .type("Test product description");
 
     //Category
     cy.get('[data-cy="product-category-select-trigger"]')
@@ -212,7 +214,7 @@ describe("Product for store", () => {
       .type("Test product update");
 
     //Product Description
-    cy.get(".ql-editor")
+    cy.get('[data-cy="product-description-input"]')
       .should("exist")
       .clear()
       .type("Test product description update");

@@ -4,10 +4,10 @@ import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
 import { checkImage } from "@/actions/checkImage";
-import { sendDeletedProductEmail, sendUpdatedProductEmail } from "@/lib/mail";
 import { currentRole, currentUser } from "@/lib/auth";
 import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
+import { sendDeletedProductEmail, sendUpdatedProductEmail } from "@/lib/mail";
 
 export async function PATCH(
   request: Request,

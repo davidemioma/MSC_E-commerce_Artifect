@@ -100,10 +100,7 @@ const ProductContent = ({ product }: Props) => {
           )}
         </div>
 
-        <div
-          className="text-sm mt-2 mb-3"
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
+        <p className="my-2">{product.description}</p>
 
         <div className="text-lg">
           {curProductItem?.discount ? (
