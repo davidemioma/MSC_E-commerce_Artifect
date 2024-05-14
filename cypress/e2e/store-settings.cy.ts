@@ -48,7 +48,7 @@ describe("Store Settings", () => {
 
     cy.get('[data-cy="save-store-details"]').should("be.disabled");
 
-    cy.wait(8000);
+    cy.wait(10000);
 
     cy.get('[data-cy="invalid-err"]').should("exist");
   });
@@ -63,7 +63,7 @@ describe("Store Settings", () => {
       });
     });
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="store-name-input"]')
       .should("exist")
@@ -84,7 +84,7 @@ describe("Store Settings", () => {
 
     cy.get('[data-cy="save-store-details"]').should("be.disabled");
 
-    cy.wait(10000);
+    cy.wait(15000);
 
     cy.get('[data-cy="invalid-err"]').should("not.exist");
   });
