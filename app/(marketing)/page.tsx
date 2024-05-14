@@ -21,7 +21,7 @@ export default async function Home() {
           <Container>
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center gap-6 text-center">
               <h1 className="text-4xl sm:text-6xl text-gray-900 font-bold tracking-tight">
-                High-Quality <span className="text-green-500">Products</span>{" "}
+                High-Quality <span className="text-violet-500">Products</span>{" "}
                 You Can Trust, Every Time.
               </h1>
 

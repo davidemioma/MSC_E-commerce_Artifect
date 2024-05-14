@@ -9,8 +9,10 @@ import AvailableForm from "./AvailableForm";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BtnSpinner from "@/components/BtnSpinner";
+import { checkImage } from "@/actions/checkImage";
 import ImageUpload from "@/components/ImageUpload";
 import MultiSelect from "@/components/MultiSelect";
+import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import ColorModal from "@/components/modal/ColorModal";
@@ -42,7 +44,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 
 type ProductItemType = ProductItem & {
   availableItems: Available[];
@@ -171,13 +172,37 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
+  const checkProductImages = async (values: ProductValidator) => {
+    if (process.env.VERCEL_ENV !== "production") {
+      return false;
+    }
+
+    let hasInappropriateImages = false;
+
+    await Promise.all(
+      values.productItems.map(async (item) => {
+        await Promise.all(
+          item.images.map(async (imageUrl) => {
+            const imgIsAppropiate = await checkImage({ imageUrl });
+
+            if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
+              hasInappropriateImages = true;
+            }
+          })
+        );
+      })
+    );
+
+    return hasInappropriateImages;
+  };
+
   const { mutate: createProduct, isPending: creating } = useMutation({
     mutationKey: ["create-product"],
     mutationFn: async (values: ProductValidator) => {
       await axios.post(`/api/stores/${params.storeId}/products/new`, values);
     },
     onSuccess: () => {
-      toast.success(data ? "Product Updated!" : "Product Created!");
+      toast.success("Product Created!");
 
       router.push(`/dashboard/${params.storeId}/products`);
 
@@ -203,7 +228,7 @@ const ProductForm = ({ data }: Props) => {
       );
     },
     onSuccess: () => {
-      toast.success(data ? "Product Updated!" : "Product Created!");
+      toast.success("Product Updated!");
 
       router.refresh();
     },
@@ -216,8 +241,16 @@ const ProductForm = ({ data }: Props) => {
     },
   });
 
-  const onSubmit = (values: ProductValidator) => {
+  const onSubmit = async (values: ProductValidator) => {
     if (honeyPot) return;
+
+    const imagesAreInappropiate = await checkProductImages(values);
+
+    if (imagesAreInappropiate) {
+      toast.error("The images of your product is inappropiate! Change it.");
+
+      return;
+    }
 
     if (data) {
       updateProduct(values);

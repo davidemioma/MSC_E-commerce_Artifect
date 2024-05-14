@@ -3,7 +3,6 @@ import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
-import { checkImage } from "@/actions/checkImage";
 import { sendCreatedProductEmail } from "@/lib/mail";
 import { UserRole, storeStatus } from "@prisma/client";
 import { currentRole, currentUser } from "@/lib/auth";
@@ -105,32 +104,6 @@ export async function POST(
       ) {
         return new NextResponse(
           "The description of your product is inappropiate! Change it.",
-          {
-            status: 400,
-          }
-        );
-      }
-
-      //Check if images are appropiate
-      let hasInappropriateImages = false;
-
-      await Promise.all(
-        productItems.map(async (item) => {
-          await Promise.all(
-            item.images.map(async (imageUrl) => {
-              const imgIsAppropiate = await checkImage({ imageUrl });
-
-              if (!imgIsAppropiate.isAppropiate || imgIsAppropiate.error) {
-                hasInappropriateImages = true;
-              }
-            })
-          );
-        })
-      );
-
-      if (hasInappropriateImages) {
-        return new NextResponse(
-          "The images of your product is inappropiate! Change it.",
           {
             status: 400,
           }
