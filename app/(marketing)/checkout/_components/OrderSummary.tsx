@@ -88,7 +88,7 @@ const OrderSummary = ({ cartId, cartItems }: Props) => {
         <div className="flex">
           <span className="flex-1">Expiry Datae</span>
 
-          <span className="font-semibold">04/24</span>
+          <span className="font-semibold">04/26</span>
         </div>
 
         <div className="flex">
