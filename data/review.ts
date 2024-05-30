@@ -1,3 +1,5 @@
+"use server";
+
 import prismadb from "@/lib/prisma";
 import { INFINITE_SCROLL_REVIEWS_RESULT } from "@/lib/utils";
 

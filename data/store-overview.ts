@@ -1,3 +1,5 @@
+"use server";
+
 import prismadb from "@/lib/prisma";
 import { OrderStatus, ProductStatus } from "@prisma/client";
 

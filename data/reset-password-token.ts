@@ -1,3 +1,5 @@
+"use server";
+
 import prismadb from "@/lib/prisma";
 
 export const getPasswordResetTokenByToken = async (token: string) => {
