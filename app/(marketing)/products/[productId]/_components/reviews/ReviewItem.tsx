@@ -6,7 +6,6 @@ import { format } from "date-fns";
 import { ReviewType } from "@/types";
 import { UserRole } from "@prisma/client";
 import axios, { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FaStar, FaRegStar } from "react-icons/fa6";
 import useCurrentUser from "@/hooks/use-current-user";
@@ -20,8 +19,6 @@ type Props = {
 };
 
 const ReviewItem = ({ review, productId, disabled }: Props) => {
-  const router = useRouter();
-
   const { user } = useCurrentUser();
 
   const queryClient = useQueryClient();
@@ -33,8 +30,6 @@ const ReviewItem = ({ review, productId, disabled }: Props) => {
     },
     onSuccess: (data) => {
       toast.success("Marked as helpful");
-
-      router.refresh();
 
       queryClient.invalidateQueries({
         queryKey: ["get-limited-reviews", productId],
@@ -65,8 +60,6 @@ const ReviewItem = ({ review, productId, disabled }: Props) => {
     },
     onSuccess: () => {
       toast.success("Review Deleted!");
-
-      router.refresh();
 
       queryClient.invalidateQueries({
         queryKey: ["get-reviews-details", productId],

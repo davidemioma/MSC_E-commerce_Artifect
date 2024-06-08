@@ -4,7 +4,6 @@ import React from "react";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,12 +26,6 @@ type Props = {
 };
 
 const ReviewForm = ({ showForm, productId }: Props) => {
-  if (!showForm) {
-    return null;
-  }
-
-  const router = useRouter();
-
   const queryClient = useQueryClient();
 
   const form = useForm<ReviewValidator>({
@@ -53,8 +46,6 @@ const ReviewForm = ({ showForm, productId }: Props) => {
       toast.success("Review Added!");
 
       form.reset();
-
-      router.refresh();
 
       queryClient.invalidateQueries({
         queryKey: ["get-reviews-details", productId],
@@ -80,6 +71,10 @@ const ReviewForm = ({ showForm, productId }: Props) => {
   const onSubmit = (values: ReviewValidator) => {
     addReview(values);
   };
+
+  if (!showForm) {
+    return null;
+  }
 
   return (
     <div className="w-full space-y-4" data-cy={`review-form-${productId}`}>
