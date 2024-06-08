@@ -17,13 +17,9 @@ import {
 export default async function AdminPage() {
   const { user } = await currentUser();
 
-  const storesChartData = await getStoreChartData();
-
   const nonVerifiedUserCount = await getUsersCount();
 
   const verifiedUserCount = await getUsersCount(true);
-
-  const productChartData = await getProductChartData();
 
   return (
     <div className="w-full">
@@ -92,29 +88,21 @@ export default async function AdminPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Stores</h1>
+          <DataChart
+            title="Stores"
+            href="/admin/stores"
+            hrefText="View All"
+            queryKey={["get-stores-chart-data"]}
+            getData={getStoreChartData}
+          />
 
-              <Link href="/admin/stores">
-                <Button variant={"violet"}>View All</Button>
-              </Link>
-            </div>
-
-            {storesChartData && <DataChart data={storesChartData} />}
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Products</h1>
-
-              <Link href="/admin/products">
-                <Button variant={"violet"}>View All</Button>
-              </Link>
-            </div>
-
-            {productChartData && <DataChart data={productChartData} />}
-          </div>
+          <DataChart
+            title="Products"
+            href="/admin/products"
+            hrefText="View All"
+            queryKey={["get-products-chart-data"]}
+            getData={getProductChartData}
+          />
         </div>
       </Container>
     </div>

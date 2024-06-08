@@ -1,35 +1,19 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import prismadb from "@/lib/prisma";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
+import { columns } from "./_components/Columns";
+import { getCategoriesByStoreId } from "@/data/store";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./_components/Columns";
 
 export default async function StoreCategoriesPage({
-  params,
+  params: { storeId },
 }: {
   params: { storeId: string };
 }) {
-  const { storeId } = params;
-
-  const categories = await prismadb.category.findMany({
-    where: {
-      storeId,
-    },
-    include: {
-      _count: {
-        select: {
-          products: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const categories = await getCategoriesByStoreId(storeId);
 
   return (
     <div className="w-full">

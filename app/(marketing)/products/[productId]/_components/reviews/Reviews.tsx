@@ -1,213 +1,84 @@
 "use client";
 
 import React from "react";
-import { toast } from "sonner";
-import { ReviewType } from "@/types";
 import ReviewList from "./ReviewList";
+import ReviewForm from "./ReviewForm";
 import { UserRole } from "@prisma/client";
-import axios, { AxiosError } from "axios";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { FaStar, FaRegStar } from "react-icons/fa6";
-import useCurrentUser from "@/hooks/use-current-user";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReviewValidator, ReviewSchema } from "@/lib/validators/review";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import Spinner from "@/components/Spinner";
 import Container from "@/components/Container";
+import useCurrentUser from "@/hooks/use-current-user";
+import { useQuery } from "@tanstack/react-query";
+import {
+  checkIfReviewed,
+  getReviewCount,
+  getReviewsForProduct,
+} from "@/data/review";
 
 type Props = {
   productId: string;
-  initialData: ReviewType[];
-  reviewCount: number;
-  hasReviewed: boolean;
 };
 
-const Reviews = ({
-  productId,
-  initialData,
-  reviewCount,
-  hasReviewed,
-}: Props) => {
-  const router = useRouter();
-
+const Reviews = ({ productId }: Props) => {
   const { user } = useCurrentUser();
 
-  const queryClient = useQueryClient();
+  const { data } = useQuery({
+    queryKey: ["get-reviews-details", productId],
+    queryFn: async () => {
+      const reviewCount = await getReviewCount(productId);
 
-  const showForm = user && user.role === UserRole.USER && !hasReviewed;
-
-  const form = useForm<ReviewValidator>({
-    resolver: zodResolver(ReviewSchema),
-    defaultValues: {
-      value: 0,
-      reason: "",
-      comment: "",
-    },
-  });
-
-  const { mutate: addReview, isPending } = useMutation({
-    mutationKey: ["add-review"],
-    mutationFn: async (values: ReviewValidator) => {
-      await axios.post(`/api/products/${productId}/reviews`, values);
-    },
-    onSuccess: () => {
-      toast.success("Review Added!");
-
-      form.reset();
-
-      router.refresh();
-
-      queryClient.invalidateQueries({
-        queryKey: ["get-limited-reviews", productId],
+      const hasReviewed = await checkIfReviewed({
+        userId: user?.id || "",
+        productId,
       });
+
+      return { reviewCount, hasReviewed };
     },
-    onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data);
-      } else {
-        toast.error("Something went wrong");
-      }
-    },
+    staleTime: 1000 * 60 * 5,
   });
 
-  const onSubmit = (values: ReviewValidator) => {
-    addReview(values);
-  };
+  const showForm =
+    user && user.role === UserRole.USER && (!data?.hasReviewed || false);
+
+  const {
+    data: initialReviews,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["get-initial-reviews", productId],
+    queryFn: async () => {
+      const reviews = await getReviewsForProduct(productId);
+
+      return reviews;
+    },
+  });
 
   return (
     <div className="w-full bg-white py-14">
       <Container>
         <div className="space-y-5">
           <h1 className="text-2xl md:text-3xl font-bold">
-            Reviews ({reviewCount})
+            Reviews ({data?.reviewCount || 0})
           </h1>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {showForm && (
-              <div
-                className="w-full space-y-4"
-                data-cy={`review-form-${productId}`}
-              >
-                <div className="space-y-0.5">
-                  <h2 className="font-semibold">Write a Review</h2>
+            <ReviewForm showForm={showForm || false} productId={productId} />
 
-                  <p className="text-sm text-gray-500">
-                    Share your thoughts about the product.
-                  </p>
-                </div>
-
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
-                  >
-                    <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="value"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Rating</FormLabel>
-
-                            <FormControl>
-                              <div className="flex items-center gap-1">
-                                {new Array(5).fill("").map((_, index) => (
-                                  <button
-                                    key={index}
-                                    type="button"
-                                    disabled={isPending}
-                                    onClick={() => field.onChange(index + 1)}
-                                    onMouseEnter={() =>
-                                      field.onChange(index + 1)
-                                    }
-                                  >
-                                    {field.value >= index + 1 ? (
-                                      <FaStar className="w-5 h-5 text-yellow-500" />
-                                    ) : (
-                                      <FaRegStar className="w-5 h-5 text-yellow-500" />
-                                    )}
-                                  </button>
-                                ))}
-                              </div>
-                            </FormControl>
-
-                            <FormMessage data-cy={`star-err-${productId}`} />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="reason"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Reason</FormLabel>
-
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Reason for rating..."
-                                disabled={isPending}
-                              />
-                            </FormControl>
-
-                            <FormMessage data-cy={`reason-err-${productId}`} />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="comment"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Comment</FormLabel>
-
-                            <FormControl>
-                              <Textarea
-                                {...field}
-                                rows={5}
-                                placeholder="Tell us your experience..."
-                                disabled={isPending}
-                              />
-                            </FormControl>
-
-                            <FormMessage data-cy={`comment-err-${productId}`} />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={isPending}
-                      data-cy={`submit-review-${productId}`}
-                    >
-                      Submit
-                    </Button>
-                  </form>
-                </Form>
+            {isLoading && (
+              <div className="w-full p-5 flex items-center justify-center">
+                <Spinner />
               </div>
             )}
 
-            {initialData.length > 0 && (
-              <ReviewList
-                productId={productId}
-                initialData={initialData}
-                reviewCount={reviewCount}
-              />
-            )}
+            {!isLoading &&
+              !isError &&
+              Array.isArray(initialReviews) &&
+              initialReviews.length > 0 && (
+                <ReviewList
+                  productId={productId}
+                  initialData={initialReviews}
+                  reviewCount={data?.reviewCount || 0}
+                />
+              )}
           </div>
         </div>
       </Container>

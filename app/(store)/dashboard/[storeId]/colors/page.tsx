@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import prismadb from "@/lib/prisma";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
+import { getColorsByStoreId } from "@/data/store";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,14 +13,7 @@ export default async function ColorsPage({
 }: {
   params: { storeId: string };
 }) {
-  const colors = await prismadb.color.findMany({
-    where: {
-      storeId,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const colors = await getColorsByStoreId(storeId);
 
   return (
     <div className="w-full">

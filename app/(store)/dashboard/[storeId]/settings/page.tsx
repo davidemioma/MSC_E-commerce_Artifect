@@ -1,9 +1,9 @@
-import prismadb from "@/lib/prisma";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Heading from "@/components/Heading";
 import Options from "./_components/Options";
 import Container from "@/components/Container";
+import { getStoreDetails } from "@/data/store";
 import { cn, getStatusColor } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import SettingsForm from "./_components/SettingsForm";
@@ -25,12 +25,7 @@ export default async function StoreDashboardPage({
     return redirect("/auth/sign-in");
   }
 
-  const store = await prismadb.store.findUnique({
-    where: {
-      id: storeId,
-      userId: user.id,
-    },
-  });
+  const store = await getStoreDetails({ userId: user.id, storeId });
 
   if (!store) {
     return redirect("/store");

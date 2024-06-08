@@ -4,7 +4,6 @@ import React from "react";
 import { ReviewType } from "@/types";
 import ReviewItem from "./ReviewItem";
 import Spinner from "@/components/Spinner";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   FetchNextPageOptions,
@@ -44,8 +43,8 @@ const ReviewsSheet = ({
       <SheetTrigger asChild>{children}</SheetTrigger>
 
       <SheetContent>
-        <div className="space-y-6">
-          <ScrollArea>
+        <div className="h-full overflow-y-scroll scrollbar-hide">
+          <div className="space-y-6 pb-10">
             <div className="flex flex-col gap-6">
               {!error &&
                 reviews?.map((review) => (
@@ -57,17 +56,17 @@ const ReviewsSheet = ({
                   />
                 ))}
             </div>
-          </ScrollArea>
 
-          {hasNextPage && (
-            <button
-              className="text-sm text-left hover:underline transition"
-              disabled={disabled}
-              onClick={() => fetchNextPage()}
-            >
-              {isFetchingNextPage ? <Spinner /> : "Load more"}
-            </button>
-          )}
+            {hasNextPage && (
+              <button
+                className="text-sm text-left hover:underline transition"
+                disabled={disabled}
+                onClick={() => fetchNextPage()}
+              >
+                {isFetchingNextPage ? <Spinner /> : "Load more"}
+              </button>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

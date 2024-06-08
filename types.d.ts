@@ -141,5 +141,9 @@ export type SearchFilters = {
     isCustom: boolean;
     range: number[];
   };
-  discount:number[];
+  discount: number[];
+};
+
+export type RecommendedType = Partial<Product> & {
+  category: Partial<Category>;
 };

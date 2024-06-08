@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import prismadb from "@/lib/prisma";
 import Heading from "@/components/Heading";
 import Container from "@/components/Container";
 import { columns } from "./_components/Columns";
+import { getBannersByStoreId } from "@/data/store";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,14 +13,7 @@ export default async function StoreBannersPage({
 }: {
   params: { storeId: string };
 }) {
-  const banners = await prismadb.banner.findMany({
-    where: {
-      storeId,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const banners = await getBannersByStoreId(storeId);
 
   return (
     <div className="w-full">

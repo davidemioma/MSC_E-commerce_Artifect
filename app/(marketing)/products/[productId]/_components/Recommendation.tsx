@@ -2,19 +2,36 @@
 
 import React, { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { HomeProductType } from "@/types";
+import Spinner from "@/components/Spinner";
+import { RecommendedType } from "@/types";
 import Container from "@/components/Container";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { getRecommendedProducts } from "@/data/product";
 import Product from "@/app/(marketing)/_components/Product";
 
 type Props = {
-  products: HomeProductType[];
+  product: RecommendedType;
 };
 
-const Recommendation = ({ products }: Props) => {
+const Recommendation = ({ product }: Props) => {
   const rowRef = useRef<HTMLDivElement>(null);
 
   const [isMoved, setIsMoved] = useState(false);
+
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["get-recommended-product", product.id],
+    queryFn: async () => {
+      const products = await getRecommendedProducts(product);
+
+      return products;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   const handleClick = (direction: string) => {
     setIsMoved(true);
@@ -31,7 +48,15 @@ const Recommendation = ({ products }: Props) => {
     }
   };
 
-  if (products.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="w-full p-5 flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (products?.length === 0 || isError) {
     return null;
   }
 
@@ -40,7 +65,7 @@ const Recommendation = ({ products }: Props) => {
       <div className="py-10 space-y-5">
         <h1 className="text-2xl md:text-3xl font-bold">You Might Also Like</h1>
 
-        {products.length > 1 && (
+        {products && products?.length > 1 && (
           <div className="flex items-center justify-end gap-3">
             <button
               className={cn(
@@ -67,11 +92,14 @@ const Recommendation = ({ products }: Props) => {
           ref={rowRef}
           className="flex items-center gap-2 overflow-x-scroll scrollbar-hide"
         >
-          {products.map((product, i) => (
-            <div key={product.id} className="min-w-[350px]">
-              <Product product={product} />
-            </div>
-          ))}
+          {!isLoading &&
+            !isError &&
+            Array.isArray(products) &&
+            products.map((product, i) => (
+              <div key={product.id} className="min-w-[350px]">
+                <Product product={product} />
+              </div>
+            ))}
         </div>
       </div>
     </Container>

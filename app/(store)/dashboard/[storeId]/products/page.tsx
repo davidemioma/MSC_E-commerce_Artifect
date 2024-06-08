@@ -1,5 +1,4 @@
 import Link from "next/link";
-import prismadb from "@/lib/prisma";
 import { Plus } from "lucide-react";
 import { currentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -11,6 +10,7 @@ import NotApproved from "./_components/NotApproved";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { buttonVariants } from "@/components/ui/button";
+import { getProductsByStoreId, getStore } from "@/data/store";
 
 export default async function ProductsPage({
   params: { storeId },
@@ -23,12 +23,7 @@ export default async function ProductsPage({
     return redirect("/auth/sign-in");
   }
 
-  const store = await prismadb.store.findUnique({
-    where: {
-      id: storeId,
-      userId: user.id,
-    },
-  });
+  const store = await getStore({ userId: user.id, storeId });
 
   if (!store) {
     return redirect("/store");
@@ -45,27 +40,7 @@ export default async function ProductsPage({
     );
   }
 
-  const products = await prismadb.product.findMany({
-    where: {
-      userId: user.id,
-      storeId,
-    },
-    include: {
-      category: {
-        select: {
-          name: true,
-        },
-      },
-      _count: {
-        select: {
-          productItems: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const products = await getProductsByStoreId({ userId: user.id, storeId });
 
   return (
     <div className="w-full">

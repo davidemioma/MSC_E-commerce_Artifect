@@ -39,6 +39,14 @@ const ReviewItem = ({ review, productId, disabled }: Props) => {
       queryClient.invalidateQueries({
         queryKey: ["get-limited-reviews", productId],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ["get-reviews-details", productId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["get-initial-reviews", productId],
+      });
     },
     onError: (err) => {
       if (err instanceof AxiosError) {
@@ -61,7 +69,15 @@ const ReviewItem = ({ review, productId, disabled }: Props) => {
       router.refresh();
 
       queryClient.invalidateQueries({
+        queryKey: ["get-reviews-details", productId],
+      });
+
+      queryClient.invalidateQueries({
         queryKey: ["get-limited-reviews", productId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["get-initial-reviews", productId],
       });
     },
     onError: (err) => {

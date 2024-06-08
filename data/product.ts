@@ -1,8 +1,9 @@
 "use server";
 
 import prismadb from "@/lib/prisma";
-import { UserRole } from "@prisma/client";
+import { RecommendedType } from "@/types";
 import { getProductStatusValue } from "@/lib/utils";
+import { ProductStatus, UserRole } from "@prisma/client";
 import { INFINITE_SCROLL_PAGINATION_RESULTS } from "@/lib/utils";
 
 export const getProductsByAdmin = async ({
@@ -183,5 +184,89 @@ export const getProductById = async (productId: string) => {
     return product;
   } catch (err) {
     return null;
+  }
+};
+
+export const getRecommendedProducts = async (product: RecommendedType) => {
+  try {
+    if (!product) return [];
+
+    const recommendedProducts = await prismadb.product.findMany({
+      where: {
+        id: {
+          not: product.id,
+        },
+        status: ProductStatus.APPROVED,
+        OR: [
+          {
+            category: {
+              OR: [
+                {
+                  name: {
+                    contains: product.category?.name,
+                  },
+                },
+                {
+                  name: {
+                    equals: product.category?.name,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            OR: [
+              {
+                name: {
+                  contains: product.name,
+                },
+              },
+              {
+                name: {
+                  equals: product.name,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      include: {
+        category: true,
+        productItems: {
+          where: {
+            availableItems: {
+              some: {
+                numInStocks: {
+                  gt: 0,
+                },
+              },
+            },
+          },
+          include: {
+            availableItems: {
+              include: {
+                size: true,
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+          },
+        },
+        reviews: {
+          select: {
+            value: true,
+          },
+        },
+      },
+      take: 10,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return recommendedProducts;
+  } catch (err) {
+    return [];
   }
 };

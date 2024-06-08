@@ -11,7 +11,6 @@ import ShareStoreLink from "../_components/ShareStoreLink";
 import { PoundSterling, CreditCard, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  getGraphData,
   getNumOfProductsInStock,
   getSalesCountByStoreId,
   getStore,
@@ -37,8 +36,6 @@ export default async function StoreDashboardPage({
   if (!store) {
     return redirect("/store");
   }
-
-  const graphData = await getGraphData(storeId);
 
   const banner = await getStoreBanner({ storeId });
 
@@ -139,17 +136,7 @@ export default async function StoreDashboardPage({
           </Card>
         </div>
 
-        <div className="w-full">
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle className="font-bold">Overview</CardTitle>
-            </CardHeader>
-
-            <CardContent className="pl-2">
-              <RevenueGraph data={graphData} />
-            </CardContent>
-          </Card>
-        </div>
+        <RevenueGraph storeId={storeId} />
       </Container>
     </div>
   );
