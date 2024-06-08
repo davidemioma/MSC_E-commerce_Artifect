@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Link from "next/link";
 import Empty from "../Empty";
 import Spinner from "../Spinner";
 import CartItem from "./CartItem";
-import { CartType } from "@/types";
+import { getCartItems } from "@/data/cart";
 import { UserRole } from "@prisma/client";
 import { usePathname } from "next/navigation";
 import { buttonVariants } from "../ui/button";
@@ -38,16 +37,16 @@ const Cart = () => {
   } = useQuery({
     queryKey: ["get-cart-item"],
     queryFn: async () => {
-      const res = await axios.get("/api/cart");
+      const data = await getCartItems();
 
-      return res.data as CartType;
+      return data;
     },
   });
 
   const emptyCart =
     !isLoading &&
     !isError &&
-    (!cart || !cart.cartItems || cart.cartItems.length === 0);
+    (!cart || !cart?.cartItems || cart?.cartItems?.length === 0);
 
   const cartTotal =
     (cart?.cartItems?.reduce(

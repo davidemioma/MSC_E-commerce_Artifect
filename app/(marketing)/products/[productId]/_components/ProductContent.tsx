@@ -1,19 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
+import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-import axios, { AxiosError } from "axios";
 import ProductSlider from "./ProductSlider";
 import { cn, formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { addToCartHandler } from "@/actions/cart";
 import useCurrentUser from "@/hooks/use-current-user";
 import AverageRating from "@/components/AverageRating";
 import { Size, Color, UserRole } from "@prisma/client";
 import TooltipContainer from "@/components/TooltipContainer";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { CartItemValidator } from "@/lib/validators/cart-item";
 import { ProductItemType, ProductDetailType } from "../../../../../types";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
@@ -64,9 +64,7 @@ const ProductContent = ({ product }: Props) => {
 
   const { mutate: addToCart, isPending } = useMutation({
     mutationKey: ["add-to-cart"],
-    mutationFn: async (values: CartItemValidator) => {
-      await axios.post("/api/cart", values);
-    },
+    mutationFn: addToCartHandler,
     onSuccess: () => {
       toast.success("Item added to cart!");
 
@@ -75,11 +73,7 @@ const ProductContent = ({ product }: Props) => {
       });
     },
     onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(err.message || "Something went wrong");
     },
   });
 

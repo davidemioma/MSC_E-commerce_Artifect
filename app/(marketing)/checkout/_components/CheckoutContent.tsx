@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import axios from "axios";
-import { CartType } from "@/types";
 import Empty from "@/components/Empty";
 import OrderSummary from "./OrderSummary";
+import { getCartItems } from "@/data/cart";
 import { useQuery } from "@tanstack/react-query";
 import CartItem from "@/components/cart/CartItem";
 import CheckoutSkeleton from "@/components/CheckoutSkeleton";
@@ -17,9 +16,9 @@ const CheckoutContent = () => {
   } = useQuery({
     queryKey: ["get-cart-item"],
     queryFn: async () => {
-      const res = await axios.get("/api/cart");
+      const data = await getCartItems();
 
-      return res.data as CartType;
+      return data;
     },
   });
 

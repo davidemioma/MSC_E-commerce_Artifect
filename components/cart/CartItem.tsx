@@ -5,9 +5,9 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { CartItemType } from "@/types";
-import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { cn, formatPrice } from "@/lib/utils";
+import { deleteCartItem, updateCartItem } from "@/actions/cart";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
@@ -23,9 +23,7 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
 
   const { mutate: removeItem, isPending } = useMutation({
     mutationKey: ["remove-cart-item"],
-    mutationFn: async () => {
-      await axios.delete(`/api/cart/${cartItem.id}`);
-    },
+    mutationFn: deleteCartItem,
     onSuccess: () => {
       toast.success("Item removed from cart.");
 
@@ -36,16 +34,12 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
       isCheckout && router.refresh();
     },
     onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(err.message || "Something went wrong");
     },
   });
 
   const { mutate: onQuantityChange, isPending: isLoading } = useMutation({
-    mutationKey: ["add-quantity", cartItem.id],
+    mutationKey: ["update-quantity", cartItem.id],
     mutationFn: async ({ task }: { task: "add" | "minus" }) => {
       if (
         cartItem.availableItem?.numInStocks &&
@@ -59,7 +53,7 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
         return;
       }
 
-      await axios.patch(`/api/cart/${cartItem.id}?task=${task}`);
+      await updateCartItem({ cartItemId: cartItem.id, task });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -69,11 +63,7 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
       isCheckout && router.refresh();
     },
     onError: (err) => {
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data);
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast.error(err.message || "Something went wrong");
     },
   });
 
@@ -143,7 +133,7 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
 
         <Button
           variant="destructive"
-          onClick={() => removeItem()}
+          onClick={() => removeItem(cartItem.id)}
           disabled={isPending || isLoading}
           data-cy={`cart-item-${index}-remove`}
         >
