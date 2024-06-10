@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { UserRole, storeStatus } from "@prisma/client";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 
 export async function DELETE(
   request: Request,
@@ -30,9 +30,7 @@ export async function DELETE(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== UserRole.SELLER) {
+    if (user.role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { StatusSchema } from "@/lib/validators/status";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 
 export async function PATCH(
@@ -21,9 +21,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { role } = await currentRole();
-
-    if (role !== UserRole.ADMIN) {
+    if (user.role !== UserRole.ADMIN) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

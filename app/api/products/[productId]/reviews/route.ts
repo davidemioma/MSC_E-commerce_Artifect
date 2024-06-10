@@ -2,7 +2,7 @@ import { z } from "zod";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { ReviewSchema } from "@/lib/validators/review";
 
 export async function GET(
@@ -87,9 +87,7 @@ export async function POST(
     }
 
     //Check if user role is USER
-    const { role } = await currentRole();
-
-    if (role !== UserRole.USER) {
+    if (user.role !== UserRole.USER) {
       return new NextResponse("Unauthorized, Only users can add review", {
         status: 401,
       });

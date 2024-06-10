@@ -1,8 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
-import { OrderStatusSchema } from "@/lib/validators/order-status";
+import { currentUser } from "@/lib/auth";
 
 export async function GET(
   request: Request,
@@ -25,9 +24,8 @@ export async function GET(
     }
 
     //Check if user role is user
-    const { role } = await currentRole();
 
-    if (role !== UserRole.ADMIN) {
+    if (user.role !== UserRole.ADMIN) {
       return new NextResponse(
         "Unauthorized, Only admin can get refund request",
         {

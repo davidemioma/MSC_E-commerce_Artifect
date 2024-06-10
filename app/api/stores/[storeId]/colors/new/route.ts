@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { ColorSchema } from "@/lib/validators/color";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 import { checkText } from "@/actions/checkText";
 
@@ -24,9 +24,7 @@ export async function POST(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== UserRole.SELLER) {
+    if (user.role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

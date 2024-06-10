@@ -4,7 +4,7 @@ import { stripe } from "@/lib/stripe";
 import { formatPrice } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { UserRole, OrderStatus } from "@prisma/client";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { getRefundFailedReason } from "@/lib/functions";
 import { sendReturnOrderEmail, sendStoreReturnOrderEmail } from "@/lib/mail";
 
@@ -33,9 +33,8 @@ export async function POST(
     }
 
     //Check if user role is user
-    const { role } = await currentRole();
 
-    if (role !== UserRole.ADMIN) {
+    if (user.role !== UserRole.ADMIN) {
       return new NextResponse(
         "Unauthorized, Only admin can accept refund request",
         {

@@ -1,8 +1,7 @@
 "use server";
 
 import prismadb from "@/lib/prisma";
-import { apiRatelimit } from "@/lib/redis";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { CartItemSchema, CartItemValidator } from "@/lib/validators/cart-item";
 
 export const addToCartHandler = async (values: CartItemValidator) => {
@@ -14,16 +13,8 @@ export const addToCartHandler = async (values: CartItemValidator) => {
       throw new Error("Unauthorized, You need to be logged in.");
     }
 
-    const { role } = await currentRole();
-
-    if (role !== "USER") {
+    if (user.role !== "USER") {
       throw new Error("Unauthorized, Only users can delete cartItem");
-    }
-
-    const { success } = await apiRatelimit.limit(user.id);
-
-    if (!success && process.env.VERCEL_ENV === "production") {
-      throw new Error("Too Many Requests! try again in 1 min");
     }
 
     const validatedBody = CartItemSchema.parse(values);
@@ -153,22 +144,16 @@ export const updateCartItem = async ({
       throw new Error("Unauthorized, You need to be logged in.");
     }
 
-    const { role } = await currentRole();
-
-    if (role !== "USER") {
-      throw new Error("Unauthorized, Only users can delete cartItem");
-    }
-
-    const { success } = await apiRatelimit.limit(user.id);
-
-    if (!success && process.env.VERCEL_ENV === "production") {
-      throw new Error("Too Many Requests! try again in 1 min");
-    }
-
     //Check if cart item exists
     const cartItem = await prismadb.cartItem.findUnique({
       where: {
         id: cartItemId,
+        cart: {
+          user: {
+            id: user.id,
+            role: "USER",
+          },
+        },
       },
       select: {
         quantity: true,
@@ -246,16 +231,16 @@ export const deleteCartItem = async (cartItemId: string) => {
       throw new Error("Unauthorized, You need to be logged in.");
     }
 
-    const { role } = await currentRole();
-
-    if (role !== "USER") {
-      throw new Error("Unauthorized, Only users can delete cartItem");
-    }
-
     //Check if cart item exists
     const cartItem = await prismadb.cartItem.findUnique({
       where: {
         id: cartItemId,
+        cart: {
+          user: {
+            id: user.id,
+            role: "USER",
+          },
+        },
       },
       select: {
         id: true,

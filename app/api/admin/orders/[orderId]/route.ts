@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import prismadb from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { sendOrderStatusUpdateEmail } from "@/lib/mail";
 import { OrderStatusSchema } from "@/lib/validators/order-status";
 import {
@@ -33,9 +33,7 @@ export async function PATCH(
     }
 
     //Check if user role is user
-    const { role } = await currentRole();
-
-    if (role !== UserRole.ADMIN) {
+    if (user.role !== UserRole.ADMIN) {
       return new NextResponse(
         "Unauthorized, Only admin can change order status",
         {

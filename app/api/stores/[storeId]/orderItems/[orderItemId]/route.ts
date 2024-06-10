@@ -1,6 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { UserRole, OrderStatus } from "@prisma/client";
 import { sendOrderStatusUpdateEmail } from "@/lib/mail";
 import { format } from "date-fns";
@@ -36,9 +36,7 @@ export async function PATCH(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== UserRole.SELLER) {
+    if (user.role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized, you need be a seller.", {
         status: 401,
       });

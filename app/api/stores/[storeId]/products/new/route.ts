@@ -5,7 +5,7 @@ import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
 import { sendCreatedProductEmail } from "@/lib/mail";
 import { UserRole, storeStatus } from "@prisma/client";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { ProductSchema } from "@/lib/validators/product";
 
 export async function POST(
@@ -20,9 +20,7 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { role } = await currentRole();
-
-    if (role !== UserRole.SELLER) {
+    if (user.role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

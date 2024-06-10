@@ -3,7 +3,7 @@ import { apiRatelimit } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { getCurrentPrice } from "@/lib/utils";
 import { checkText } from "@/actions/checkText";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { UserRole, storeStatus } from "@prisma/client";
 import { ProductSchema } from "@/lib/validators/product";
 import { sendDeletedProductEmail, sendUpdatedProductEmail } from "@/lib/mail";
@@ -21,9 +21,7 @@ export async function PATCH(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== UserRole.SELLER) {
+    if (user.role !== UserRole.SELLER) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -299,9 +297,7 @@ export async function DELETE(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== "SELLER") {
+    if (user.role !== "SELLER") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -385,9 +381,7 @@ export async function GET(
     }
 
     //Check if user is a seller
-    const { role } = await currentRole();
-
-    if (role !== "SELLER") {
+    if (user.role !== "SELLER") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

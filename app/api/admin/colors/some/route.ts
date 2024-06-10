@@ -1,6 +1,6 @@
 import prismadb from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { UserRole } from "@prisma/client";
 
 export async function POST(request: Request) {
@@ -15,9 +15,7 @@ export async function POST(request: Request) {
     }
 
     //Check if user is an admin
-    const { role } = await currentRole();
-
-    if (role !== UserRole.ADMIN) {
+    if (user.role !== UserRole.ADMIN) {
       return new NextResponse("Unauthorized, You need to be an admin.", {
         status: 401,
       });

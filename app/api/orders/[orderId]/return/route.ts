@@ -3,7 +3,7 @@ import prismadb from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import { sendReturnRequestEmail } from "@/lib/mail";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { OrderStatus, UserRole } from "@prisma/client";
 import { ReturnSchema } from "@/lib/validators/return";
 
@@ -28,9 +28,7 @@ export async function PATCH(
     }
 
     //Check if user role is user
-    const { role } = await currentRole();
-
-    if (role !== UserRole.USER) {
+    if (user.role !== UserRole.USER) {
       return new NextResponse("Unauthorized, Only users can cancel orders", {
         status: 401,
       });

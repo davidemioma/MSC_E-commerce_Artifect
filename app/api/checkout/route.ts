@@ -3,7 +3,7 @@ import prismadb from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { currentRole, currentUser } from "@/lib/auth";
+import { currentUser } from "@/lib/auth";
 import { CartItemsSchema } from "@/lib/validators/cart-item";
 
 export async function POST(request: Request) {
@@ -18,10 +18,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { role } = await currentRole();
-
     //Check if current role is USER
-    if (role !== UserRole.USER) {
+    if (user.role !== UserRole.USER) {
       return new NextResponse("You do not have permission to use stripe.", {
         status: 401,
       });
