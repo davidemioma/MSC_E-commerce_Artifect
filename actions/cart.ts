@@ -25,32 +25,15 @@ export const addToCartHandler = async (values: CartItemValidator) => {
 
     const { productId, productItemId, availableItemId } = validatedBody;
 
-    //Check if product exists
-    const productExists = await prismadb.product.findUnique({
-      where: {
-        id: productId,
-      },
-    });
-
-    if (!productExists) {
-      throw new Error("Product with provided ID does not exist.");
-    }
-
-    //Check if product item exists
-    const productItemExists = await prismadb.productItem.findUnique({
-      where: {
-        id: productItemId,
-      },
-    });
-
-    if (!productItemExists) {
-      throw new Error("Product item with provided ID does not exist.");
-    }
-
     //Check if available Item exists
     const availableItemExists = await prismadb.available.findUnique({
       where: {
         id: availableItemId,
+        productId,
+        productItemId,
+      },
+      select: {
+        id: true,
       },
     });
 

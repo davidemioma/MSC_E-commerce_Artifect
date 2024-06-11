@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -21,11 +21,17 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
 
   const queryClient = useQueryClient();
 
+  const [quantity, setQuantity] = useState(cartItem.quantity || 0);
+
+  const [isChangeLoading, setIsChangeLoading] = useState(false);
+
   const { mutate: removeItem, isPending } = useMutation({
     mutationKey: ["remove-cart-item"],
     mutationFn: deleteCartItem,
     onSuccess: () => {
       toast.success("Item removed from cart.");
+
+      setQuantity(0);
 
       queryClient.invalidateQueries({
         queryKey: ["get-cart-item"],
@@ -41,6 +47,8 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
   const { mutate: onQuantityChange, isPending: isLoading } = useMutation({
     mutationKey: ["update-quantity", cartItem.id],
     mutationFn: async ({ task }: { task: "add" | "minus" }) => {
+      setIsChangeLoading(true);
+
       if (
         cartItem.availableItem?.numInStocks &&
         task === "add" &&
@@ -53,6 +61,10 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
         return;
       }
 
+      task === "add"
+        ? setQuantity((prev) => prev + 1)
+        : setQuantity((prev) => prev - 1);
+
       await updateCartItem({ cartItemId: cartItem.id, task });
     },
     onSuccess: () => {
@@ -61,9 +73,13 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
       });
 
       isCheckout && router.refresh();
+
+      setIsChangeLoading(false);
     },
     onError: (err) => {
       toast.error(err.message || "Something went wrong");
+
+      setIsChangeLoading(false);
     },
   });
 
@@ -111,19 +127,19 @@ const CartItem = ({ cartItem, isCheckout, index }: Props) => {
           <Button
             className="text-lg font-semibold"
             variant="outline"
-            disabled={isPending || isLoading}
+            disabled={isPending || isLoading || isChangeLoading}
             onClick={() => onQuantityChange({ task: "minus" })}
             data-cy={`cart-item-${index}-minus`}
           >
             -
           </Button>
 
-          <div className="px-3 font-semibold">{cartItem.quantity}</div>
+          <div className="px-3 font-semibold">{quantity}</div>
 
           <Button
             className="text-lg font-semibold"
             variant="outline"
-            disabled={isPending || isLoading}
+            disabled={isPending || isLoading || isChangeLoading}
             onClick={() => onQuantityChange({ task: "add" })}
             data-cy={`cart-item-${index}-add`}
           >
