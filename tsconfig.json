@@ -37,7 +37,8 @@
     "__tests__/ReviewAndCart.test.jsx",
     "__tests__/ProductForm.test.jsx",
     "__tests__/Product.test.jsx",
-    "__tests__/StoreTables.test.jsx"
+    "__tests__/StoreTables.test.jsx",
+    "script.js"
   ],
   "exclude": ["node_modules"]
 }

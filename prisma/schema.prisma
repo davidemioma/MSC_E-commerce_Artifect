@@ -6,6 +6,7 @@
 //npx prisma generate - Do this after creating a new model
 //npx prisma db push - to push to your database.
 //npx prisma migrate reset - to reset your databse.
+//npx prisma migrate dev --name init - to push to your database and save your database history
 //npx prisma studio - to view your data
 
 generator client {
@@ -15,7 +16,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url  	    = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
